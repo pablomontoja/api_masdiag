@@ -1,0 +1,50 @@
+class TestTransaction < ApplicationRecord
+  after_create :change_test_amount
+
+  belongs_to :project
+  belongs_to :sample, optional: true
+  belongs_to :reserved_sample_code, optional: true
+  belongs_to :contractor
+  has_one :institution_order_component
+  has_many :institution_tests, class_name: 'InstitutionTest'
+  has_many :used_institution_tests, foreign_key: 'used_by_test_transaction_id', class_name: 'InstitutionTest'
+
+  validates :amount_change, presence: true
+  validate :institution_tests_availability, if: proc { |it| it.amount_change.negative? }
+
+  private
+
+  def institution_tests_availability
+    institution_id = self.contractor.institution.id
+    if InstitutionTest.not_expired.not_used.where('project_id = ? AND institution_id = ?', self.project_id,
+                                                  institution_id).count < self.amount_change.abs
+      errors.add(:amount_change, 'not enough institution tests left')
+    end
+  end
+
+  def change_test_amount
+    change = self.amount_change
+    if change.positive?
+      institution_tests = []
+      change.times do
+        institution_tests << { institution_id: self.contractor.institution_id, project_id: self.project_id,
+                               expiry_date: Time.zone.now + 2.years, created_at: Time.zone.now, updated_at: Time.zone.now }
+      end
+      self.institution_tests.insert_all(institution_tests)
+    elsif change.negative?
+      institution_id = self.contractor.institution.id
+      InstitutionTest
+        .not_expired
+        .not_used
+        .where(project_id: self.project_id, institution_id: institution_id)
+        .order(expiry_date: :asc)
+        .limit(change.abs)
+        .update_all(used: true, used_by_test_transaction_id: self.id)
+    end
+  end
+
+  def readonly?
+    true
+  end
+
+end
