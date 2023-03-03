@@ -33,7 +33,7 @@ class V1::WrongSampleUpdater < ApplicationService
   end
 
   def params_preparation
-    @params = Masdiag::ParamsRebuilder.call(@params, :sample)
+    @params = Masdiag::ParamsMapper.call(@params, :sample)
     if !@rsc.reserved_by.nil? && !@params[:patient_attributes][:Pesel].blank?
       patient = @rsc.reserved_by.patients.find_by(Pesel: @params[:patient_attributes][:Pesel])
       patient.update!(email: @params[:patient_attributes][:email]) if patient

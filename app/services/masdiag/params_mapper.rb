@@ -1,12 +1,10 @@
-class Masdiag::ParamsRebuilder < ApplicationService
+class Masdiag::ParamsMapper < ApplicationService
   def initialize(params, resource)
-    binding.break
     @params = params.to_h
     @resource = resource
   end
 
   def call
-    binding.break
     case @resource
     when :sample
       @params[:Code] = @params.delete :code

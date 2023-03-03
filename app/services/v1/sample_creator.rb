@@ -37,14 +37,17 @@ class V1::SampleCreator < ApplicationService
   end
 
   def params_preparation
-    @params = Masdiag::ParamsRebuilder.call(@params, :sample)
+    @params = Masdiag::ParamsMapper.call(@params, :sample)
+    @params[:patient_attributes].merge!(ContractorId: Current.api_account.contractor_id)
+
     if !@params[:patient_attributes][:Pesel].blank?
       patient = @rsc.reserved_by&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel])
-      patient = Contractor.find(@params[:patient_attributes][:ContractorId])&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel]) if patient.nil?
-      patient.update!(email: @params[:patient_attributes][:email]) if patient
+      patient = Contractor.find(Current.api_account.contractor_id)&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel]) if patient.nil?
+      patient.update!(email: @params[:patient_attributes][:email]) if patient && @params[:patient_attributes][:email].present?
       @params = @params.except(:patient_attributes) if patient
       @params.merge!(PatientId: patient.Id) if patient
     end
+
     @params.merge!(RegistrationDate: Time.zone.now, IsWrongRegistration: false, WasWrongRegistration: false,
                    SampleState: 1, SampleStatus: 1, WrongRegistrationStatus: 0) # payment_status?
   end

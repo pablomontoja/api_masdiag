@@ -13,7 +13,8 @@ class ApplicationController < ActionController::API
 
   def authenticate_user
     authenticate_or_request_with_http_basic do |username, password|
-      ApiAccount.find_by(username: username)&.authenticate(password)
+      Current.api_account = ApiAccount.find_by(username: username)&.authenticate(password)
+      Current.api_account
     end
   end
 

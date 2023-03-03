@@ -1,7 +1,6 @@
 class V1::SampleController < ApplicationController
 
   def create
-    binding.break
     current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
     if current_rsc.nil?
@@ -33,29 +32,45 @@ class V1::SampleController < ApplicationController
   private
 
   def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :pesel, :contractor_id, :is_foreigner, :birth_date, :gender, :id_document, :id_number])
+    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :is_foreigner, :birth_date, :gender, :id_document, :id_number])
   end
 
 end
 
 # "sample"=>
-# {"Code":"JV4XJ", "sample_collection_date":"2022-04-10", "patient_attributes":{"email":"pablomontoja2@gmail.com", "email_confirmation":"pablomontoja2@gmail.com", "FirstName":"Paweł", "LastName":"Świder", "Pesel":"83070212412", "BirthDate":"", "Gender":"1", "ContractorId":"336"}
+# {"Code":"JV4XJ", "sample_collection_date":"2022-04-10", "patient_attributes":{"email":"email@domain.com", "email_confirmation":"email@domain.com", "FirstName":"Paweł", "LastName":"Świder", "Pesel":"73080335755", "BirthDate":"", "Gender":"1", "ContractorId":"336"}
 
+
+# {
+#   "sample": {
+#     "code": "JV4XJ",
+#     "sample_collection_date": "2022-04-10",
+#     "patient_attributes": {
+#       "email": "email@domain.com",
+#       "first_name": "Paweł",
+#       "last_name": "Świder",
+#       "pesel": "73080335755",
+#       "is_foreigner": false,
+#       "birth_date": "",
+#       "gender": "0",
+#     }
+#   }
+# }
 
 # {
 #     "sample": {
 #         "code": "JV4XJ",
 #         "sample_collection_date": "2022-04-10",
 #         "patient_attributes": {
-#             "email": "pablomontoja2@gmail.com",
-#             "email_confirmation": "pablomontoja2@gmail.com",
+#             "email": "email@domain.com",
 #             "first_name": "Paweł",
 #             "last_name": "Świder",
-#             "pesel": "83070212412",
-#             "birth_date": "",
-#             "gender": "1",
-#             "contractor_id": "336",
-#             "is_foreigner": false
+#             "pesel": "73080335755",
+#             "is_foreigner": false,
+#             "birth_date": "1973-08-03",
+#             "gender": "0",
+#             "id_document": 0,
+#             "id_number": "AA"
 #         }
 #     }
 # }

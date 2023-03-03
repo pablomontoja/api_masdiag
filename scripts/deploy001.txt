@@ -1,1 +1,3 @@
 rails db:migrate
+
+dodać (GABA) do nazwy analitu w DB
