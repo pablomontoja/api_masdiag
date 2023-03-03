@@ -13,7 +13,7 @@ class ApplicationController < ActionController::API
 
   def authenticate_user
     authenticate_or_request_with_http_basic do |username, password|
-      password == Rails.application.credentials.dig(:http_auth, :"#{username}")
+      ApiAccount.find_by(username: username)&.authenticate(password)
     end
   end
 

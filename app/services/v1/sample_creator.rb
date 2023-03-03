@@ -37,7 +37,7 @@ class V1::SampleCreator < ApplicationService
   end
 
   def params_preparation
-    @params = Masdiag::ParamsRebuilder.call(@params)
+    @params = Masdiag::ParamsRebuilder.call(@params, :sample)
     if !@params[:patient_attributes][:Pesel].blank?
       patient = @rsc.reserved_by&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel])
       patient = Contractor.find(@params[:patient_attributes][:ContractorId])&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel]) if patient.nil?

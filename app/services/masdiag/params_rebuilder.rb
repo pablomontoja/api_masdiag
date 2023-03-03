@@ -1,18 +1,23 @@
 class Masdiag::ParamsRebuilder < ApplicationService
-  def initialize(params)
+  def initialize(params, resource)
     binding.break
     @params = params.to_h
+    @resource = resource
   end
 
   def call
     binding.break
-    @params[:Code] = @params.delete :code
-    @params.dig(:patient_attributes)[:FirstName] = @params.dig(:patient_attributes).delete :first_name
-    @params.dig(:patient_attributes)[:LastName] = @params.dig(:patient_attributes).delete :last_name
-    @params.dig(:patient_attributes)[:Pesel] = @params.dig(:patient_attributes).delete :pesel
-    @params.dig(:patient_attributes)[:BirthDate] = @params.dig(:patient_attributes).delete :birth_date
-    @params.dig(:patient_attributes)[:Gender] = @params.dig(:patient_attributes).delete :gender
-    @params.dig(:patient_attributes)[:ContractorId] = @params.dig(:patient_attributes).delete :contractor_id
+    case @resource
+    when :sample
+      @params[:Code] = @params.delete :code
+      @params.dig(:patient_attributes)[:FirstName] = @params.dig(:patient_attributes).delete :first_name
+      @params.dig(:patient_attributes)[:LastName] = @params.dig(:patient_attributes).delete :last_name
+      @params.dig(:patient_attributes)[:Pesel] = @params.dig(:patient_attributes).delete :pesel
+      @params.dig(:patient_attributes)[:BirthDate] = @params.dig(:patient_attributes).delete :birth_date
+      @params.dig(:patient_attributes)[:Gender] = @params.dig(:patient_attributes).delete :gender
+      @params.dig(:patient_attributes)[:ContractorId] = @params.dig(:patient_attributes).delete :contractor_id
+    end
+
     @params
   end
 end

@@ -40,3 +40,22 @@ end
 
 # "sample"=>
 # {"Code":"JV4XJ", "sample_collection_date":"2022-04-10", "patient_attributes":{"email":"pablomontoja2@gmail.com", "email_confirmation":"pablomontoja2@gmail.com", "FirstName":"Paweł", "LastName":"Świder", "Pesel":"83070212412", "BirthDate":"", "Gender":"1", "ContractorId":"336"}
+
+
+# {
+#     "sample": {
+#         "code": "JV4XJ",
+#         "sample_collection_date": "2022-04-10",
+#         "patient_attributes": {
+#             "email": "pablomontoja2@gmail.com",
+#             "email_confirmation": "pablomontoja2@gmail.com",
+#             "first_name": "Paweł",
+#             "last_name": "Świder",
+#             "pesel": "83070212412",
+#             "birth_date": "",
+#             "gender": "1",
+#             "contractor_id": "336",
+#             "is_foreigner": false
+#         }
+#     }
+# }
