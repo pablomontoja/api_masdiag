@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     resources :sample, only: %i{create} do
       delete "/",on: :collection, to: 'sample#destroy'
     end
+
+    get "/common/identity_documents", to: 'common#identity_documents'
   end
 
 end

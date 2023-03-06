@@ -26,7 +26,7 @@ class V1::SampleController < ApplicationController
     @sample.validate
 
     if @sample.save!
-      json_response(@sample, :created)
+      json_response(SampleResource.new(@sample), :created)
     else
       json_response({message: @sample.errors}, :unprocessable_entity)
     end
@@ -55,7 +55,7 @@ class V1::SampleController < ApplicationController
   private
 
   def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :is_foreigner, :birth_date, :gender, :id_document, :id_number]).each_value do |value|
+    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).each_value do |value|
       case value
       when String
         value.try(:strip!)
@@ -96,7 +96,6 @@ end
 #             "first_name": "Paweł",
 #             "last_name": "Świder",
 #             "pesel": "73080335755",
-#             "is_foreigner": false,
 #             "birth_date": "1973-08-03",
 #             "gender": "0",
 #             "id_document": 0,

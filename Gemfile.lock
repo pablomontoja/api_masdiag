@@ -68,6 +68,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    alba (2.2.0)
     bcrypt (3.1.18)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
@@ -107,6 +108,7 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
+    oj (3.14.2)
     puma (5.6.5)
       nio4r (~> 2.0)
     racc (1.6.2)
@@ -154,10 +156,12 @@ PLATFORMS
 
 DEPENDENCIES
   activepesel
+  alba
   bcrypt (~> 3.1.7)
   bootsnap
   byebug
   mysql2 (~> 0.5)
+  oj
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.2)
   tzinfo-data

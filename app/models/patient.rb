@@ -19,7 +19,9 @@ class Patient < ApplicationRecord
   validates :Gender, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
   validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }, if: Proc.new { |patient| patient.Pesel.blank? }
   validates :id_document, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
-  validates :id_number, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
+  validates_inclusion_of :id_document, in: V1::Common::IDENTITY_DOCUMENTS.keys, message: "%{value} is not in the list of possible documents, see GET /v1/common/identity_documents", if: Proc.new { |patient| patient.Pesel.blank? }
+  validates :id_number, presence: true, length: { minimum: 2 }, if: Proc.new { |patient| patient.Pesel.blank? }
+
 
   def fullname
     "#{self.FirstName} #{self.LastName}"
