@@ -9,14 +9,15 @@ class Patient < ApplicationRecord
   before_save :set_time_stamps
   # before_save :set_gender_and_birthday, if: Proc.new { |patient| patient.Pesel.present? }
   before_save :update_data_from_pesel, if: Proc.new { |patient| patient.Pesel.present? && Activepesel::Pesel.new(patient.Pesel).valid? }
+  before_validation :strip_fields
 
-  # walidacja
+  # validations
   validates :FirstName, presence: true, length: { minimum: 2 }
   validates :LastName, presence: true, length: { minimum: 2 }
   validates :Pesel, presence: true, length: { is: 11 }, uniqueness: { scope: :ContractorId }, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
-  validate :pesel_validation
+  validate :pesel_validation, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
   validates :Gender, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
-  validates :BirthDate, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
+  validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }, if: Proc.new { |patient| patient.Pesel.blank? }
   validates :id_document, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
   validates :id_number, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
 
@@ -24,8 +25,14 @@ class Patient < ApplicationRecord
     "#{self.FirstName} #{self.LastName}"
   end
 
-
   private
+
+  def strip_fields
+    self.FirstName.strip!
+    self.LastName.strip!
+    self.id_number.strip!
+    self.Pesel.strip!
+  end
 
   def pesel_validation
     errors.add(:Pesel, "is invalid") unless Activepesel::Pesel.new(self.Pesel).valid?
@@ -36,31 +43,6 @@ class Patient < ApplicationRecord
     self.BirthDate = pesel.date_of_birth
     self.Gender = pesel.sex - 1 # js activepesel uses 1, 2 codes for gender whereas our app uses 0, 1
   end
-
-  # def set_gender_and_birthday
-  #   if self.is_foreigner == false
-  #     pesel = Activepesel::Pesel.new(self.Pesel)
-
-  #     case pesel.sex
-  #     when 1
-  #       self.Gender = 0 #facet
-  #     when 2
-  #       self.Gender = 1 #baba
-  #     end
-
-  #     if pesel.valid?
-  #       self.BirthDate = pesel.date_of_birth
-  #     else
-  #       self.BirthDate = nil
-  #     end
-
-  #     self.id_number = nil
-  #     self.id_document = nil
-  #   else
-  #     self.Pesel = nil
-  #   end
-
-  # end
 
   def set_time_stamps
     self.CreatedAt = DateTime.now if self.new_record?

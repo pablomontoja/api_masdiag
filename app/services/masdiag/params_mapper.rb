@@ -7,7 +7,7 @@ class Masdiag::ParamsMapper < ApplicationService
   def call
     case @resource
     when :sample
-      @params[:Code] = @params.delete :code
+      @params[:Code] = (@params.delete :code).upcase
       @params.dig(:patient_attributes)[:FirstName] = @params.dig(:patient_attributes).delete :first_name
       @params.dig(:patient_attributes)[:LastName] = @params.dig(:patient_attributes).delete :last_name
       @params.dig(:patient_attributes)[:Pesel] = @params.dig(:patient_attributes).delete :pesel

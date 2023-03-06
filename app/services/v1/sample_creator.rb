@@ -38,12 +38,17 @@ class V1::SampleCreator < ApplicationService
 
   def params_preparation
     @params = Masdiag::ParamsMapper.call(@params, :sample)
-    @params[:patient_attributes].merge!(ContractorId: Current.api_account.contractor_id)
+    @params[:patient_attributes].merge!(ContractorId: Current.api_account.contractor_id) if @rsc.reserved_by.nil?
+    @params[:patient_attributes].merge!(ContractorId: @rsc.reserved_by.Id) if !@rsc.reserved_by.nil?
 
     if !@params[:patient_attributes][:Pesel].blank?
       patient = @rsc.reserved_by&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel])
       patient = Contractor.find(Current.api_account.contractor_id)&.patients&.find_by(Pesel: @params[:patient_attributes][:Pesel]) if patient.nil?
       patient.update!(email: @params[:patient_attributes][:email]) if patient && @params[:patient_attributes][:email].present?
+      @params = @params.except(:patient_attributes) if patient
+      @params.merge!(PatientId: patient.Id) if patient
+    else
+      patient = Patient.where(FirstName: @params[:patient_attributes][:FirstName], LastName: @params[:patient_attributes][:LastName], Gender: @params[:patient_attributes][:Gender], BirthDate: @params[:patient_attributes][:BirthDate], ContractorId: @params[:patient_attributes][:ContractorId]).first
       @params = @params.except(:patient_attributes) if patient
       @params.merge!(PatientId: patient.Id) if patient
     end

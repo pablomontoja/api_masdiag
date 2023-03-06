@@ -1,9 +1,14 @@
 class V1::SampleController < ApplicationController
 
   def create
-    current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
+    current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_params[:code])
 
     if current_rsc.nil?
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      return
+    end
+
+    if current_rsc&.reserved_tests.count.zero?
       json_response({ message: "The sample does not have assigned tests." }, :unprocessable_entity)
       return
     end
@@ -25,14 +30,39 @@ class V1::SampleController < ApplicationController
     else
       json_response({message: @sample.errors}, :unprocessable_entity)
     end
+  end
 
+  def destroy
+    sample_params[:code].upcase!
+    rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_params[:code])
+    sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_params[:code])
+    if rsc.nil?
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      return
+    end
+
+    if sample.nil?
+      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
+      return
+    end
+
+    if sample.destroy
+      json_response({}, :ok)
+    end
   end
 
 
   private
 
   def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :is_foreigner, :birth_date, :gender, :id_document, :id_number])
+    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :is_foreigner, :birth_date, :gender, :id_document, :id_number]).each_value do |value|
+      case value
+      when String
+        value.try(:strip!)
+      when ActionController::Parameters
+        value.each_value { |value| value.try(:strip!) }
+      end
+    end
   end
 
 end
@@ -74,3 +104,5 @@ end
 #         }
 #     }
 # }
+
+# N4GZ4 Q4TEY S672U LZHPF CJIB7 Q6NFI UPTBV QJDKW KRVRZ Y1ACD BGIJQ WN46G AJ7YA ZFMRK PBFBB JRXIM 2WQ52 D1ZKU IFAI4 XDSFV VXAFI LPUEL DDBX7 U93T2 S9RAE 883JK TVQUU FD4KI T9QV3 RR7MY BL29A YCZJ5 MR1XW VSHWQ 51WZ2 9A991 IZEVW SGBAK BE8WB F3UQA 5GGXA MGYA5 231ZS 5HMAV L3183 8E1F3 PZVRN TVQB6 GF43J 4KVCF AD4ZE PKF4C 18JMB CVS1P PAIX1 UHRFG

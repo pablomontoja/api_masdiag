@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   get "health/not_found", to: 'health#not_found'
 
   namespace :v1, defaults: {format: :json} do
-    resources :sample, only: :create
+    resources :sample, only: %i{create} do
+      delete "/",on: :collection, to: 'sample#destroy'
+    end
   end
 
 end
