@@ -33,9 +33,8 @@ class V1::SampleController < ApplicationController
   end
 
   def destroy
-    sample_params[:code].upcase!
-    rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_params[:code])
-    sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_params[:code])
+    rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_code)
+    sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
     if rsc.nil?
       json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
       return
@@ -53,6 +52,10 @@ class V1::SampleController < ApplicationController
 
 
   private
+
+  def sample_code
+    params.require(:code).upcase
+  end
 
   def sample_params
     params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).each_value do |value|

@@ -7,8 +7,12 @@ Rails.application.routes.draw do
 
   namespace :v1, defaults: {format: :json} do
     resources :sample, only: %i{create} do
-      delete "/",on: :collection, to: 'sample#destroy'
+      delete "/:code",on: :collection, to: 'sample#destroy'
     end
+
+    # resources :result do
+    get "/result/:code", to: 'result#show'
+    # end
 
     get "/common/identity_documents", to: 'common#identity_documents'
   end

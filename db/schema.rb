@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_02_210401) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_06_220257) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -415,6 +415,34 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_02_210401) do
     t.string "ContextKey", limit: 300, null: false
     t.binary "Model", size: :long, null: false
     t.string "ProductVersion", limit: 32, null: false
+  end
+
+  create_table "active_storage_attachments", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
   create_table "agents", id: :integer, charset: "utf8", force: :cascade do |t|
@@ -1092,6 +1120,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_02_210401) do
   add_foreign_key "Samples", "Users", column: "UserId", primary_key: "Id", name: "FK_Samples_Users_UserId", on_update: :cascade, on_delete: :cascade
   add_foreign_key "Samples", "soaking_degrees", name: "FK_Samples_soaking_degrees_soaking_degree_id"
   add_foreign_key "SamplesToCsvQueues", "Protocols", column: "ProtocolId", primary_key: "Id", name: "FK_SamplesToCsvQueues_Protocols_ProtocolId"
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "answers", "Samples", primary_key: "Id"
   add_foreign_key "answers", "options"
   add_foreign_key "answers", "survey_questions"
