@@ -48,3 +48,4 @@ gem 'activepesel'
 gem 'bcrypt', '~> 3.1.7'
 gem 'oj'
 gem 'alba'
+gem "aws-sdk-s3"
