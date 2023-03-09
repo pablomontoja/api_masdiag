@@ -1,0 +1,7 @@
+	1. change staging credentials
+EDITOR=nano rails credentials:show -e staging
+
+	2. create staging db
+RAILS_ENV=staging rails db:create db:schema:load
+
+dodać (GABA) do nazwy analitu w DB

@@ -26,18 +26,7 @@ class V1::ResultController < ApplicationController
       res << {test: meas.project.Name, status: get_status(meas.Status), unencrypted_result: nil}
     end
 
-    # mids = sample.measurements.each do |meas|
-    #   if meas.Status == 5 && meas.online_file.file_contents.present?
-    #     meas.online_file.prepare_active_storage
-    #     res << {test: meas.project.Name, status: get_status(meas.Status), unencrypted_result: url_for(meas.online_file.unencrypted_result) }
-    #   else
-    #     res << {test: meas.project.Name, status: get_status(meas.Status) }
-    #   end
-
-    # end
-    # encrypted_result: url_for(meas.online_file.encrypted_result)
-    # res = OnlineFile.where(measurement_id: mids).pluck(:measurement_id)
-    # Measurement.includes(sample: {patient: :contractor}).where(Status: 4).where(sample: {IsControlSample: false}).where(sample: {patient: {Contractors: {institution_id: 1}}}).where("LENGTH(sample.Code) = 5").where(sample: {IsWrongRegistration: false}).limit(100).pluck("sample.Code")
+    # "http://127.0.0.1:3000/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBDdz09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--2f19a40975b3e71377c6ae91d492cb06dcd3693f/JXHXW_2.pdf"
 
     json_response({results: res})
   end

@@ -20,9 +20,9 @@ class Institution < ApplicationRecord
     end
   end
 
-  def readonly?
-    Rails.env.test? ? false : true
-  end
+  # def readonly?
+  #   Rails.env.test? ? false : true
+  # end
 
   def available_codes
     rsc_codes = ReservedSampleCode.where(InstitutionId: self.id).pluck(:Code)
@@ -39,8 +39,8 @@ class Institution < ApplicationRecord
   private
 
   # def remove_whitespaces_and_dashes_in_nip
-  # 	nip.strip!
-  # 	nip.gsub!(/[^0-9]/, "")
+  #   nip.strip!
+  #   nip.gsub!(/[^0-9]/, "")
   # end
 
 end

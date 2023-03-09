@@ -9,8 +9,8 @@ class Contractor < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
-  def readonly?
-    Rails.env.test? ? false : true
-  end 
+  # def readonly?
+  #   Rails.env.test? ? false : true
+  # end
 
 end
