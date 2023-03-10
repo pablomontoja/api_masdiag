@@ -12,7 +12,7 @@ ApiAccount.create!(username: "epixpert", password: "8LhEkEdkPj4EQQ34", password_
 user = User.create!(FirstName: "Paweł", LastName: "Świder", email: "pawel.swider@masdiag.pl", Login: "pswider", Password: "pass", Salt: "salt", IsActive: true, Role: 0, encrypted_password: "$", sign_in_count: 0, HasSmartCard: false)
 
 
-po = ProductionOrder.new(lot: "001.Epixpert", packages_expiry_date: Date.parse("2023-04-01"), packages_count: 10, product_id: 1, stock_room_id: 1, material_type: 0)
+po = ProductionOrder.new(lot: "001.Epixpert", packages_expiry_date: Date.parse("2024-04-01"), packages_count: 10, product_id: 1, stock_room_id: 1, material_type: 0)
 ProductionOrdersJob.perform_now(po.attributes, user)
 
 
@@ -44,6 +44,7 @@ end
 
 # ZJKXP jest przyjety do Labu, ale nie ma wyników
 # BHCLC anulowana
+# XHYVZ expired
 
 smp = Sample.find_by(Code: "BHCLC")
 smp.measurements.destroy_all

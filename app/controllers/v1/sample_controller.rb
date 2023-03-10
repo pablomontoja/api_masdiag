@@ -8,6 +8,11 @@ class V1::SampleController < ApplicationController
       return
     end
 
+    if current_rsc.expiry_date < Time.zone.now
+      json_response({ message: "The DBS card is expired." }, :unprocessable_entity)
+      return
+    end
+
     if current_rsc&.reserved_tests.count.zero?
       json_response({ message: "The sample does not have assigned tests." }, :unprocessable_entity)
       return
