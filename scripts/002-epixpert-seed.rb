@@ -40,4 +40,11 @@ Measurement.includes(:sample).where(sample: {Code: codes}).each do |meas|
 end
 
 
+
+
 # ZJKXP jest przyjety do Labu, ale nie ma wyników
+# BHCLC anulowana
+
+smp = Sample.find_by(Code: "BHCLC")
+smp.measurements.destroy_all
+smp.update(Comment: "materiał niezakwalifikowany do badania", SampleStatus: 4, CancelledById: 1, CancellationDate: DateTime.now, soaking_degree_id: [4,5].sample)
