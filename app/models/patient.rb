@@ -30,10 +30,10 @@ class Patient < ApplicationRecord
   private
 
   def strip_fields
-    self.FirstName.strip!
-    self.LastName.strip!
-    self.id_number.strip!
-    self.Pesel.strip!
+    self.FirstName&.strip!
+    self.LastName&.strip!
+    self.id_number&.strip!
+    self.Pesel&.strip!
   end
 
   def pesel_validation

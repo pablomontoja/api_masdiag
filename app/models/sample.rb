@@ -34,6 +34,14 @@ class Sample < ApplicationRecord
     authorized_count > 0 ? true : false
   end
 
+  def test_names
+    measurements.map{|m| m.project&.Name}
+  end
+
+  def cancelled?
+    [4,5].include?(soaking_degree_id) || SampleStatus == 4
+  end
+
   def self.search(search)
     if search.present?
       a = self.where("Code LIKE ?", "%#{search}%").collect(&:id)
