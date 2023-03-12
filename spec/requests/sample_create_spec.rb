@@ -23,18 +23,29 @@ RSpec.describe 'V1::SampleController#create', type: :request do
         post '/v1/sample', params: smp_params, headers: http_auth_header
         expect(json.dig("sample", "code")).to eq("JV4XJ")
         expect(json.dig("sample", "tests")).to eq(rsc.projects_names)
+        expect(response).to have_http_status(201)
       end
 
       it 'returns error message when DBS is expired' do
         rsc.update(expiry_date: 2.days.ago)
         post '/v1/sample', params: smp_params, headers: http_auth_header
         expect(json.dig("message")).to eq("The DBS card is expired.")
+        expect(response).to have_http_status(422)
       end
 
       it 'returns error message when DBS is not assigned' do
         rsc.reserved_tests.destroy_all
         post '/v1/sample', params: smp_params, headers: http_auth_header
         expect(json.dig("message")).to eq("The sample does not have assigned tests.")
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns json with expected keys' do
+        post "/v1/sample", params: smp_params, headers: http_auth_header
+        expect(json.dig("sample")).to have_key("code")
+        expect(json.dig("sample")).to have_key("tests")
+        expect(json.dig("sample")).to have_key("id")
+        expect(response).to have_http_status(201)
       end
 
       it 'returns a created status' do

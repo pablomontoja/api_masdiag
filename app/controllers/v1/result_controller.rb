@@ -2,8 +2,8 @@ class V1::ResultController < ApplicationController
 
   def show
     current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_code)
-
     sample = Sample.find_by(Code: sample_code)
+
     if current_rsc.nil?
       json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
       return
@@ -13,7 +13,6 @@ class V1::ResultController < ApplicationController
       json_response({ message: "Unknown sample code." }, :unprocessable_entity)
       return
     end
-
 
     results = []
 
@@ -115,7 +114,7 @@ class V1::ResultController < ApplicationController
     when 3
       return "clarification needed"
     when 4
-      return "canceled"
+      return "cancelled"
     when 5
       return "pool recharged after cancellation"
     else
