@@ -14,4 +14,11 @@ FactoryBot.define do
     CreatedAt { Time.now }
     package_id { 2 }
   end
+
+  factory :rsc_without_institution, class: ReservedSampleCode do
+    Code { "JV4XJ" }
+    expiry_date { 1.year.since }
+    CreatedAt { Time.now }
+    package_id { 1 }
+  end
 end

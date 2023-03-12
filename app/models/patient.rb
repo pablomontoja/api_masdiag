@@ -15,7 +15,7 @@ class Patient < ApplicationRecord
   validates :FirstName, presence: true, length: { minimum: 2 }
   validates :LastName, presence: true, length: { minimum: 2 }
   validates :Pesel, presence: true, length: { is: 11 }, uniqueness: { scope: :ContractorId }, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
-  validate :pesel_validation, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
+  validate :pesel_validation, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? && patient.Pesel.blank? }
   validates :Gender, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
   validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }, if: Proc.new { |patient| patient.Pesel.blank? }
   validates :id_document, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }

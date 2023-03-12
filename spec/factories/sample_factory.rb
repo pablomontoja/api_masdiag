@@ -15,3 +15,46 @@ end
 
 # "sample"=>
 # {"Code"=>"JV4XJ", "sample_collection_date"=>"2022-04-10", "patient_attributes"=>{"email"=>"pablomontoja2@gmail.com", "email_confirmation"=>"pablomontoja2@gmail.com", "FirstName"=>"Paweł", "LastName"=>"Świder", "Pesel"=>"83070212412", "BirthDate"=>"", "Gender"=>"1", "ContractorId"=>"336"}
+
+
+FactoryBot.define do
+  factory :sample_with_pesel, class: Hash do
+    sample do
+      {
+        "code": "JV4XJ",
+        "sample_collection_date": "2022-04-10",
+        "patient_attributes": {
+          "email": "email@domain.com",
+          "first_name": "Paweł",
+          "last_name": "Świder",
+          "pesel": "73080335755"
+        }
+      }
+    end
+    skip_create
+    initialize_with { attributes }
+  end
+end
+
+FactoryBot.define do
+  factory :sample_without_pesel, class: Hash do
+    sample do
+      {
+        "code": "JV4XJ",
+        "sample_collection_date": "2022-04-10",
+        "patient_attributes": {
+          "email": "email@domain.com",
+          "first_name": "Paweł",
+          "last_name": "Świder",
+          "pesel": "",
+          "birth_date": "2010-02-14",
+          "gender": "0",
+          "id_document": 1,
+          "id_number": "AA"
+        }
+      }
+    end
+    skip_create
+    initialize_with { attributes }
+  end
+end
