@@ -1,8 +1,8 @@
 require 'rails_helper'
 # include ApiHelpers
 
-RSpec.describe 'Samples', type: :request do
-  describe 'POST /create' do
+RSpec.describe 'V1::SampleController#create', type: :request do
+  describe 'POST /v1/sample' do
     context 'with valid parameters' do
       # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:product) { create(:product) }

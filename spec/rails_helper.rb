@@ -31,6 +31,7 @@ rescue ActiveRecord::PendingMigrationError => e
 end
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
+  config.include ApiHelpers, type: :controller
   config.include ApiHelpers, type: :request
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
