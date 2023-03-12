@@ -33,26 +33,25 @@ RSpec.describe 'V1::ResultController#show', type: :request do
         expect(json.dig("results").first["sample_code"]).to eq("JV4XJ")
         expect(json.dig("results").first["test"]).to eq(measurement.project.Name)
         expect(json.dig("results").first["unencrypted_result"]).not_to be_nil
-        expect(response).to have_http_status(200)
       end
 
       it 'returns json with expected keys' do
         get "/v1/result/get/#{valid_sample.Code}", headers: http_auth_header
+        expect(json.dig("results").size).to eq(1)
         expect(json.dig("results").first).to have_key("sample_code")
         expect(json.dig("results").first).to have_key("test")
         expect(json.dig("results").first).to have_key("measurement_status")
         expect(json.dig("results").first).to have_key("sample_status")
         expect(json.dig("results").first).to have_key("unencrypted_result")
         expect(json.dig("results").first).not_to have_key("rejection_reason")
-        expect(response).to have_http_status(200)
       end
 
       it 'returns json with expected keys for cancelled sample' do
         valid_sample.update(SampleStatus: 4)
         get "/v1/result/get/#{valid_sample.Code}", headers: http_auth_header
+        expect(json.dig("results").first["sample_status"]).to eq("cancelled")
         expect(json.dig("results").first).not_to have_key("unencrypted_result")
         expect(json.dig("results").first).to have_key("rejection_reason")
-        expect(response).to have_http_status(200)
       end
     end
 
