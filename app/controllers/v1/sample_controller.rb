@@ -8,7 +8,7 @@ class V1::SampleController < ApplicationController
       return
     end
 
-    if current_rsc.expiry_date < Time.zone.now
+    if current_rsc&.expiry_date < Time.zone.now
       json_response({ message: "The DBS card is expired." }, :unprocessable_entity)
       return
     end
@@ -51,7 +51,7 @@ class V1::SampleController < ApplicationController
     end
 
     if sample.destroy
-      json_response({}, :ok)
+      head :no_content
     end
   end
 

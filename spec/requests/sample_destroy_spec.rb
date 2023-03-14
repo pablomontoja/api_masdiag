@@ -50,10 +50,9 @@ RSpec.describe 'V1::SampleController#delete', type: :request do
         rsc.update(IsRetailSale: true, InstitutionId: inst.id)
       end
 
-      it 'returns status 200' do
+      it 'returns status 204' do
         delete '/v1/sample/delete/JV4XJ', headers: http_auth_header
-        expect(json).to eq({})
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(204)
       end
     end
 
