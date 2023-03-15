@@ -13,7 +13,7 @@ ENV RAILS_SERVE_STATIC_FILES true
 ENV RAILS_LOG_TO_STDOUT true
 ENV GEM_HOME="/bundle"
 ENV PATH $GEM_HOME/bin:$GEM_HOME/gems/bin:$PATH
-RUN gem install bundler && bundle check || bundle install -j8
+RUN gem install bundler -v 2.3.22 && bundle check || bundle install -j8
 
 
 
@@ -25,7 +25,7 @@ FROM builder
 COPY entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
-EXPOSE 3010
+EXPOSE 3000
 
 # Start the main process.
-CMD ["rails", "server", "-b", "0.0.0.0", "-e", $rails_env , "-p", "3010"]
+CMD ["rails", "server", "-b", "0.0.0.0", "-e", $rails_env , "-p", "3000"]
