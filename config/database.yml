@@ -58,6 +58,7 @@ production:
   username: <%= Rails.application.credentials.db.username %>
   password: <%= Rails.application.credentials.db.password %>
   host: <%= Rails.application.credentials.db.host %>
+  port: <%= Rails.application.credentials.db.port %>
 
 staging:
   <<: *default
@@ -65,3 +66,4 @@ staging:
   username: <%= Rails.application.credentials.db.username %>
   password: <%= Rails.application.credentials.db.password %>
   host: <%= Rails.application.credentials.db.host %>
+  port: <%= Rails.application.credentials.db.port %>
