@@ -15,9 +15,9 @@ class V1::TriggerController < ApplicationController
     end
 
     res = Notification::ResultService.call(sample)
-    # json_response(ResultResource.call(sample, current_rsc))
+
     if res.success?
-      render json: {message: "result sent to endpoint"}, status: 200
+      render json: {message: "result endpoint responded with status 200"}, status: 200
     else
       render json: { message: res.error.join(", ")}, status: 500
     end

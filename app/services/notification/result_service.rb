@@ -14,7 +14,12 @@ class Notification::ResultService < ApplicationService
     return handle_error(["blank result post endpoint url"]) if url.blank?
 
     begin
-      response = Faraday.post(url, result.to_json, {'Content-Type' => 'application/json'})
+      conn = Faraday.new() do |f|
+        f.response :raise_error # raise Faraday::Error on status code 4xx or 5xx
+        f.request :json
+        f.response :json
+      end
+      response = conn.post(url, result.to_json)
       handle_result()
     rescue Faraday::Error => e
       return handle_error([e.to_s]) if e.response.nil?
