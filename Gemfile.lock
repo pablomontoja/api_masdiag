@@ -102,6 +102,10 @@ GEM
       railties (>= 5.0.0)
     faker (3.1.1)
       i18n (>= 1.8.11, < 2)
+    faraday (2.7.4)
+      faraday-net_http (>= 2.0, < 3.1)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (3.0.2)
     globalid (1.1.0)
       activesupport (>= 5.0)
     i18n (1.12.0)
@@ -184,6 +188,7 @@ GEM
       rspec-mocks (~> 3.11)
       rspec-support (~> 3.11)
     rspec-support (3.12.0)
+    ruby2_keywords (0.0.5)
     thor (1.2.1)
     timeout (0.3.2)
     tzinfo (2.0.6)
@@ -205,6 +210,7 @@ DEPENDENCIES
   byebug
   factory_bot_rails
   faker
+  faraday
   mysql2 (~> 0.5)
   oj
   puma (~> 5.0)

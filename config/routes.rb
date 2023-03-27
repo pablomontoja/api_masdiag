@@ -15,6 +15,12 @@ Rails.application.routes.draw do
     # end
 
     get "/common/identity_documents", to: 'common#identity_documents'
+    get "/common/version", to: 'common#version'
+
+    post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
+    post "/trigger/send_result/:code", to: 'trigger#send_result'
   end
+
+  get '*path' => redirect('/')
 
 end

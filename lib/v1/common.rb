@@ -8,4 +8,7 @@ module V1::Common
     6 => "zgoda na pobyt tolerowany",
     7 => "PESEL opiekuna prawnego gdy pacjentem jest noworodek"
   }.freeze
+
+  CURRENT_VERSION = "1.01"
+  CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ESb51fSMVWJNipnF_pp0ZiMBGTmVY7ndBnglLzWCNtVhGQ?e=MuyUh9"
 end

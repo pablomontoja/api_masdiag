@@ -4,7 +4,7 @@ class ApplicationService
     new(*args, &block).call
   end
 
-private
+  private
 
   def handle_result(result = nil)
     OpenStruct.new({success?: true, payload: result})
@@ -13,5 +13,5 @@ private
   def handle_error(error = [])
     OpenStruct.new({success?: false, error: error})
   end
-  
+
 end
