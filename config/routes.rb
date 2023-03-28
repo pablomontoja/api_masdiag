@@ -21,6 +21,6 @@ Rails.application.routes.draw do
     post "/trigger/send_result/:code", to: 'trigger#send_result'
   end
 
-  get '*path' => redirect('/')
+  # get '*path' => redirect('/')
 
 end
