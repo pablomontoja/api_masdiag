@@ -7,27 +7,37 @@ class Patient < ApplicationRecord
 
   # callbacks
   before_save :set_time_stamps
-  # before_save :set_gender_and_birthday, if: Proc.new { |patient| patient.Pesel.present? }
   before_save :update_data_from_pesel, if: Proc.new { |patient| patient.Pesel.present? && Activepesel::Pesel.new(patient.Pesel).valid? }
   before_validation :strip_fields
 
   # validations
   validates :FirstName, presence: true, length: { minimum: 2 }
   validates :LastName, presence: true, length: { minimum: 2 }
-  validates :Pesel, presence: true, length: { is: 11 }, uniqueness: { scope: :ContractorId }, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
-  validate :pesel_validation, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? && patient.Pesel.blank? }
-  validates :Gender, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
-  validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }, if: Proc.new { |patient| patient.Pesel.blank? }
-  validates :id_document, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
-  validates_inclusion_of :id_document, in: V1::Common::IDENTITY_DOCUMENTS.keys, message: "%{value} is not in the list of possible documents, see GET /v1/common/identity_documents", if: Proc.new { |patient| patient.Pesel.blank? }
-  validates :id_number, presence: true, length: { minimum: 2 }, if: Proc.new { |patient| patient.Pesel.blank? }
 
+  # v1 validations
+  with_options({on: :v1}) do |v1_patient|
+    v1_patient.validates :Pesel, presence: true, length: { is: 11 }, uniqueness: { scope: :ContractorId }, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
+    v1_patient.validate :pesel_validation, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? && patient.Pesel.blank? }
+    v1_patient.validates :Gender, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
+    v1_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }, if: Proc.new { |patient| patient.Pesel.blank? }
+    v1_patient.validates :id_document, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
+    v1_patient.validates_inclusion_of :id_document, in: V1::Common::IDENTITY_DOCUMENTS.keys, message: "%{value} is not in the list of possible documents, see GET /v1/common/identity_documents", if: Proc.new { |patient| patient.Pesel.blank? }
+    v1_patient.validates :id_number, presence: true, length: { minimum: 2 }, if: Proc.new { |patient| patient.Pesel.blank? }
+  end
+
+  # NUME validations
+  with_options({on: :nume}) do |nume_patient|
+    nume_patient.validates :Gender, presence: true
+    nume_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }
+  end
 
   def fullname
     "#{self.FirstName} #{self.LastName}"
   end
 
+  #######################
   private
+  #######################
 
   def strip_fields
     self.FirstName&.strip!

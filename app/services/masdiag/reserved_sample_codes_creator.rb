@@ -15,7 +15,7 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
 
   def call
     begin
-      byebug
+      # byebug
       @production_order.packages.each do |pack|
         pack.product.capacity.times {
           code = get_random_code

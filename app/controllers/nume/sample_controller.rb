@@ -1,36 +1,32 @@
-class V1::SampleController < ApplicationController
+class Nume::SampleController < ApplicationController
+  include NumeCheck
+  before_action :set_rsc
+  before_action :set_sample, only: :destroy
 
   def create
-    current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_params[:code])
-
-    if current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
-      return
-    end
-
-    if current_rsc&.expiry_date < Time.zone.now
+    if @current_rsc&.expiry_date < Time.zone.now
       json_response({ message: "The DBS card is expired." }, :unprocessable_entity)
       return
     end
 
-    if current_rsc&.reserved_tests.count.zero?
+    if @current_rsc&.reserved_tests.count.zero?
       json_response({ message: "The sample does not have assigned tests." }, :unprocessable_entity)
       return
     end
 
     @sample = Sample.where(IsWrongRegistration: true)
     .includes(measurements: %i[project result])
-    .find_by(Code: current_rsc.Code.upcase)
+    .find_by(Code: @current_rsc.Code.upcase)
 
     @sample = if @sample.nil?
-      V1::SampleCreator.call(sample_params, current_rsc)
+      V1::SampleCreator.call(sample_params, @current_rsc)
     else
-      V1::WrongSampleUpdater.call(@sample, sample_params, current_rsc)
+      V1::WrongSampleUpdater.call(@sample, sample_params, @current_rsc)
     end
 
     @sample.validate
 
-    if @sample.save!(context: :v1)
+    if @sample.save!(context: :nume)
       json_response(SampleResource.new(@sample), :created)
     else
       json_response({message: @sample.errors}, :unprocessable_entity)
@@ -38,25 +34,30 @@ class V1::SampleController < ApplicationController
   end
 
   def destroy
-    rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_code)
-    sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
-    if rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
-      return
-    end
-
-    if sample.nil?
-      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
-      return
-    end
-
-    if sample.destroy
+    if @sample.destroy
       head :no_content
     end
   end
 
 
   private
+
+  def set_rsc
+    request.method == "DELETE" ? code = sample_code : code = sample_params[:code]
+    @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: code)
+
+    if @current_rsc.nil?
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+    end
+  end
+
+  def set_sample
+    @sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
+
+    if @sample.nil?
+      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
+    end
+  end
 
   def sample_code
     params.require(:code).upcase
