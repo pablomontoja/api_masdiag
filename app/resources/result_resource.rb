@@ -24,11 +24,11 @@ class ResultResource < ApplicationService
 
         if meas&.online_file&.file_contents.present?
           meas.online_file.prepare_active_storage
-          results << { sample_code: meas.sample.Code, test: meas.project.Name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: url_for(meas.online_file.unencrypted_result) }
+          results << { sample_code: meas.sample.Code, test: meas.project.eng_name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: url_for(meas.online_file.unencrypted_result) }
           next
         end
 
-        h = { sample_code: meas.sample.Code, test: meas.project.Name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: nil }
+        h = { sample_code: meas.sample.Code, test: meas.project.eng_name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: nil }
         h[:rejection_reason] = rejection_reason(meas.sample) if meas.sample.SampleStatus == 4
         results << h
       end
