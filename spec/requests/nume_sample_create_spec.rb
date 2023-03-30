@@ -128,6 +128,13 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
         expect(response).to have_http_status(422)
       end
 
+      it 'returns error message when patient gender is not in the list of possible values' do
+        smp_params[:sample][:patient_attributes][:gender] = "2"
+        post '/nume/sample', params: smp_params, headers: http_auth_header
+        expect(json.dig("message")).to include("is not in the list of possible values (0 for male and 1 for female)")
+        expect(response).to have_http_status(422)
+      end
+
       # Patient gender can't be blank, Patient birthdate can't be blank, Patient birthdate can't be blank, Patient id number can't be blank, Patient id number is too short
 
     end

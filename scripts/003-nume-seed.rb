@@ -1,3 +1,9 @@
+###### SQL
+UPDATE `Projects` SET `Name` = 'Borreliosis Screening' WHERE `Projects`.`Id` = 13;
+INSERT INTO `Projects` (`Id`, `Name`, `Description`, `WithCutter`, `PlateDimensionX`, `PlateDimensionY`, `Prefix`, `created_at`, `updated_at`, `is_blocked_online`, `survey_description`, `PdfNameOfAnalysis`, `PdfDescription`, `product_name_in_invoice`, `pkwiu_in_invoice`, `brutto_price`, `FinalProtocoleHeader`, `responsible_person_email`, `has_selectable_analytes`, `InjectionVolume`) VALUES (NULL, 'Borreliosis Confirmation', 'Borelioza', '1', '8', '12', NULL, '2023-03-30 10:45:50', '2023-03-30 10:45:50', '0', 'Dziękujemy za wypełnienie poniższej ankiety. Dane udostępnione za jej pośrednictwem zostaną umieszczone w sprawozdaniu z badania laboratoryjnego.', 'Borelioza', 'Badanie ilościowe przeciwciał klas IgG i IgM skierowanym przeciwko antygenom Borrelia wykonane metodą ELISA.', 'Oznaczenie ilościowe przeciwciał IgG dla Boreliozy wykonane metodą ELISA zgodnie z umową', '86.90.15', '100.00', NULL, 'pawel.swider@masdiag.pl', '0', '15.0');
+#########
+
+
 require 'faker'
 inst = Institution.create!(name: "Nume", nip: "HRB 179171", address: "Stadtbahnstraße 118 d, 22391 Hamburg", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "Stadtbahnstraße 118 d, 22391 Hamburg", street: "Stadtbahnstraße 118 d", postal_code: "22391", city: "Hamburg", company_for_shipments: nil, shipment_street: "Stadtbahnstraße 118 d", shipment_postal_code: "22391", shipment_city: "Hamburg", region_of_activity: 0 )
 

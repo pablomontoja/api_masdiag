@@ -28,6 +28,7 @@ class Patient < ApplicationRecord
   # NUME validations
   with_options({on: :nume}) do |nume_patient|
     nume_patient.validates :Gender, presence: true
+    nume_patient.validates_inclusion_of :Gender, in: [0, 1], message: "%{value} is not in the list of possible values (0 for male and 1 for female)"
     nume_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }
   end
 
