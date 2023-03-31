@@ -29,7 +29,7 @@ class V1::KitController < ApplicationController
         @current_rsc.reserved_tests.create(project_id: test)
       end
     end
-    head :ok
+    head :no_content
 
   end
 

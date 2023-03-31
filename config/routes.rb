@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     # end
 
     get "/common/identity_documents", to: 'common#identity_documents'
-    get "/common/version", to: 'common#version'
+    get "/common/api_version", to: 'common#api_version'
     get "/common/tests", to: 'common#tests'
 
     post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
@@ -35,13 +35,13 @@ Rails.application.routes.draw do
     # end
 
     get "/common/identity_documents", to: 'common#identity_documents'
-    get "/common/version", to: 'common#version'
+    get "/common/api_version", to: 'common#api_version'
     get "/common/tests", to: 'common#tests'
 
     post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
-    post "/tests/assignment", to: 'kit#assign_tests'
+    post "/kits/assign_tests", to: 'kit#assign_tests'
 
   end
 

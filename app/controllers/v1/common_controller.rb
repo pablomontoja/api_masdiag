@@ -4,7 +4,7 @@ class V1::CommonController < ApplicationController
     render json: V1::Common::IDENTITY_DOCUMENTS
   end
 
-  def version
+  def api_version
     render json: {version: V1::Common::CURRENT_VERSION, documentation_url: V1::Common::CURRENT_DOCUMENTATION_URL}
   end
 

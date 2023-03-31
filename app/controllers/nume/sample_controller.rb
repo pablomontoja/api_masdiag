@@ -50,7 +50,7 @@ class Nume::SampleController < ApplicationController
     end
 
     sample.measurements.create!(ProjectId: 19, Status: 1)
-    head :ok
+    head :no_content
   end
 
 
