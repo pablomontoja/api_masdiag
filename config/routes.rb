@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
-    post "/tests/assignment", to: 'kit#assign_tests'
+    post "/kits/assign_tests", to: 'kit#assign_tests'
   end
 
   namespace :nume, defaults: {format: :json} do

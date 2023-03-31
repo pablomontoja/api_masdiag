@@ -28,6 +28,7 @@ class V1::KitController < ApplicationController
       assignment_params[:test_ids].each do |test|
         @current_rsc.reserved_tests.create(project_id: test)
       end
+      @current_rsc.update(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
     end
     head :no_content
 
@@ -42,10 +43,12 @@ class V1::KitController < ApplicationController
   end
 
   def validate_assignment(test_ids)
+    # byebug
+    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.compact.reject(&:empty?).empty?
+
     avail_test = V1::Common::AVAILABLE_TESTS
-    requested_test = avail_test.select{|a| test_ids.include?(a[:id])}
-    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.compact.empty?
-    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.compact.size != requested_test.compact.size
+    requested_test = avail_test.select{|a| test_ids.map(&:to_i).include?(a[:id])}
+    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.compact.reject(&:empty?).size != requested_test.compact.size
 
     requested_material = requested_test.map { |t| t[:material] }.uniq
     requested_weight = requested_test.select{|t| t[:material] == "DBS"}.sum {|t| t[:weight]}
