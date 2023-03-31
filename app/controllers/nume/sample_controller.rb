@@ -41,7 +41,6 @@ class Nume::SampleController < ApplicationController
   end
 
   def activate_confirmation_test
-    byebug
     sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
 
     v = validate_confirmation_test_request(sample)
@@ -51,7 +50,6 @@ class Nume::SampleController < ApplicationController
     end
 
     sample.measurements.create!(ProjectId: 19, Status: 1)
-    # byebug
     head :ok
   end
 

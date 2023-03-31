@@ -16,9 +16,12 @@ Rails.application.routes.draw do
 
     get "/common/identity_documents", to: 'common#identity_documents'
     get "/common/version", to: 'common#version'
+    get "/common/tests", to: 'common#tests'
 
     post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
+
+    post "/tests/assignment", to: 'kit#assign_tests'
   end
 
   namespace :nume, defaults: {format: :json} do
@@ -33,9 +36,13 @@ Rails.application.routes.draw do
 
     get "/common/identity_documents", to: 'common#identity_documents'
     get "/common/version", to: 'common#version'
+    get "/common/tests", to: 'common#tests'
 
     post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
+
+    post "/tests/assignment", to: 'kit#assign_tests'
+
   end
 
   # get '*path' => redirect('/')

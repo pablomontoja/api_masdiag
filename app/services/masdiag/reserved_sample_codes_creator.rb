@@ -4,7 +4,6 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
   attr_reader :current_user
 
   def initialize(production_order, current_user)
-    # byebug
     @current_user = current_user
     @production_order = production_order
     # @packages = production_order.packages
@@ -15,7 +14,6 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
 
   def call
     begin
-      # byebug
       @production_order.packages.each do |pack|
         pack.product.capacity.times {
           code = get_random_code

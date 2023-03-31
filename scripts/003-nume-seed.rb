@@ -17,6 +17,7 @@
 # UPDATE `Projects` SET `eng_name` = 'THC' WHERE `Projects`.`Id` = 11;
 # UPDATE `Projects` SET `eng_name` = 'Homocysteine' WHERE `Projects`.`Id` = 12;
 # UPDATE `Projects` SET `eng_name` = 'Borreliosis Screening' WHERE `Projects`.`Id` = 13;
+# UPDATE `Projects` SET `eng_name` = 'TSH' WHERE `Projects`.`Id` = 14;
 # UPDATE `Projects` SET `eng_name` = 'Organic acid profile' WHERE `Projects`.`Id` = 15;
 # UPDATE `Projects` SET `eng_name` = 'Purines and Pyrimidines' WHERE `Projects`.`Id` = 16;
 # UPDATE `Projects` SET `eng_name` = 'SAICAr and S-Ado' WHERE `Projects`.`Id` = 17;
