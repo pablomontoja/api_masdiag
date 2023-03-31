@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   namespace :nume, defaults: {format: :json} do
     resources :sample, only: %i{create} do
       delete "/delete/:code",on: :collection, to: 'sample#destroy'
+      post "/activate_confirmation_test/:code", on: :collection, to: 'sample#activate_confirmation_test'
     end
 
     # resources :result do

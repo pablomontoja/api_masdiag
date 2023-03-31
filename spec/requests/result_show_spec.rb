@@ -31,7 +31,7 @@ RSpec.describe 'V1::ResultController#show', type: :request do
       it 'returns sample_code and test name' do
         get "/v1/result/get/#{valid_sample.Code}", headers: http_auth_header
         expect(json.dig("results").first["sample_code"]).to eq("JV4XJ")
-        expect(json.dig("results").first["test"]).to eq(measurement.project.Name)
+        expect(json.dig("results").first["test"]).to eq(measurement.project.eng_name)
         expect(json.dig("results").first["unencrypted_result"]).not_to be_nil
       end
 

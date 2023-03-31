@@ -34,16 +34,48 @@ class Nume::SampleController < ApplicationController
   end
 
   def destroy
+
     if @sample.destroy
       head :no_content
     end
   end
 
+  def activate_confirmation_test
+    byebug
+    sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
+
+    v = validate_confirmation_test_request(sample)
+    if v.invalid
+      json_response({message: v.errors.join("; ")}, :unprocessable_entity)
+      return
+    end
+
+    sample.measurements.create!(ProjectId: 19, Status: 1)
+    # byebug
+    head :ok
+  end
+
 
   private
 
+  def validate_confirmation_test_request(sample)
+    errors = []
+    errors << "Quality of sample is not sufficient to add another test" if (sample.measurements.count > 0 && sample.soaking_degree_id != 1)
+    errors << "The sample does not have an authorised test for Borreliosis Screening" if (sample.measurements.where(Status: 5, ProjectId: 13).count == 0)
+    errors << "The sample already has a Borreliosis Confirmation test added" if (sample.measurements.where(ProjectId: 19).count > 0)
+    return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
+  end
+
   def set_rsc
-    request.method == "DELETE" ? code = sample_code : code = sample_params[:code]
+    case request.params[:action]
+    when "create"
+      code = sample_params[:code]
+    when "activate_confirmation_test"
+      code = sample_code
+    when "destroy"
+      code = sample_code
+    end
+
     @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: code)
 
     if @current_rsc.nil?
@@ -61,6 +93,10 @@ class Nume::SampleController < ApplicationController
 
   def sample_code
     params.require(:code).upcase
+  end
+
+  def test_id
+    params.require(:test_id)
   end
 
   def sample_params
