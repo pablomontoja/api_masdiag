@@ -1,6 +1,6 @@
 class V1::KitController < ApplicationController
 
-  #{data: {code: "ASDFG", test_ids: [1,2]}}
+  # {data: {code: "ASDFG", test_ids: [1,2]}}
   def assign_tests
     # byebug
     @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: assignment_params[:code])
@@ -17,9 +17,9 @@ class V1::KitController < ApplicationController
       return
     end
 
-    check = validate_assignment(assignment_params[:test_ids])
-    if check.invalid
-      json_response({message: check.errors.join("; ")}, :unprocessable_entity)
+    assignment = validate_assignment(assignment_params[:test_ids])
+    if assignment.invalid
+      json_response({message: assignment.errors.join("; ")}, :unprocessable_entity)
       return
     end
 
