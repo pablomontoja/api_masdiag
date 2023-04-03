@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_19_175404) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_30_105756) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -276,6 +276,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_19_175404) do
     t.string "responsible_person_email"
     t.boolean "has_selectable_analytes"
     t.decimal "InjectionVolume", precision: 4, scale: 1, null: false
+    t.string "eng_name"
   end
 
   create_table "ProtocolSamples", primary_key: ["Protocol_Id", "Sample_Id"], charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|

@@ -38,6 +38,7 @@ group :development, :test do
   # gem "debug", platforms: %i[ mri mingw x64_mingw ]
   gem 'byebug'
   gem 'rspec-rails'
+  gem 'faker'
 end
 
 group :development do
@@ -54,7 +55,6 @@ gem "aws-sdk-s3"
 
 group :test do
   gem 'factory_bot_rails'
-  gem 'faker'
 end
 
 

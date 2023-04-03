@@ -42,16 +42,9 @@ class Sample < ApplicationRecord
     [4,5].include?(soaking_degree_id) || SampleStatus == 4
   end
 
-  def self.search(search)
-    if search.present?
-      a = self.where("Code LIKE ?", "%#{search}%").collect(&:id)
-      a = a + self.joins(:patient).where("FirstName LIKE ? or LastName LIKE ?", "%#{search}%", "%#{search}%").collect(&:id)
-      self.where(id: a).all
-      #self.where("number LIKE ? or sample_name LIKE ? or comment LIKE ?", "%#{search}%", "%#{search}%", "%#{search}%").all
-    else
-      self.all
-    end
-  end
+  #######################
+  private
+  #######################
 
   def set_defaults
     self.payment_status = 1

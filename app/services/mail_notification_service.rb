@@ -2,12 +2,12 @@ class MailNotificationService < ApplicationService
   require 'net/http'
   attr_reader :resource
 
-	def initialize(action, resource)
+  def initialize(action, resource)
     @action = action
-		@resource = resource
-	end
+    @resource = resource
+  end
 
-	def call    
+  def call
     begin
       attempts ||= 1
       uri_string = Rails.application.credentials.external_mailer[:url]
@@ -31,13 +31,14 @@ class MailNotificationService < ApplicationService
         req.body = {sample_id: @resource.Id}.to_json
       when "aqipharm_registration"
         req.body = {sample_id: @resource.Id}.to_json
-      end      
+      end
 
       response = http.request(req)
 
       if response.code != "200"
-        errors = [Time.current.to_s, "INDCLIENTS2 --> #{self.class.name}", "action: #{@action}", "message - #{response.msg}", "response body - #{response.body}", caller_locations.join("<br>")]
-        IndMailer.after_error(errors.flatten).deliver_later
+        errors = [Time.current.to_s, "MASDIAG API --> #{self.class.name}", "action: #{@action}", "message - #{response.msg}", "response body - #{response.body}", caller_locations.join("<br>")]
+        puts errors
+        # IndMailer.after_error(errors.flatten).deliver_later
         raise StandardError
       end
     rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => ex
@@ -46,9 +47,10 @@ class MailNotificationService < ApplicationService
         puts "<--------- retrying #{self.class.name} - attempt: #{attempts} --------->"
         retry
       end
-      errors = [Time.current.to_s, "INDCLIENTS2 --> #{self.class.name}", "action: #{@action}", "Exception - #{ex}", "@resource - #{@sample.to_json}", caller_locations.join("<br>")]
-      IndMailer.after_error(errors.flatten).deliver_later
+      errors = [Time.current.to_s, "MASDIAG API --> #{self.class.name}", "action: #{@action}", "Exception - #{ex}", "@resource - #{@sample.to_json}", caller_locations.join("<br>")]
+      puts errors
+      # IndMailer.after_error(errors.flatten).deliver_later
     end
-	end
+  end
 
 end

@@ -15,12 +15,36 @@ Rails.application.routes.draw do
     # end
 
     get "/common/identity_documents", to: 'common#identity_documents'
-    get "/common/version", to: 'common#version'
+    get "/common/api_version", to: 'common#api_version'
+    get "/common/tests", to: 'common#tests'
 
     post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
+
+    post "/kits/assign_tests", to: 'kit#assign_tests'
   end
 
-  get '*path' => redirect('/')
+  namespace :nume, defaults: {format: :json} do
+    resources :sample, only: %i{create} do
+      delete "/delete/:code",on: :collection, to: 'sample#destroy'
+      post "/activate_confirmation_test/:code", on: :collection, to: 'sample#activate_confirmation_test'
+    end
+
+    # resources :result do
+    get "/result/get/:code", to: 'result#show'
+    # end
+
+    get "/common/identity_documents", to: 'common#identity_documents'
+    get "/common/api_version", to: 'common#api_version'
+    get "/common/tests", to: 'common#tests'
+
+    post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
+    post "/trigger/send_result/:code", to: 'trigger#send_result'
+
+    post "/kits/assign_tests", to: 'kit#assign_tests'
+
+  end
+
+  # get '*path' => redirect('/')
 
 end

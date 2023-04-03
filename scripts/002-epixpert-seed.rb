@@ -3,7 +3,7 @@ Institution.create!(name: "Masdiag Sp. z o.o.", nip: "5222996468", address: "Że
 inst = Institution.create!(name: "Epixpert sp. z o.o.", nip: "5252821696", address: "Kryniczna 7, 03-934 Warszawa", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "Kryniczna 7, 03-934 Warszawa", street: "Kryniczna 7", postal_code: "03-934", city: "Warszawa", company_for_shipments: nil, shipment_street: "Kryniczna 7", shipment_postal_code: "03-934", shipment_city: "Warszawa", region_of_activity: 0 )
 
 
-contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "email@email.com", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
+contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "epiexpert@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
 
 
 ApiAccount.create!(username: "epixpert", password: "8LhEkEdkPj4EQQ34", password_confirmation: "8LhEkEdkPj4EQQ34", contractor_id: contractor.Id)
