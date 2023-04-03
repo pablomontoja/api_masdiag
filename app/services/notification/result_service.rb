@@ -5,7 +5,6 @@ class Notification::ResultService < ApplicationService
   end
 
   def call
-    # byebug
     result = ResultResource.call(@sample, @sample.rsc)
     institution_id = @sample.patient.contractor.institution_id
     api_account = ApiAccount.all.select { |a| a.institution.id == institution_id  }.first

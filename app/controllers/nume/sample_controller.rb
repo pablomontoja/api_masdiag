@@ -1,36 +1,32 @@
-class V1::SampleController < ApplicationController
+class Nume::SampleController < ApplicationController
+  include NumeCheck
+  before_action :set_rsc
+  before_action :set_sample, only: :destroy
 
   def create
-    current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_params[:code])
-
-    if current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
-      return
-    end
-
-    if current_rsc&.expiry_date < Time.zone.now
+    if @current_rsc&.expiry_date < Time.zone.now
       json_response({ message: "The DBS card is expired." }, :unprocessable_entity)
       return
     end
 
-    if current_rsc&.reserved_tests.count.zero?
+    if @current_rsc&.reserved_tests.count.zero?
       json_response({ message: "The sample does not have assigned tests." }, :unprocessable_entity)
       return
     end
 
     @sample = Sample.where(IsWrongRegistration: true)
     .includes(measurements: %i[project result])
-    .find_by(Code: current_rsc.Code.upcase)
+    .find_by(Code: @current_rsc.Code.upcase)
 
     @sample = if @sample.nil?
-      V1::SampleCreator.call(sample_params, current_rsc)
+      V1::SampleCreator.call(sample_params, @current_rsc)
     else
-      V1::WrongSampleUpdater.call(@sample, sample_params, current_rsc)
+      V1::WrongSampleUpdater.call(@sample, sample_params, @current_rsc)
     end
 
     @sample.validate
 
-    if @sample.save!(context: :v1)
+    if @sample.save!(context: :nume)
       json_response(SampleResource.new(@sample), :created)
     else
       json_response({message: @sample.errors}, :unprocessable_entity)
@@ -38,28 +34,67 @@ class V1::SampleController < ApplicationController
   end
 
   def destroy
-    rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_code)
-    sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
-    if rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
-      return
-    end
 
-    if sample.nil?
-      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
-      return
-    end
-
-    if sample.destroy
+    if @sample.destroy
       head :no_content
     end
+  end
+
+  def activate_confirmation_test
+    sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
+
+    v = validate_confirmation_test_request(sample)
+    if v.invalid
+      json_response({message: v.errors.join("; ")}, :unprocessable_entity)
+      return
+    end
+
+    sample.measurements.create!(ProjectId: 19, Status: 1)
+    head :no_content
   end
 
 
   private
 
+  def validate_confirmation_test_request(sample)
+    errors = []
+    errors << "Quality of sample is not sufficient to add another test" if (sample.measurements.count > 0 && sample.soaking_degree_id != 1)
+    errors << "The sample does not have an authorised test for Borreliosis Screening" if (sample.measurements.where(Status: 5, ProjectId: 13).count == 0)
+    errors << "The sample already has a Borreliosis Confirmation test added" if (sample.measurements.where(ProjectId: 19).count > 0)
+    return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
+  end
+
+  def set_rsc
+    case request.params[:action]
+    when "create"
+      code = sample_params[:code]
+    when "activate_confirmation_test"
+      code = sample_code
+    when "destroy"
+      code = sample_code
+    end
+
+    @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: code)
+
+    if @current_rsc.nil?
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+    end
+  end
+
+  def set_sample
+    @sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
+
+    if @sample.nil?
+      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
+    end
+  end
+
   def sample_code
     params.require(:code).upcase
+  end
+
+  def test_id
+    params.require(:test_id)
   end
 
   def sample_params
