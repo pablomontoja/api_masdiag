@@ -3,8 +3,12 @@
 
 
 # ###### SQL
+# Wykonane już na produkcji
 # UPDATE `Projects` SET `Name` = 'Borreliosis Screening' WHERE `Projects`.`Id` = 13;
 # INSERT INTO `Projects` (`Id`, `Name`, `Description`, `WithCutter`, `PlateDimensionX`, `PlateDimensionY`, `Prefix`, `created_at`, `updated_at`, `is_blocked_online`, `survey_description`, `PdfNameOfAnalysis`, `PdfDescription`, `product_name_in_invoice`, `pkwiu_in_invoice`, `brutto_price`, `FinalProtocoleHeader`, `responsible_person_email`, `has_selectable_analytes`, `InjectionVolume`) VALUES (NULL, 'Borreliosis Confirmation', 'Borelioza', '1', '8', '12', NULL, '2023-03-30 10:45:50', '2023-03-30 10:45:50', '0', 'Dziękujemy za wypełnienie poniższej ankiety. Dane udostępnione za jej pośrednictwem zostaną umieszczone w sprawozdaniu z badania laboratoryjnego.', 'Borelioza', 'Badanie ilościowe przeciwciał klas IgG i IgM skierowanym przeciwko antygenom Borrelia wykonane metodą ELISA.', 'Oznaczenie ilościowe przeciwciał IgG dla Boreliozy wykonane metodą ELISA zgodnie z umową', '86.90.15', '100.00', NULL, 'pawel.swider@masdiag.pl', '0', '15.0');
+# Wykonane już na produkcji
+
+# Do zrobienia na produkcji
 # UPDATE `Projects` SET `eng_name` = 'NBS' WHERE `Projects`.`Id` = 1;
 # UPDATE `Projects` SET `eng_name` = 'Vitamin D metabolites' WHERE `Projects`.`Id` = 2;
 # UPDATE `Projects` SET `eng_name` = 'Aminoacids' WHERE `Projects`.`Id` = 3;
@@ -27,13 +31,13 @@
 
 
 require 'faker'
-# inst = Institution.create!(name: "Nume", nip: "HRB 179171", address: "Stadtbahnstraße 118 d, 22391 Hamburg", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "Stadtbahnstraße 118 d, 22391 Hamburg", street: "Stadtbahnstraße 118 d", postal_code: "22391", city: "Hamburg", company_for_shipments: nil, shipment_street: "Stadtbahnstraße 118 d", shipment_postal_code: "22391", shipment_city: "Hamburg", region_of_activity: 0 )
+inst = Institution.create!(name: "Nume", nip: "HRB 179171", address: "Stadtbahnstraße 118 d, 22391 Hamburg", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "Stadtbahnstraße 118 d, 22391 Hamburg", street: "Stadtbahnstraße 118 d", postal_code: "22391", city: "Hamburg", company_for_shipments: nil, shipment_street: "Stadtbahnstraße 118 d", shipment_postal_code: "22391", shipment_city: "Hamburg", region_of_activity: 0 )
 
-inst = Institution.last
-# contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "nume@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
+# inst = Institution.last
+contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "nume@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
 
 
-# ApiAccount.create!(username: "nume", password: "hEPkXy3Kjj9F2RXM", password_confirmation: "hEPkXy3Kjj9F2RXM", contractor_id: contractor.Id)
+ApiAccount.create!(username: "nume", password: "hEPkXy3Kjj9F2RXM", password_confirmation: "hEPkXy3Kjj9F2RXM", contractor_id: contractor.Id)
 Current.api_account = ApiAccount.find_by(username: "nume")
 
 user = User.find_by(email: "pawel.swider@masdiag.pl")
@@ -117,7 +121,7 @@ sample.save!
 
 smp = Sample.find_by(Code: cancelled_code)
 smp.measurements.destroy_all
-smp.update(Comment: "materiał niezakwalifikowany do badania", SampleStatus: 4, CancelledById: 1,AcceptanceDate: DateTime.now, CancellationDate: DateTime.now, soaking_degree_id: [4,5].sample)
+smp.update(Comment: "materiał niezakwalifikowany do badania", SampleStatus: 4, CancelledById: 1, AcceptanceDate: DateTime.now, CancellationDate: DateTime.now, soaking_degree_id: [4,5].sample)
 
 expired_code = all_codes.sample()
 all_codes.delete(expired_code)
@@ -133,8 +137,8 @@ pp "cancelled - #{cancelled_code}"
 pp "expired - #{expired_code}"
 
 
-"free_codes - [\"3VZ28\", \"EYJ2N\", \"KRU7C\", \"RUCV1\"]"
-"accepted but without results yet - CQ1VT"
-"accepted with resuls: - [\"TV1JE\", \"3AVUM\", \"XYZTK\"]"
-"cancelled - ISX1G"
-"expired - H9EN5"
+"free_codes - [\"AGENX\", \"5AFP5\", \"T42FB\", \"KS8BN\"]"
+"accepted but without results yet - SDFG3"
+"accepted with resuls: - [\"TXMEF\", \"GDMJ5\", \"X4AYB\"]"
+"cancelled - 21RIY"
+"expired - 6I72U"
