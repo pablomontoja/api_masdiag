@@ -138,3 +138,10 @@ pp "expired - #{expired_code}"
 "accepted with resuls: - [\"TV1JE\", \"3AVUM\", \"XYZTK\"]"
 "cancelled - ISX1G"
 "expired - H9EN5"
+
+
+"free_codes - [\"AGENX\", \"5AFP5\", \"T42FB\", \"KS8BN\"]"
+"accepted but without results yet - SDFG3"
+"accepted with resuls: - [\"TXMEF\", \"GDMJ5\", \"X4AYB\"]"
+"cancelled - 21RIY"
+"expired - 6I72U"
