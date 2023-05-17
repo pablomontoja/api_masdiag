@@ -1,4 +1,4 @@
-class Nume::CommonController < V1::CommonController
+class Nume::CommonController < Fv1::CommonController
   include NumeCheck
 
   def api_version
