@@ -19,17 +19,17 @@ class Patient < ApplicationRecord
     v1_patient.validates :Pesel, presence: true, length: { is: 11 }, uniqueness: { scope: :ContractorId }, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? }
     v1_patient.validate :pesel_validation, unless: Proc.new { |patient| patient.Gender.present? && patient.BirthDate.present? && patient.id_document.present? && patient.id_number.present? && patient.Pesel.blank? }
     v1_patient.validates :Gender, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
-    v1_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }, if: Proc.new { |patient| patient.Pesel.blank? }
+    v1_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: :today_date }, if: Proc.new { |patient| patient.Pesel.blank? }
     v1_patient.validates :id_document, presence: true, if: Proc.new { |patient| patient.Pesel.blank? }
     v1_patient.validates_inclusion_of :id_document, in: V1::Common::IDENTITY_DOCUMENTS.keys, message: "%{value} is not in the list of possible documents, see GET /v1/common/identity_documents", if: Proc.new { |patient| patient.Pesel.blank? }
     v1_patient.validates :id_number, presence: true, length: { minimum: 2 }, if: Proc.new { |patient| patient.Pesel.blank? }
   end
 
   # NUME validations
-  with_options({on: :nume}) do |nume_patient|
+  with_options({on: :fv1}) do |nume_patient|
     nume_patient.validates :Gender, presence: true
     nume_patient.validates_inclusion_of :Gender, in: [0, 1], message: "%{value} is not in the list of possible values (0 for male and 1 for female)"
-    nume_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: Date.today }
+    nume_patient.validates :BirthDate, presence: true, comparison: { less_than_or_equal_to: :today_date }
   end
 
   def fullname
@@ -39,6 +39,10 @@ class Patient < ApplicationRecord
   #######################
   private
   #######################
+
+  def today_date
+    Date.today
+  end
 
   def strip_fields
     self.FirstName&.strip!

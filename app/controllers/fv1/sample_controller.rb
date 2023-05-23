@@ -25,7 +25,7 @@ class Fv1::SampleController < ApplicationController
 
     @sample.validate
 
-    if @sample.save!(context: :nume)
+    if @sample.save!(context: :fv1)
       json_response(SampleResource.new(@sample), :created)
     else
       json_response({message: @sample.errors}, :unprocessable_entity)
