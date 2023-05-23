@@ -31,7 +31,11 @@ class MailNotificationService < ApplicationService
         req.body = {sample_id: @resource.Id}.to_json
       when "aqipharm_registration"
         req.body = {sample_id: @resource.Id}.to_json
+      when "send_error_notifications"
+        req.body = @resource.to_json
       end
+
+
 
       response = http.request(req)
 

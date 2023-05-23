@@ -16,7 +16,7 @@ class Sample < ApplicationRecord
   # walidacja
   validates :Code, presence: true, uniqueness: true
   validates :Code, length: { is: 5 }
-  validates :sample_collection_date, presence: true, comparison: { less_than_or_equal_to: Date.today }
+  validates :sample_collection_date, presence: true, comparison: { less_than_or_equal_to: :today_date }
   validates :RegistrationDate, presence: true
   validates_inclusion_of :IsWrongRegistration, in: [true, false]
   validates_inclusion_of :WasWrongRegistration, in: [true, false]
@@ -45,6 +45,10 @@ class Sample < ApplicationRecord
   #######################
   private
   #######################
+
+  def today_date
+    Date.today
+  end
 
   def set_defaults
     self.payment_status = 1

@@ -137,6 +137,13 @@ pp "cancelled - #{cancelled_code}"
 pp "expired - #{expired_code}"
 
 
+"free_codes - [\"3VZ28\", \"EYJ2N\", \"KRU7C\", \"RUCV1\"]"
+"accepted but without results yet - CQ1VT"
+"accepted with resuls: - [\"TV1JE\", \"3AVUM\", \"XYZTK\"]"
+"cancelled - ISX1G"
+"expired - H9EN5"
+
+
 "free_codes - [\"AGENX\", \"5AFP5\", \"T42FB\", \"KS8BN\"]"
 "accepted but without results yet - SDFG3"
 "accepted with resuls: - [\"TXMEF\", \"GDMJ5\", \"X4AYB\"]"
