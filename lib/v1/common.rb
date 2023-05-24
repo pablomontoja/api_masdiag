@@ -9,7 +9,7 @@ module V1::Common
     7 => "PESEL opiekuna prawnego gdy pacjentem jest noworodek"
   }.freeze
 
-  CURRENT_VERSION = "1.02"
+  CURRENT_VERSION = "1.03"
 
   CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ERz1cOWXhDFDhAtmf5vAmJQBqfu0IfNE0jKRsAFaRTvxHg?e=MQFBNc"
 

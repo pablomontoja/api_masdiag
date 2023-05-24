@@ -1,5 +1,24 @@
 class V1::KitController < ApplicationController
 
+  def check_code
+    @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: code_params)
+
+    response_hash = {}
+    response_hash[:code] = code_params
+    response_hash[:masdiag_check_sum] = control_sum(code_params)
+
+    if @current_rsc.nil?
+      response_hash[:message] = "A such sample code was not found for your institution"
+      json_response(response_hash, :unprocessable_entity)
+      return
+    end
+
+    response_hash[:test_names] = @current_rsc.projects.map(&:eng_name)
+    response_hash[:test_ids] = @current_rsc.projects.map(&:Id)
+
+    json_response(response_hash)
+  end
+
   # {data: {code: "ASDFG", test_ids: [1,2]}}
   def assign_tests
     # byebug
@@ -31,12 +50,15 @@ class V1::KitController < ApplicationController
       @current_rsc.update(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
     end
     head :no_content
-
   end
 
 
 
   private
+
+  def code_params
+    params.require(:code).upcase
+  end
 
   def assignment_params
     params.require(:data).permit(:code, test_ids:[])
@@ -56,6 +78,22 @@ class V1::KitController < ApplicationController
     errors << "Assignment of tests for 2 different types of material is not possible" if (requested_material.count > 1)
     errors << "Weight limit exceeded for DBS material" if requested_material.include?("DBS") && requested_weight > 2
     return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
+  end
+
+  def control_sum(code)
+    result = "ok"
+    if code.match?(/[oO0]/i)
+      result = "invalid" if code.match?(/[oO0]/i)
+    else
+      ul_sum = 0
+      modulo34 = '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ'
+      (0..code.length - 2).step(2).each { |i| ul_sum += (code[i].ord - '1'.ord) * (i + 1) }
+      ul_sum *= 3
+      (1..code.length - 2).step(2).each { |i| ul_sum += (code[i].ord - '1'.ord) * i }
+      controlchar = modulo34[ul_sum % 34]
+      result = "invalid" if controlchar != code[-1]
+    end
+    return result
   end
 
 end
