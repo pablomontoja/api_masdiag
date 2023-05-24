@@ -26,6 +26,8 @@ Rails.application.routes.draw do
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/assign_tests", to: 'kit#assign_tests'
+    get "/kits/check_code/:code", to: 'kit#check_code'
+
   end
 
   #########################################################
@@ -49,7 +51,7 @@ Rails.application.routes.draw do
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/assign_tests", to: 'kit#assign_tests'
-
+    get "/kits/check_code/:code", to: 'kit#check_code'
   end
 
   namespace :nume, defaults: {format: :json} do
@@ -70,7 +72,7 @@ Rails.application.routes.draw do
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/assign_tests", to: 'kit#assign_tests'
-
+    get "/kits/check_code/:code", to: 'kit#check_code'
   end
 
   # get '*path' => redirect('/')
