@@ -23,7 +23,7 @@ RSpec.describe 'KitController#check_code', type: :request do
       end
 
       it 'returns status 200 for v1' do
-        post "/v1/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
+        get "/v1/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(200)
         expect(json.dig("test_ids")).to eq([2, 3])
         expect(json.dig("test_names")).to eq(["Vitamin D metabolites", "Aminoacids"])
@@ -32,7 +32,7 @@ RSpec.describe 'KitController#check_code', type: :request do
       end
 
       it 'returns status 200 for fv1' do
-        post "/fv1/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
+        get "/fv1/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(200)
         expect(json.dig("test_ids")).to eq([2, 3])
         expect(json.dig("test_names")).to eq(["Vitamin D metabolites", "Aminoacids"])
@@ -42,7 +42,7 @@ RSpec.describe 'KitController#check_code', type: :request do
 
       it 'returns status 200 for nume' do
         inst.update!(name: "Nume")
-        post "/nume/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
+        get "/nume/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(200)
         expect(json.dig("test_ids")).to eq([2, 3])
         expect(json.dig("test_names")).to eq(["Vitamin D metabolites", "Aminoacids"])
@@ -70,7 +70,7 @@ RSpec.describe 'KitController#check_code', type: :request do
       end
 
       it 'returns status 422 for v1' do
-        post "/v1/kits/check_code/ABCDE", params: assign_params, headers: http_auth_header
+        get "/v1/kits/check_code/ABCDE", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(422)
         expect(json.dig("test_ids")).to eq(nil)
         expect(json.dig("test_names")).to eq(nil)
@@ -79,7 +79,7 @@ RSpec.describe 'KitController#check_code', type: :request do
       end
 
       it 'returns status 422 for fv1' do
-        post "/fv1/kits/check_code/ABCDE", params: assign_params, headers: http_auth_header
+        get "/fv1/kits/check_code/ABCDE", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(422)
         expect(json.dig("test_ids")).to eq(nil)
         expect(json.dig("test_names")).to eq(nil)
@@ -89,7 +89,7 @@ RSpec.describe 'KitController#check_code', type: :request do
 
       it 'returns status 422 for nume' do
         inst.update!(name: "Nume")
-        post "/nume/kits/check_code/ABCDE", params: assign_params, headers: http_auth_header
+        get "/nume/kits/check_code/ABCDE", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(422)
         expect(json.dig("test_ids")).to eq(nil)
         expect(json.dig("test_names")).to eq(nil)

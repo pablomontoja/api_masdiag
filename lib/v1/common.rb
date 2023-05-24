@@ -11,7 +11,7 @@ module V1::Common
 
   CURRENT_VERSION = "1.03"
 
-  CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ERz1cOWXhDFDhAtmf5vAmJQBqfu0IfNE0jKRsAFaRTvxHg?e=MQFBNc"
+  CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ER55sN5uFclLqY065SatCqwBSIhFfZADtVtgiHyCZ8ugBg?e=v8KO3e"
 
   AVAILABLE_TESTS = [{id: 2, name: "Vitamin D metabolites", material: "DBS", weight: 1, comment:""},
                      {id: 3, name: "Aminoacids", material: "DBS", weight: 1, comment:""},
