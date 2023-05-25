@@ -9,8 +9,8 @@ class InstitutionTest < ApplicationRecord
   scope :not_expired, -> { where('expiry_date > ?', Time.zone.today) }
   scope :not_used, -> { where(used: false) }
 
-  def readonly?
-    true
-  end 
+  # def readonly?
+  #   true
+  # end
 
 end

@@ -42,12 +42,17 @@ class V1::KitController < ApplicationController
       return
     end
 
+    @contractor_id = Current.api_account.contractor.Id
+
     ActiveRecord::Base.transaction do
-      @current_rsc.reserved_tests.destroy_all
+      @current_rsc.retrieve_institution_tests
+
       assignment_params[:test_ids].each do |test|
-        @current_rsc.reserved_tests.create(project_id: test)
+        @current_rsc.reserved_tests.create!(project_id: test)
       end
-      @current_rsc.update(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
+      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
+
+      build_transactions()
     end
     head :no_content
   end
@@ -66,11 +71,12 @@ class V1::KitController < ApplicationController
 
   def validate_assignment(test_ids)
     # byebug
-    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.compact.reject(&:empty?).empty?
+    test_ids.uniq!
+    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.compact.empty?
 
     avail_test = V1::Common::AVAILABLE_TESTS
     requested_test = avail_test.select{|a| test_ids.map(&:to_i).include?(a[:id])}
-    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.compact.reject(&:empty?).size != requested_test.compact.size
+    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.compact.size != requested_test.compact.size
 
     requested_material = requested_test.map { |t| t[:material] }.uniq
     requested_weight = requested_test.select{|t| t[:material] == "DBS"}.sum {|t| t[:weight]}
@@ -94,6 +100,12 @@ class V1::KitController < ApplicationController
       result = "invalid" if controlchar != code[-1]
     end
     return result
+  end
+
+  def build_transactions
+    @current_rsc.projects.map(&:Id).each do |p_id|
+      @current_rsc.test_transactions.create!(contractor_id: @contractor_id, project_id: p_id, amount_change: -1)
+    end
   end
 
 end

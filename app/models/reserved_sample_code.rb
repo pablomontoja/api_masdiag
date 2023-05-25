@@ -36,4 +36,9 @@ class ReservedSampleCode < ApplicationRecord
     shop_order
   end
 
+  def retrieve_institution_tests
+    self.reserved_tests.destroy_all
+    self.test_transactions.each(&:retrieve_tests)
+  end
+
 end

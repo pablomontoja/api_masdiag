@@ -6,7 +6,7 @@ class Sample < ApplicationRecord
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
   has_many :measurements, class_name: 'Measurement', foreign_key: 'SampleId', dependent: :destroy, inverse_of: :sample
   accepts_nested_attributes_for :patient
-  has_many :answers, class_name: 'Answer', foreign_key: "Sample_id", dependent: :destroy, inverse_of: :sample
+  has_many :test_transactions
 
   attr_accessor :approve
 
