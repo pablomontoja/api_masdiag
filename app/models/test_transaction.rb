@@ -6,21 +6,24 @@ class TestTransaction < ApplicationRecord
   belongs_to :reserved_sample_code, optional: true
   belongs_to :contractor
   has_one :institution_order_component
-  has_many :institution_tests, class_name: 'InstitutionTest'
-  has_many :used_institution_tests, foreign_key: 'used_by_test_transaction_id', class_name: 'InstitutionTest'
+  has_many :institution_tests, class_name: 'InstitutionTest'#, inverse_of: :test_transaction
+  has_many :used_institution_tests, foreign_key: 'used_by_test_transaction_id', class_name: 'InstitutionTest', inverse_of: :used_by_test_transaction
+
+  # accepts_nested_attributes_for :institution_tests
 
   validates :amount_change, presence: true
   validate :institution_tests_availability, if: proc { |it| it.amount_change.negative? }
 
-  def retrieve_tests
-    institution_tests = []
-    self.used_institution_tests.each do |t|
-      institution_tests << { institution_id: self.contractor.institution_id, project_id: self.project_id,
-                             expiry_date: calculate_test_expiry_date(t), created_at: Time.zone.now, updated_at: Time.zone.now, duplicate: true }
-    end
+  def remove_used_tests
+    self.used_institution_tests.destroy_all
+    # institution_tests = []
+    # self.used_institution_tests.each do |t|
+    #   institution_tests << { institution_id: self.contractor.institution_id, project_id: self.project_id,
+    #                          expiry_date: calculate_test_expiry_date(t), created_at: Time.zone.now, updated_at: Time.zone.now, duplicate: true }
+    # end
 
-    self.used_institution_tests.destroy_all if !institution_tests.size.zero?
-    self.institution_tests.insert_all(institution_tests) if !institution_tests.size.zero?
+    # self.used_institution_tests.destroy_all if !institution_tests.size.zero?
+    # self.institution_tests.insert_all(institution_tests) if !institution_tests.size.zero?
   end
 
   private
