@@ -70,13 +70,12 @@ class V1::KitController < ApplicationController
   end
 
   def validate_assignment(test_ids)
-    # byebug
     test_ids.uniq!
-    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.compact.empty?
+    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
 
     avail_test = V1::Common::AVAILABLE_TESTS
     requested_test = avail_test.select{|a| test_ids.map(&:to_i).include?(a[:id])}
-    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.compact.size != requested_test.compact.size
+    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.map(&:to_i).reject(&:zero?).compact.size != requested_test.compact.size
 
     requested_material = requested_test.map { |t| t[:material] }.uniq
     requested_weight = requested_test.select{|t| t[:material] == "DBS"}.sum {|t| t[:weight]}

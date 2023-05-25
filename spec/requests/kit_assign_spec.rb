@@ -17,8 +17,19 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
       let(:assign_params) { build(:test_assignment)}
 
+      before do
+        TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
+        TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
+      end
+
       it 'returns status 204' do
         post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(response).to have_http_status(204)
+      end
+
+      it 'returns status 204 for string array of test_ids' do
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=["2", "3"]}
+        post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
         expect(response).to have_http_status(204)
       end
     end
@@ -35,6 +46,11 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
       let(:assign_params) { build(:test_assignment)}
+
+      before do
+        TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
+        TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
+      end
 
       it 'returns error message when test_ids array is empty' do
         tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[]}
