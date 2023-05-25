@@ -32,6 +32,54 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
         post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
         expect(response).to have_http_status(204)
       end
+
+      it 'changes number of used institution_tests by 2' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { InstitutionTest.where(used: true).count }.by(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of used institution_tests by 2 even if action is used multiple times' do
+        prev = InstitutionTest.where(used: true).count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        curr = InstitutionTest.where(used: true).count
+        expect(curr - prev).to be(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of institution_tests by 0' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { InstitutionTest.count }.by(0)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of transactions by 2' do
+        previous = TestTransaction.count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        current = TestTransaction.count
+        expect(current - previous).to be(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of transactions by 6' do
+        previous = TestTransaction.count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        current = TestTransaction.count
+        expect(current - previous).to be(6)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of reserved_tests by 2' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { ReservedTest.where(reserved_sample_code_id: rsc.Id).count }.by(2)
+        expect(response).to have_http_status(204)
+      end
     end
 
     context 'with invalid params' do
@@ -47,9 +95,30 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
       let(:assign_params) { build(:test_assignment)}
 
-      before do
-        TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
-        TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
+      # before do
+      #   TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
+      #   TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
+      # end
+
+      it 'returns status 422 due to lack of tests in pool' do
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(response).to have_http_status(422)
+        expect(json.dig("message")).to match(/not enough institution tests left in pool for such assignment/)
+      end
+
+      it 'changes number of transactions by 0' do
+        previous = TestTransaction.count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        current = TestTransaction.count
+        expect(current - previous).to be(0)
+        expect(response).to have_http_status(422)
+      end
+
+      it 'changes number of used institution_test by 0' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { InstitutionTest.where(used: true).count }.by(0)
+        expect(response).to have_http_status(422)
       end
 
       it 'returns error message when test_ids array is empty' do
