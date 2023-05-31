@@ -13,7 +13,7 @@ class Fv1::TriggerController < ApplicationController
     if res.success?
       render json: {message: "result endpoint responded with status 200"}, status: 200
     else
-      render json: { message: res.error.join(", ")}, status: 500
+      render json: { message: res.error&.join(", ")}, status: 500
     end
 
   end

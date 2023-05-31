@@ -12,6 +12,10 @@ class Notification::ResultService < ApplicationService
 
     return handle_error(["blank result post endpoint url"]) if url.blank?
 
+    pp "============================== Notification::ResultService =============================="
+    pp result
+    pp "============================== Notification::ResultService =============================="
+
     begin
       conn = Faraday.new() do |f|
         f.response :raise_error # raise Faraday::Error on status code 4xx or 5xx
