@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     post "/kits/assign_tests", to: 'kit#assign_tests'
     get "/kits/check_code/:code", to: 'kit#check_code'
 
+    get "/institution/pool_status", to: 'institution#pool_status'
   end
 
   #########################################################
