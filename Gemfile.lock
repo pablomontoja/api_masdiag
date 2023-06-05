@@ -111,6 +111,7 @@ GEM
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jmespath (1.6.2)
+    lockbox (1.2.0)
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -211,6 +212,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   faraday
+  lockbox
   mysql2 (~> 0.5)
   oj
   puma (~> 5.0)
