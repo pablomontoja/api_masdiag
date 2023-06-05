@@ -59,3 +59,4 @@ end
 
 
 gem 'faraday'
+gem "lockbox"

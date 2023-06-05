@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_30_105756) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -492,6 +492,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_30_105756) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "settings"
+    t.text "settings_ciphertext"
     t.index ["contractor_id"], name: "fk_rails_8f4a850bff"
   end
 
