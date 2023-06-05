@@ -22,7 +22,8 @@ Rails.application.routes.draw do
     get "/common/api_version", to: 'common#api_version'
     get "/common/tests", to: 'common#tests'
 
-    post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
+    post "/setup/set_result_post_endpoint_url", to: 'setup#result_post_endpoint'
+    post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/assign_tests", to: 'kit#assign_tests'
@@ -48,7 +49,8 @@ Rails.application.routes.draw do
     get "/common/api_version", to: 'common#api_version'
     get "/common/tests", to: 'common#tests'
 
-    post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
+    post "/setup/set_result_post_endpoint_url", to: 'setup#result_post_endpoint'
+    post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/assign_tests", to: 'kit#assign_tests'
@@ -69,7 +71,8 @@ Rails.application.routes.draw do
     get "/common/api_version", to: 'common#api_version'
     get "/common/tests", to: 'common#tests'
 
-    post "/setup/set_result_post_endpoint_url", to: 'setup#set_result_post_endpoint_url'
+    post "/setup/set_result_post_endpoint_url", to: 'setup#result_post_endpoint'
+    post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/assign_tests", to: 'kit#assign_tests'

@@ -2,6 +2,8 @@ class ApiAccount < ApplicationRecord
   include ActiveModel::SecurePassword
   has_secure_password :password, validations: false
 
+  after_initialize :init_settings
+
   # serialize :settings, type: Hash, coder: JSON, default: Hash.new
   has_encrypted :settings, type: :hash#, migrating: true
   
@@ -36,8 +38,14 @@ class ApiAccount < ApplicationRecord
     self.save
   end
 
-  def result_post_endpoint_password=(password)
+  def result_post_endpoint_password=(password)    
     self.settings["result_post_endpoint_password"] = password
     self.save
+  end
+
+  private
+
+  def init_settings
+    self.settings ||= {}
   end
 end
