@@ -1,6 +1,11 @@
 1. comment has_encrypted :settings, type: :hash
 
 2.
+---
+result_post_endpoint: https://numeactivate.bubbleapps.io/version-test/api/1.1/wf/results
+
+#<ApiAccount id: 2, username: "nume", password_digest: [FILTERED], contractor_id: 2, created_at: "2023-04-03 12:06:42.638791000 +0000", updated_at: "2023-06-01 08:39:20.936468000 +0000", settings: {"result_post_endpoint"=>"https://numeactivate.bubbleapps.io/version-test/api/1.1/wf/results"}, migrated_settings: nil>
+
 [#<ApiAccount:0x00007ff92f955c38                                  
   id: 1,                                                          
   username: "epixpert",
