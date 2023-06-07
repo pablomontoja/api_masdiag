@@ -4,7 +4,7 @@ FactoryBot.define do
     email_confirmation { email }
     FirstName { Faker::Name.first_name }
     LastName { Faker::Name.last_name }
-    Pesel { 87062615432 }
+    Pesel { 73080335755 }
     Gender { 0 }
     contractor
   end

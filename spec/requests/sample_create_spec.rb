@@ -26,6 +26,13 @@ RSpec.describe 'V1::SampleController#create', type: :request do
         expect(response).to have_http_status(201)
       end
 
+      it 'uses SampleCreator as sample creator' do
+        expect(V1::WrongSampleUpdater).not_to receive(:call).and_call_original
+        expect(V1::SampleCreator).to receive(:call).and_call_original
+
+        post '/v1/sample', params: smp_params, headers: http_auth_header
+      end
+
       it 'returns error message when DBS is expired' do
         rsc.update(expiry_date: 2.days.ago)
         post '/v1/sample', params: smp_params, headers: http_auth_header
@@ -50,6 +57,14 @@ RSpec.describe 'V1::SampleController#create', type: :request do
 
       it 'returns a created status' do
         post '/v1/sample', params: smp_params, headers: http_auth_header
+        expect(response).to have_http_status(201)
+      end
+
+      it 'does not change amount of used institution_tests' do
+        prev = InstitutionTest.where(used: true).count
+        post '/v1/sample', params: smp_params, headers: http_auth_header
+        curr = InstitutionTest.where(used: true).count
+        expect(curr - prev).to be(0)
         expect(response).to have_http_status(201)
       end
     end
@@ -95,6 +110,14 @@ RSpec.describe 'V1::SampleController#create', type: :request do
         post '/v1/sample', params: smp_params, headers: http_auth_header
         expect(json.dig("message")).to eq("A such sample code was not found for your institution.")
       end
+
+      it 'does not change amount of used institution_tests' do
+        prev = InstitutionTest.where(used: true).count
+        post '/v1/sample', params: smp_params, headers: http_auth_header
+        curr = InstitutionTest.where(used: true).count
+        expect(curr - prev).to be(0)
+        expect(response).to have_http_status(422)
+      end
     end
 
     context 'with invalid parameters' do
@@ -138,6 +161,16 @@ RSpec.describe 'V1::SampleController#create', type: :request do
         smp_params[:sample][:patient_attributes][:last_name] = ""
         post '/v1/sample', params: smp_params, headers: http_auth_header
         expect(json.dig("message")).to include("Patient lastname can't be blank")
+        expect(response).to have_http_status(422)
+      end
+
+      it 'does not change amount of used institution_tests' do
+        smp_params[:sample][:patient_attributes][:last_name] = ""
+        smp_params[:sample][:patient_attributes][:first_name] = ""
+        prev = InstitutionTest.where(used: true).count
+        post '/v1/sample', params: smp_params, headers: http_auth_header
+        curr = InstitutionTest.where(used: true).count
+        expect(curr - prev).to be(0)
         expect(response).to have_http_status(422)
       end
 

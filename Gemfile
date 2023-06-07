@@ -37,7 +37,7 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   # gem "debug", platforms: %i[ mri mingw x64_mingw ]
   gem 'byebug'
-  gem 'rspec-rails'
+  # gem 'rspec-rails'
   gem 'faker'
 end
 
@@ -54,7 +54,11 @@ gem "aws-sdk-s3"
 
 
 group :test do
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails',            '~> 4.8', '>= 4.8.2'
+  gem 'rails-controller-testing',     '~> 1.0.2'
+  gem 'rspec-rails'
+  gem 'shoulda',                      '~> 3.5'
+  gem 'shoulda-callback-matchers',    '~> 1.1', '>= 1.1.3'
 end
 
 

@@ -3,6 +3,12 @@ module ApiHelpers
     JSON.parse(response.body)
   end
 
+  def http_login
+    user = 'username'
+    pw = 'password'
+    request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(user,pw)
+  end  
+
   def http_auth_header
     {"Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("username","password")}
   end
