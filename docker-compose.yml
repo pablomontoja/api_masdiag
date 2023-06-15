@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+  app:
+    image: 127.0.0.1:5000/api-masdiag-staging
+    hostname: api-masdiag-staging
+    build:
+      context: .
+      args:
+        rails_master_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        rails_env: staging
+    command: sh -c "rails s -p 3000 -b '0.0.0.0' -e staging"
+    expose:
+      - "3000"
+    restart:
+        unless-stopped
+    environment:
+      RAILS_LOG_TO_STDOUT: 'true'
+      RAILS_SERVE_STATIC_FILES: 'true'
+      RAILS_ENV: staging
+    ports:
+      - "3000:3000"    
+
+
+        
+
