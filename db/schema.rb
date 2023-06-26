@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
-  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2023_06_26_110039) do
+  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
@@ -30,7 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["AnalyteId"], name: "IX_AnalyteId"
   end
 
-  create_table "AnalyteResults", primary_key: ["ResultId", "AnalyteId"], charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "AnalyteResults", primary_key: ["ResultId", "AnalyteId"], charset: "utf8", force: :cascade do |t|
     t.integer "ResultId", null: false
     t.integer "AnalyteId", null: false
     t.decimal "Value", precision: 18, scale: 2, null: false
@@ -41,7 +41,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["Result_MeasurementId"], name: "IX_Result_MeasurementId"
   end
 
-  create_table "Analytes", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Analytes", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "Name", size: :long, null: false, collation: "utf8_general_ci"
     t.integer "ProjectId", null: false
     t.boolean "IsCalculatedFromOthers", null: false
@@ -58,7 +58,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["ProjectId"], name: "IX_ProjectId"
   end
 
-  create_table "CeraSamples", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "CeraSamples", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "SampleId", null: false
     t.boolean "BadQuality", null: false
     t.boolean "IsResultSentToCera", null: false
@@ -74,7 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["SampleId"], name: "IX_SampleId"
   end
 
-  create_table "Contractors", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Contractors", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.text "Address", size: :long
     t.datetime "created_at", precision: nil
@@ -113,7 +113,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["reset_password_token"], name: "index_Contractors_on_reset_password_token", unique: true
   end
 
-  create_table "FileDatas", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "FileDatas", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "FileType", size: :long
     t.integer "FileLength", null: false
     t.binary "FileContent", size: :long
@@ -121,7 +121,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["ProtocolId"], name: "IX_ProtocolId"
   end
 
-  create_table "GaSamples", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "GaSamples", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "SampleId", null: false
     t.integer "PatientId", null: false
     t.boolean "BadQuality", null: false
@@ -135,7 +135,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["SampleId"], name: "IX_SampleId"
   end
 
-  create_table "LogMessages", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "LogMessages", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Message", size: :long
     t.text "SecondMessage", size: :long
     t.text "Stacktrace", size: :long
@@ -146,7 +146,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["UserId"], name: "IX_UserId"
   end
 
-  create_table "Measurements", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Measurements", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.integer "SampleId", null: false
     t.integer "ProjectId", null: false
     t.integer "ResultId"
@@ -175,11 +175,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["SampleId"], name: "IX_SampleId"
   end
 
-  create_table "Multiplexes", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Multiplexes", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "Name", size: :tiny
   end
 
-  create_table "Patients", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Patients", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.datetime "RegistrationDate", precision: nil, null: false
     t.text "FirstName", size: :long, null: false
     t.text "LastName", size: :long, null: false
@@ -199,7 +199,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.boolean "approve1", default: false
     t.boolean "approve2", default: false
     t.boolean "approve3", default: false
-    t.integer "language", default: 0, null: false
+    t.string "language", default: "pl", null: false
     t.boolean "approve_personal_data", default: false
     t.boolean "IsVirtual", null: false
     t.boolean "send_results_on_mail", default: false, null: false
@@ -212,7 +212,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["ModifiedById"], name: "IX_ModifiedById"
   end
 
-  create_table "PlateMeasurements", primary_key: "MeasurementId", id: :integer, default: nil, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "PlateMeasurements", primary_key: "MeasurementId", id: :integer, default: nil, charset: "utf8", force: :cascade do |t|
     t.integer "PlatePosition", null: false
     t.integer "PlateId", null: false
     t.integer "CreatedById", null: false
@@ -221,7 +221,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["PlateId", "MeasurementId"], name: "IX_PlateMeasurement_PlateMeasurement", unique: true
   end
 
-  create_table "Plates", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Plates", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.integer "ProjectId", null: false
     t.datetime "RegistrationDate", precision: nil, null: false
     t.text "Code", size: :long, null: false
@@ -240,7 +240,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["MultiplexId"], name: "IX_MultiplexId"
   end
 
-  create_table "Project_translations", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Project_translations", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name"
     t.text "Description"
     t.text "survey_description"
@@ -256,7 +256,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["project_id"], name: "index_project_translations_on_project_id"
   end
 
-  create_table "Projects", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Projects", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long, null: false
     t.text "Description", size: :long
     t.boolean "WithCutter", null: false
@@ -279,14 +279,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.string "eng_name"
   end
 
-  create_table "ProtocolSamples", primary_key: ["Protocol_Id", "Sample_Id"], charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "ProtocolSamples", primary_key: ["Protocol_Id", "Sample_Id"], charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "Protocol_Id", null: false
     t.integer "Sample_Id", null: false
     t.index ["Protocol_Id"], name: "IX_Protocol_Id"
     t.index ["Sample_Id"], name: "IX_Sample_Id"
   end
 
-  create_table "Protocols", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Protocols", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "CreatedById", null: false
     t.datetime "CreatedAt", precision: nil
@@ -297,7 +297,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["ProjectId"], name: "IX_ProjectId"
   end
 
-  create_table "ReservedSampleCodes", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "ReservedSampleCodes", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Code", size: :long
     t.datetime "CreatedAt", precision: nil, null: false
     t.integer "CreatedById"
@@ -316,12 +316,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.text "comment"
     t.datetime "assignment_date", precision: nil
     t.integer "MaterialType", default: 0, null: false
+    t.integer "material_handler", default: 0, null: false
     t.index ["CreatedById"], name: "IX_CreatedById"
     t.index ["InstitutionId"], name: "IX_InstitutionId"
     t.index ["package_id"], name: "index_ReservedSampleCodes_on_package_id"
   end
 
-  create_table "Results", primary_key: "MeasurementId", id: :integer, default: nil, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Results", primary_key: "MeasurementId", id: :integer, default: nil, charset: "utf8", force: :cascade do |t|
     t.datetime "ImportDate", precision: nil, null: false
     t.text "Description", size: :long
     t.text "PlateCode", size: :long
@@ -331,7 +332,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["MeasurementId"], name: "IX_MeasurementId"
   end
 
-  create_table "Samples", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Samples", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "Code", limit: 50, null: false
     t.text "ProtocolName", size: :long
     t.boolean "IsControlSample", default: false, null: false
@@ -367,6 +368,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.text "Lot", size: :tiny
     t.text "Level", size: :tiny
     t.text "selected_tests"
+    t.text "clinical_info"
     t.index ["CancelledById"], name: "IX_CancelledById"
     t.index ["Code"], name: "IX_Code"
     t.index ["PatientId"], name: "IX_PatientId"
@@ -374,13 +376,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["soaking_degree_id"], name: "IX_soaking_degree_id"
   end
 
-  create_table "SamplesToCsvQueues", primary_key: "ProtocolId", id: :integer, default: nil, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "SamplesToCsvQueues", primary_key: "ProtocolId", id: :integer, default: nil, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.boolean "IsDone", null: false
     t.text "SampleIds", size: :long
     t.index ["ProtocolId"], name: "IX_ProtocolId"
   end
 
-  create_table "Users", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "Users", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Login", size: :long, null: false
     t.text "Password", size: :long, null: false
     t.text "Salt", size: :long, null: false
@@ -412,7 +414,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["reset_password_token"], name: "index_Users_on_reset_password_token", unique: true
   end
 
-  create_table "__MigrationHistory", primary_key: "MigrationId", id: { type: :string, limit: 150 }, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "__MigrationHistory", primary_key: "MigrationId", id: { type: :string, limit: 150 }, charset: "utf8", force: :cascade do |t|
     t.string "ContextKey", limit: 300, null: false
     t.binary "Model", size: :long, null: false
     t.string "ProductVersion", limit: 32, null: false
@@ -446,7 +448,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "agents", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "agents", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -473,7 +475,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["reset_password_token"], name: "index_agents_on_reset_password_token", unique: true
   end
 
-  create_table "answers", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "answers", id: :integer, charset: "utf8", force: :cascade do |t|
     t.integer "option_id"
     t.integer "survey_question_id"
     t.integer "Sample_id"
@@ -493,10 +495,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.datetime "updated_at", null: false
     t.text "settings"
     t.text "settings_ciphertext"
+    t.string "language", default: "pl", null: false
     t.index ["contractor_id"], name: "fk_rails_8f4a850bff"
   end
 
-  create_table "audits", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "audits", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "auditable_id"
     t.string "auditable_type"
     t.integer "associated_id"
@@ -518,14 +521,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["user_id", "user_type"], name: "user_index"
   end
 
-  create_table "config_entries", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "config_entries", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "key", null: false, collation: "utf8_general_ci"
     t.text "json", size: :long
     t.string "config_type", collation: "utf8_general_ci"
     t.index ["key"], name: "IX_key", unique: true
   end
 
-  create_table "csv_files", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "csv_files", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "filename", size: :long
     t.text "content_type", size: :long
     t.integer "file_size", null: false
@@ -536,7 +539,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.text "sample_ids", size: :long
   end
 
-  create_table "db_files", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "db_files", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "file_type", size: :long
     t.integer "file_length", null: false
     t.binary "file_content", size: :medium
@@ -544,7 +547,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["fileable_id"], name: "IX_fileable_id"
   end
 
-  create_table "delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
@@ -559,7 +562,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "discounts", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "discounts", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.decimal "value", precision: 5, scale: 2
     t.date "date_from"
@@ -574,15 +577,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.integer "treshold_step_three"
   end
 
-  create_table "discounts_invoices", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "discounts_invoices", id: :integer, charset: "utf8", force: :cascade do |t|
     t.integer "invoice_id"
     t.integer "discount_id"
   end
 
-  create_table "fileables", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "fileables", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
   end
 
-  create_table "institution_order_components", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "institution_order_components", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "institution_order_id", null: false
     t.integer "test_transaction_id"
     t.integer "project_id"
@@ -600,7 +603,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["test_transaction_id"], name: "index_institution_order_components_on_test_transaction_id"
   end
 
-  create_table "institution_orders", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "institution_orders", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "contractor_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -628,7 +631,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["contractor_id"], name: "index_institution_orders_on_contractor_id"
   end
 
-  create_table "institution_tests", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "institution_tests", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "institution_id", null: false
     t.integer "project_id", null: false
     t.datetime "created_at", null: false
@@ -642,7 +645,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["project_id"], name: "index_institution_tests_on_project_id"
   end
 
-  create_table "institutions", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "institutions", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.text "address"
     t.string "nip"
@@ -687,19 +690,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["created_by_agent_id"], name: "fk_rails_4adfc629f3"
   end
 
-  create_table "institutions_projects", id: false, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "institutions_projects", id: false, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "institution_id"
     t.integer "project_id"
     t.index ["institution_id"], name: "index_institutions_projects_on_institution_id"
     t.index ["project_id"], name: "index_institutions_projects_on_project_id"
   end
 
-  create_table "instruments", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "instruments", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "name", size: :long
     t.text "short_name", size: :long
   end
 
-  create_table "invoice_components", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "invoice_components", id: :integer, charset: "utf8", force: :cascade do |t|
     t.integer "lp"
     t.text "product_name"
     t.string "pkwiu"
@@ -718,7 +721,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["invoice_id"], name: "index_invoice_components_on_invoice_id"
   end
 
-  create_table "invoices", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "invoices", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "number"
     t.date "date_of_invoice"
     t.date "date_of_sale"
@@ -745,7 +748,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["institution_id"], name: "index_invoices_on_institution_id"
   end
 
-  create_table "kits", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "kits", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "shop_id"
     t.string "tag_content"
     t.integer "sample_id"
@@ -761,7 +764,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["shop_order_id"], name: "index_kits_on_shop_order_id"
   end
 
-  create_table "laboratory_books", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "laboratory_books", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.date "begin_date"
     t.date "end_date"
@@ -771,7 +774,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.binary "xlsx_file", size: :medium
   end
 
-  create_table "old_passwords", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "old_passwords", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "encrypted_password", null: false
     t.string "password_archivable_type", null: false
     t.integer "password_archivable_id", null: false
@@ -780,7 +783,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["password_archivable_type", "password_archivable_id"], name: "index_password_archivable"
   end
 
-  create_table "online_files", primary_key: "measurement_id", id: :integer, default: nil, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "online_files", primary_key: "measurement_id", id: :integer, default: nil, charset: "utf8", force: :cascade do |t|
     t.text "filename", size: :long
     t.text "content_type", size: :long
     t.integer "file_size", null: false
@@ -797,7 +800,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["measurement_id"], name: "IX_measurement_id"
   end
 
-  create_table "option_translations", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "option_translations", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "option_text"
     t.string "locale", null: false
     t.integer "option_id", null: false
@@ -808,7 +811,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["option_id"], name: "index_option_translations_on_option_id"
   end
 
-  create_table "options", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "options", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "option_text"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -816,13 +819,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.boolean "is_other_option", default: false, null: false
   end
 
-  create_table "options_survey_questions", id: false, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "options_survey_questions", id: false, charset: "utf8", force: :cascade do |t|
     t.integer "survey_question_id"
     t.integer "option_id"
     t.index ["survey_question_id", "option_id"], name: "sur_quest_opt_index"
   end
 
-  create_table "order_panel_delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "order_panel_delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
@@ -837,7 +840,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "order_panel_users", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "order_panel_users", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "provider", default: "email", null: false
     t.string "uid", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -862,7 +865,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["uid", "provider"], name: "index_order_panel_users_on_uid_and_provider", unique: true
   end
 
-  create_table "packages", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "packages", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "serial_number"
     t.string "extended_serial_number"
     t.datetime "expiry_date", precision: nil
@@ -879,7 +882,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["stock_room_id"], name: "fk_rails_e067235a3b"
   end
 
-  create_table "production_orders", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "production_orders", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "lot"
     t.datetime "packages_expiry_date", precision: nil
     t.integer "packages_count"
@@ -888,21 +891,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.text "comment"
-    t.integer "material_type", default: 0, null: false
     t.index ["product_id"], name: "fk_rails_b45fb21cdc"
     t.index ["stock_room_id"], name: "fk_rails_b081d45c17"
   end
 
-  create_table "products", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "products", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "name"
     t.string "ref"
     t.integer "type"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.integer "capacity"
+    t.integer "material_type", default: 0, null: false
+    t.integer "material_handler", default: 0, null: false
   end
 
-  create_table "quality_control_components", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "quality_control_components", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.decimal "mean", precision: 9, scale: 3
     t.decimal "two_sd_value", precision: 9, scale: 3
     t.decimal "three_sd_value", precision: 9, scale: 3
@@ -917,7 +921,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["quality_control_id"], name: "index_quality_control_components_on_quality_control_id"
   end
 
-  create_table "quality_controls", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "quality_controls", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "name"
     t.date "preperiod_begin"
     t.date "preperiod_end"
@@ -934,7 +938,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["sample_id"], name: "index_quality_controls_on_sample_id"
   end
 
-  create_table "rejestracja2_delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "rejestracja2_delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
@@ -949,13 +953,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["priority", "run_at"], name: "rejestracja2_delayed_jobs_priority"
   end
 
-  create_table "reserved_tests", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "reserved_tests", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "project_id"
     t.integer "reserved_sample_code_id"
     t.index ["project_id", "reserved_sample_code_id"], name: "index_reserved_tests_on_project_id_and_reserved_sample_code_id"
   end
 
-  create_table "result_sending_events", id: :integer, default: nil, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "result_sending_events", id: :integer, default: nil, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "measurement_id"
     t.integer "sample_id", null: false
     t.datetime "sent_date", precision: nil
@@ -968,7 +972,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["sample_id"], name: "IX_sample_id"
   end
 
-  create_table "shipments", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "shipments", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "name"
     t.bigint "shipmentable_id", null: false
     t.string "shipmentable_type", null: false
@@ -986,7 +990,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["shipmentable_type", "shipmentable_id"], name: "index_shipments_on_shipmentable_type_and_shipmentable_id"
   end
 
-  create_table "shipping_companies", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "shipping_companies", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "contract_signature"
     t.datetime "created_at", null: false
@@ -994,7 +998,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["name"], name: "index_shipping_companies_on_name", unique: true
   end
 
-  create_table "shop_orders", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "shop_orders", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "number"
     t.string "time_signature"
     t.string "first_name"
@@ -1004,14 +1008,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.text "package_ids"
+    t.text "kits"
+    t.text "coupons"
+    t.decimal "total_cost", precision: 7, scale: 2
+    t.decimal "total_cost_with_coupons", precision: 7, scale: 2
   end
 
-  create_table "soaking_degrees", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "soaking_degrees", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "name", size: :long
     t.integer "sn", null: false
   end
 
-  create_table "stock_room_items", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "stock_room_items", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.bigint "storagable_id"
     t.string "storagable_type"
     t.integer "capacity"
@@ -1026,13 +1034,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["storagable_type", "storagable_id"], name: "index_stock_room_items_on_storagable_type_and_storagable_id"
   end
 
-  create_table "stock_rooms", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "stock_rooms", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "survey_question_translations", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "survey_question_translations", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "question_text"
     t.string "locale", null: false
     t.integer "survey_question_id", null: false
@@ -1043,7 +1051,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["survey_question_id"], name: "index_survey_question_translations_on_survey_question_id"
   end
 
-  create_table "survey_questions", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "survey_questions", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "question_text"
     t.integer "Project_id"
     t.datetime "created_at", precision: nil, null: false
@@ -1054,7 +1062,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["Project_id"], name: "index_survey_questions_on_Project_id"
   end
 
-  create_table "survey_reports", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "survey_reports", id: :integer, charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.date "date_from"
     t.date "date_to"
@@ -1065,7 +1073,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_093259) do
     t.index ["project_id"], name: "index_survey_reports_on_project_id"
   end
 
-  create_table "test_transactions", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "test_transactions", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "amount_change", null: false
     t.integer "project_id", null: false
     t.integer "sample_id"
