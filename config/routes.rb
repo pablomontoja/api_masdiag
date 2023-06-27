@@ -79,6 +79,14 @@ Rails.application.routes.draw do
     get "/kits/check_code/:code", to: 'kit#check_code'
   end
 
+
+  #########################################################
+  ### MASDIAG
+  #########################################################
+  namespace :masdiag, defaults: {format: :json} do
+    post "/notifications/trigger", to: 'notification#trigger'
+  end
+
   # get '*path' => redirect('/')
 
 end
