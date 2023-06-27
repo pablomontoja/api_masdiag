@@ -76,7 +76,7 @@ class Masdiag::NotificationController < ApplicationController
 
       f.save
 
-      file.update_attribute(:is_patient_notification_send, true)
+      file.update_attribute(:is_notification_send, true)
       file.update_attribute(:when_patient_notification_send, Time.current)
     end
   end

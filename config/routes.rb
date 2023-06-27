@@ -84,6 +84,8 @@ Rails.application.routes.draw do
   ### MASDIAG
   #########################################################
   namespace :masdiag, defaults: {format: :json} do
+    post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
+    
     post "/notifications/trigger", to: 'notification#trigger'
   end
 
