@@ -19,7 +19,7 @@ class ResultResource < ApplicationService
       h[:rejection_reason] = rejection_reason(@sample) if @sample.SampleStatus == 4
       results << h
     else
-      @current_rsc.projects.each do |pr|
+      @current_rsc&.projects&.each do |pr|
         meas = @sample.measurements.order(Status: :desc).find_by(ProjectId: pr.Id)
 
         if meas&.online_file&.file_contents.present?

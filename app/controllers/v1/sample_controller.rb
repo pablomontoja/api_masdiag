@@ -22,6 +22,7 @@ class V1::SampleController < ApplicationController
     .includes(measurements: %i[project result])
     .find_by(Code: current_rsc.Code.upcase)
 
+
     @sample = if @sample.nil?
       V1::SampleCreator.call(sample_params, current_rsc)
     else

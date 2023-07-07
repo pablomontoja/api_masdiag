@@ -25,7 +25,7 @@ class Notification::ResultService < ApplicationService
       end
       
       response = conn.post(url, result.to_json)
-      handle_result()
+      handle_result(result)
     rescue Faraday::Error => e
       return handle_error([e.to_s]) if e.response.nil?
       err = ["status: #{e.response[:status]}", "body: #{e.response[:body]}"]

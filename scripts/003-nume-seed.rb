@@ -31,7 +31,7 @@
 
 
 require 'faker'
-inst = Institution.create!(name: "Nume", nip: "HRB 179171", address: "Stadtbahnstraße 118 d, 22391 Hamburg", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "Stadtbahnstraße 118 d, 22391 Hamburg", street: "Stadtbahnstraße 118 d", postal_code: "22391", city: "Hamburg", company_for_shipments: nil, shipment_street: "Stadtbahnstraße 118 d", shipment_postal_code: "22391", shipment_city: "Hamburg", region_of_activity: 0 )
+# inst = Institution.create!(name: "Nume", nip: "DE360207124", address: "Stadtbahnstraße 118 d, 22391 Hamburg", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "Stadtbahnstraße 118 d, 22391 Hamburg", street: "Stadtbahnstraße 118 d", postal_code: "22391", city: "Hamburg", company_for_shipments: nil, shipment_street: "Stadtbahnstraße 118 d", shipment_postal_code: "22391", shipment_city: "Hamburg", region_of_activity: 0 )
 
 # inst = Institution.last
 contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "nume@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
