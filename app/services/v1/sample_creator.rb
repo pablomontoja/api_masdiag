@@ -39,6 +39,7 @@ class V1::SampleCreator < ApplicationService
   def params_preparation
     @params = Masdiag::ParamsMapper.call(@params, :sample)
     @params[:patient_attributes].merge!(ContractorId: Current.api_account.contractor_id) if @rsc.reserved_by.nil?
+    @params[:patient_attributes].merge!(language: Current.api_account.language) if @rsc.reserved_by.nil?
     @params[:patient_attributes].merge!(ContractorId: @rsc.reserved_by.Id) if !@rsc.reserved_by.nil?
 
     if !@params[:patient_attributes][:Pesel].blank?

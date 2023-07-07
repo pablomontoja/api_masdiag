@@ -79,6 +79,13 @@ RSpec.describe 'V1::SampleController#create', type: :request do
         expect(curr - prev).to be(0)
         expect(response).to have_http_status(201)
       end
+
+      it 'sets patient language properly' do
+        api_account.update(language: "de")
+        post '/v1/sample', params: smp_params, headers: http_auth_header
+
+        expect(@controller.instance_variable_get(:@sample).patient.language).to eq("de")
+      end
     end
 
    
