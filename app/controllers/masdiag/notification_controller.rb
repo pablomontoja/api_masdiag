@@ -9,7 +9,6 @@ class Masdiag::NotificationController < ApplicationController
 
     Measurement.where(Id: meas_ids).each do |meas|
       res = Notification::ResultService.call(meas.sample)
-
       if res.success?
         @files_done[meas.online_file] = res.payload.to_json
       else
@@ -56,7 +55,6 @@ class Masdiag::NotificationController < ApplicationController
                                           # }
 
       # mail content
-      # byebug
       tmpfile = Tempfile.new([SecureRandom.uuid,'.json'], Rails.root.join('tmp') )
       tmpfile.binmode
       tmpfile.write(json)
@@ -77,7 +75,7 @@ class Masdiag::NotificationController < ApplicationController
       f.save
 
       file.update_attribute(:is_notification_send, true)
-      file.update_attribute(:when_patient_notification_send, Time.current)
+      file.update_attribute(:when_notification_send, Time.current)
     end
   end
 

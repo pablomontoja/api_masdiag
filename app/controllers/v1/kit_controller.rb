@@ -21,7 +21,6 @@ class V1::KitController < ApplicationController
 
   # {data: {code: "ASDFG", test_ids: [1,2]}}
   def assign_tests
-    # byebug
     @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: assignment_params[:code])
 
     if @current_rsc.nil?

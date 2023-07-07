@@ -7,7 +7,6 @@ class Masdiag::PackagesCreator < ApplicationService
 
   def call
     begin
-      # byebug
       last_serial = 0
       last_serial = Integer(Package.order(serial_number: :asc).last.serial_number)+1 if Package.order(serial_number: :asc).last.present?
 
