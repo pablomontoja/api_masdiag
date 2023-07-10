@@ -30,10 +30,10 @@ services:
         - traefik.docker.network=webgateway
       # placement:
       #   constraints: [node.role == worker]
-      replicas: 1
+      replicas: 2
       update_config:
         parallelism: 1
-        delay: 10s
+        delay: 60s
         order: stop-first
         failure_action: rollback
       placement:
