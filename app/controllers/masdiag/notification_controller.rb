@@ -19,14 +19,69 @@ class Masdiag::NotificationController < ApplicationController
     build_res_sending_events()  
 
     if errors.count.zero?
-      render json: {message: "result endpoint responded with status 200"}, status: 200
+      render json: { message: "result endpoint responded with status 200" }, status: 200
     else
       render json: { message: errors.join(", ")}, status: 500
     end
+  end
 
+  # REQUIRED PARAMS: sample_id 
+  def sample_status_changed
+    sample = Sample.find(params[:sample_id])
+    @samples_done = Hash.new
+
+    res = Notification::ResultService.call(sample)
+    if res.success?
+      @samples_done[sample] = res.payload.to_json
+      build_notification_sending_events()
+      render json: { message: "result endpoint responded with status 200" }, status: 200
+    else
+      render json: { message: res.error&.join(", ")}, status: 500
+    end
   end
 
   private
+
+  def build_notification_sending_events
+    return nil if @samples_done == nil
+
+    @samples_done.each do |sample, json|
+      f = Fileable.new
+      event = f.build_result_sending_event
+
+      event.measurement = nil
+      event.sample = sample
+      event.sent_date = Time.current
+      event.sent_through = 6   # MasdiagAPI
+      event.recipient = "MasdiagAPI"
+      event.address = "MasdiagAPI /masdiag/notifications/sample_status_changed"
+
+                                          # public enum MethodsOfSendingEnum
+                                          # {
+                                          #     Undefined = 0,
+                                          #     EmailNotification,
+                                          #     EmailPdf,
+                                          #     CerascreenAPI,
+                                          #     EmailCsv,
+                                          #     GenericAssaysAPI,
+                                          #     MasdiagAPI
+                                          # }
+
+      # mail content
+      tmpfile = Tempfile.new([SecureRandom.uuid,'.json'], Rails.root.join('tmp') )
+      tmpfile.binmode
+      tmpfile.write(json)
+      tmpfile.rewind
+
+      dbfile = f.db_files.build
+      dbfile.file_content = tmpfile.read
+      dbfile.file_type = "application/json"
+      dbfile.file_length = dbfile.file_content.size
+      tmpfile.close
+
+      f.save
+    end    
+  end
 
   def build_res_sending_events
     return nil if @files_done == nil

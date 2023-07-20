@@ -22,6 +22,8 @@ class ResultResource < ApplicationService
       @current_rsc&.projects&.each do |pr|
         meas = @sample.measurements.order(Status: :desc).find_by(ProjectId: pr.Id)
 
+        next if meas.nil?
+
         if meas&.online_file&.file_contents.present?
           meas.online_file.prepare_active_storage
           results << { sample_code: meas.sample.Code, test: meas.project.eng_name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: url_for(meas.online_file.unencrypted_result) }

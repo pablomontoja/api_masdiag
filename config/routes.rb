@@ -87,6 +87,7 @@ Rails.application.routes.draw do
     post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
     
     post "/notifications/trigger", to: 'notification#trigger'
+    post "/notifications/sample_status_changed/:sample_id", to: 'notification#sample_status_changed'
   end
 
   # get '*path' => redirect('/')
