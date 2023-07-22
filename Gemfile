@@ -64,3 +64,4 @@ end
 
 gem 'faraday'
 gem "lockbox"
+gem 'composite_primary_keys', '=14.0.6'
