@@ -7,7 +7,6 @@ class RawResultResource < ApplicationService
   end
 
   def call
-  	pp @hash
     @hash
   end
 
@@ -16,7 +15,7 @@ class RawResultResource < ApplicationService
 
     return {json_result: result} if @meas.nil?
 
-    @meas.result&.analyte_results.each do |anres|
+    @meas.result&.analyte_results&.each do |anres|
     	next if !(allowed_analyte_ids(@meas).include?(anres.AnalyteId))
     	result << OneAnalyteRes.new(anres.analyte.NameInAPI, round_value(anres), anres.Unit)
     end
