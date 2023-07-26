@@ -110,3 +110,11 @@ pp "accepted but without results yet - #{accepted_code}"
 pp "accepted with resuls: - #{codes}"
 pp "cancelled - #{cancelled_code}"
 pp "expired - #{expired_code}"
+
+
+
+# free_codes - WF8U1, YBRUY, 7QJR1, EXVCB
+# accepted but without results yet - HLF5R
+# accepted with resuls: - TUY8D, EL82I, TFQLK
+# cancelled - WAFUK
+# expired - 93G4V
