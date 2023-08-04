@@ -17,11 +17,6 @@ RSpec.describe 'Nume::KitController#assign_tests', type: :request do
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
       let(:assign_params) { build(:test_assignment)}
 
-      # before do
-      #   TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
-      #   TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
-      # end
-
       it 'returns status 204' do
         post "/nume/kits/assign_tests", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(204)

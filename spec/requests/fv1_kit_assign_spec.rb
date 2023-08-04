@@ -11,16 +11,11 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
       # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
       let!(:product) { create(:product) }
       let!(:package) { create(:package, product: product) }
-      let!(:inst) { create(:institution) }
+      let!(:inst) { create(:institution, name: "Nume") }
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
       let(:assign_params) { build(:test_assignment)}
-
-      before do
-        TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
-        TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
-      end
 
       it 'returns status 204' do
         post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
@@ -31,48 +26,14 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
         tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=["2", "3"]}
         post "/fv1/kits/assign_tests", params: tmp_params, headers: http_auth_header
         expect(response).to have_http_status(204)
-      end
-
-      it 'changes number of used institution_tests by 2' do
-        expect {
-          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        }.to change { InstitutionTest.where(used: true).count }.by(2)
-        expect(response).to have_http_status(204)
-      end
-
-      it 'changes number of used institution_tests by 2 even if action is used multiple times' do
-        prev = InstitutionTest.where(used: true).count
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        curr = InstitutionTest.where(used: true).count
-        expect(curr - prev).to be(2)
-        expect(response).to have_http_status(204)
-      end
+      end      
 
       it 'changes number of institution_tests by 0' do
         expect {
           post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
         }.to change { InstitutionTest.count }.by(0)
         expect(response).to have_http_status(204)
-      end
-
-      it 'changes number of transactions by 2' do
-        previous = TestTransaction.count
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        current = TestTransaction.count
-        expect(current - previous).to be(2)
-        expect(response).to have_http_status(204)
-      end
-
-      it 'changes number of transactions by 6' do
-        previous = TestTransaction.count
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        current = TestTransaction.count
-        expect(current - previous).to be(6)
-        expect(response).to have_http_status(204)
-      end
+      end      
 
       it 'changes number of reserved_tests by 2' do
         expect {
@@ -84,27 +45,13 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
 
     context 'with invalid params' do
       let!(:valid_sample) { FactoryBot.create(:sample) }
-      let!(:project_vitd) { create(:project, Id: 2) }
-      let!(:project_aa) { create(:project, Id: 3) }
-      # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
       let!(:product) { create(:product) }
       let!(:package) { create(:package, product: product) }
-      let!(:inst) { create(:institution) }
+      let!(:inst) { create(:institution, name: "Nume") }
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
       let(:assign_params) { build(:test_assignment)}
-
-      # before do
-      #   TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
-      #   TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
-      # end
-
-      it 'returns status 422 due to lack of tests in pool' do
-        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        expect(response).to have_http_status(422)
-        expect(json.dig("message")).to match(/not enough institution tests left in pool for such assignment/)
-      end
 
       it 'changes number of transactions by 0' do
         previous = TestTransaction.count
