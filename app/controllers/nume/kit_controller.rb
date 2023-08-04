@@ -3,8 +3,6 @@ class Nume::KitController < Fv1::KitController
 
 
   # {data: {code: "ASDFG", test_ids: [1,2]}}
-  # TO DO rspec test needed to check if this action goes without tests pool 
-  # TO DO check documentation for nume
   def assign_tests
     @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: assignment_params[:code])
 
