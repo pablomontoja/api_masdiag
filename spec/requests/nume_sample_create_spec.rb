@@ -52,6 +52,18 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
         post '/nume/sample', params: smp_params, headers: http_auth_header
         expect(response).to have_http_status(201)
       end
+
+      it "sets patient's language properly" do
+        smp_params.tap{|h| h[:sample][:patient_attributes][:language] = "de"}
+        post '/fv1/sample', params: smp_params, headers: http_auth_header
+        expect(@controller.instance_variable_get(:@sample).patient.language).to eq("de")
+      end
+
+      it 'sets patient default language if the attribute is not present in params' do
+        api_account.update(language: "de")
+        post '/fv1/sample', params: smp_params, headers: http_auth_header
+        expect(@controller.instance_variable_get(:@sample).patient.language).to eq("de")
+      end
     end
 
     context 'with valid parameters but not assigned DBS' do
