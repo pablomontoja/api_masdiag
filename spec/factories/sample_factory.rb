@@ -55,3 +55,24 @@ FactoryBot.define do
     initialize_with { attributes }
   end
 end
+
+
+FactoryBot.define do
+  factory :sample_foreigner, class: Hash do
+    sample do
+      {
+        "code": "JV4XJ",
+        "sample_collection_date": "2022-04-10",
+        "patient_attributes": {
+          "email": nil,
+          "first_name": "Paweł",
+          "last_name": "Świder",
+          "birth_date": "2010-02-14",
+          "gender": "0"
+        }
+      }
+    end
+    skip_create
+    initialize_with { attributes }
+  end
+end
