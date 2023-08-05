@@ -33,12 +33,12 @@ class Fv1::SampleController < ApplicationController
   end
 
   def destroy
-
     if @sample.destroy
       head :no_content
     end
   end
 
+  # TO DO - rspec tests needed
   def activate_confirmation_test
     sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
 
@@ -97,7 +97,7 @@ class Fv1::SampleController < ApplicationController
   end
 
   def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).each_value do |value|
+    params.require(:sample).permit(:id, :code, :sample_collection_date, patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number, :language]).each_value do |value|
       case value
       when String
         value.try(:strip!)

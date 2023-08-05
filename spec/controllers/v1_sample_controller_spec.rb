@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe V1::SampleController, type: :controller do
 
-  describe 'POST #create' do
+  describe 'controller tests - POST #create' do
   	context "with normal sample" do
 
 	  	let!(:product) { create(:product) }

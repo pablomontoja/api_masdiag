@@ -1,14 +1,14 @@
 require 'rails_helper'
 # include ApiHelpers
 
-RSpec.describe 'Nume::SampleController#delete', type: :request do
-  describe 'DELETE /nume/sample/:code' do
+RSpec.describe 'Fv1::SampleController#delete', type: :request do
+  describe 'DELETE /fv1/sample/:code' do
     context 'with invalid parameters' do
       let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:product) { create(:product) }
       let!(:project) { create(:project) }
       let!(:package) { create(:package, product: product) }
-      let!(:inst) { create(:institution, name: "Nume") }
+      let!(:inst) { create(:institution) }
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
@@ -21,14 +21,14 @@ RSpec.describe 'Nume::SampleController#delete', type: :request do
 
       it 'returns error message when code was not found for your institution' do
         rsc.update(InstitutionId: nil)
-        delete '/nume/sample/delete/JV4XJ', headers: http_auth_header
+        delete '/fv1/sample/delete/JV4XJ', headers: http_auth_header
         expect(json.dig("message")).to eq("A such sample code was not found for your institution.")
         expect(response).to have_http_status(422)
       end
 
       it 'returns error message when sample is accepted in lab' do
         valid_sample.update(AcceptanceDate: Date.today)
-        delete '/nume/sample/delete/JV4XJ', headers: http_auth_header
+        delete '/fv1/sample/delete/JV4XJ', headers: http_auth_header
         expect(json.dig("message")).to eq("This sample cannot be deleted.")
         expect(response).to have_http_status(422)
       end
@@ -39,7 +39,7 @@ RSpec.describe 'Nume::SampleController#delete', type: :request do
       let!(:product) { create(:product) }
       let!(:project) { create(:project) }
       let!(:package) { create(:package, product: product) }
-      let!(:inst) { create(:institution, name: "Nume") }
+      let!(:inst) { create(:institution) }
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
@@ -51,7 +51,7 @@ RSpec.describe 'Nume::SampleController#delete', type: :request do
       end
 
       it 'returns status 204' do
-        delete '/nume/sample/delete/JV4XJ', headers: http_auth_header
+        delete '/fv1/sample/delete/JV4XJ', headers: http_auth_header
         expect(response).to have_http_status(204)
       end
     end
