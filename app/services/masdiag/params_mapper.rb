@@ -14,6 +14,8 @@ class Masdiag::ParamsMapper < ApplicationService
       @params.dig(:patient_attributes)[:BirthDate] = @params.dig(:patient_attributes).delete :birth_date
       @params.dig(:patient_attributes)[:Gender] = @params.dig(:patient_attributes).delete :gender
       @params.dig(:patient_attributes)[:ContractorId] = @params.dig(:patient_attributes).delete :contractor_id
+      @params.dig(:patient_attributes)[:email] = nil if @params.dig(:patient_attributes)[:email] == "null"
+      @params.dig(:patient_attributes)[:language] = nil if @params.dig(:patient_attributes)[:language] == "null"
     end
 
     @params
