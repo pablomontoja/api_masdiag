@@ -12,7 +12,7 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
-      let(:smp_params) { build(:sample_without_pesel)}
+      let(:smp_params) { build(:sample_foreigner)}
 
       before :each do
         rsc.reserved_tests.create!(project_id: 2)
@@ -74,7 +74,7 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
       let!(:rsc) { create(:rsc_without_institution, package_id: package.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
-      let(:smp_params) { build(:sample_with_pesel)}
+      let(:smp_params) { build(:sample_foreigner)}
 
       it 'returns error message when DBS card not assigned' do
         post '/nume/sample', params: smp_params, headers: http_auth_header
@@ -91,7 +91,7 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
-      let(:smp_params) { build(:sample_with_pesel)}
+      let(:smp_params) { build(:sample_foreigner)}
 
       before :each do
         rsc.reserved_tests.create!(project_id: 2)

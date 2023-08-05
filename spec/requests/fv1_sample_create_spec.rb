@@ -89,7 +89,7 @@ RSpec.describe 'Fv1::SampleController#create', type: :request do
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
-      let(:smp_params) { build(:sample_without_pesel)}
+      let(:smp_params) { build(:sample_foreigner)}
 
       before :each do
         rsc.reserved_tests.create!(project_id: 2)
