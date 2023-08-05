@@ -35,16 +35,6 @@ RSpec.describe 'V1::SampleController#create', type: :request do
         post '/v1/sample', params: smp_params, headers: http_auth_header
       end
 
-      # it 'modifies the parameters of the sample as appropriate' do        
-      #   expect(assigns(:sample).RegistrationDate).not_to eql(nil)
-      #   expect(assigns(:sample).PatientId).not_to eql(nil)
-      #   expect(assigns(:sample).IsWrongRegistration).to eql(false)
-      #   expect(assigns(:sample).WasWrongRegistration).to eql(true)
-      #   expect(assigns(:sample).WrongRegistrationStatus).to eql(2)
-      #   expect(assigns(:sample).measurements.count).to eql(1)
-      #   expect(assigns(:sample).WrongRegistrationStatus).to be_in([2, 4])
-      # end
-
       it 'returns error message when DBS is expired' do
         rsc.update(expiry_date: 2.days.ago)
         post '/v1/sample', params: smp_params, headers: http_auth_header
