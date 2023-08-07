@@ -44,6 +44,7 @@ RSpec.describe 'Nume::ResultController#show', type: :request do
         expect(json.dig("results").first).to have_key("sample_status")
         expect(json.dig("results").first).to have_key("unencrypted_result")
         expect(json.dig("results").first).not_to have_key("rejection_reason")
+        expect(json.dig("results").first).to have_key("raw_result")
       end
 
       it 'returns json with expected keys for cancelled sample' do
