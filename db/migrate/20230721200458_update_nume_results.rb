@@ -3,8 +3,9 @@ class UpdateNumeResults < ActiveRecord::Migration[7.0]
     meases = Measurement.includes(sample: :patient).where(Patients: {ContractorId: 638}).where(ProjectId: 2)
 
     meases.each do |meas|
-      newAnalyte = meas.result.analyte_results.find_by(AnalyteId: 310)
-      next if !(newAnalyte.nil?)
+      newAnalyte = meas&.result&.analyte_results&.find_by(AnalyteId: 310)
+      next if !(newAnalyte.blank?)
+      next if meas.result.nil?
       witD2425 = meas.result.analyte_results.find_by(AnalyteId: 83).Value
       witD3 = meas.result.analyte_results.find_by(AnalyteId: 80).Value
 
