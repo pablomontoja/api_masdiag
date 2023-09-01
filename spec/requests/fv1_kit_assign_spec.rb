@@ -38,8 +38,19 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
       it 'changes number of reserved_tests by 2' do
         expect {
           post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
-        }.to change { ReservedTest.where(reserved_sample_code_id: rsc.Id).count }.by(2)
+        }.to change { ReservedTest.where(reserved_sample_code_id: rsc.Id).count }.by(2)        
         expect(response).to have_http_status(204)
+      end
+
+      it 'override assignment if assigned' do
+        rsc.reserved_tests.create!(project_id: 2)
+        rsc.reserved_tests.create!(project_id: 3)
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2]}
+        post "/fv1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+
+        expect(rsc.reserved_tests.count).to be(1)
+        expect(rsc.project_ids).to include(2)
+        expect(rsc.project_ids).not_to include(3)
       end
     end
 

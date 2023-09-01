@@ -4,8 +4,8 @@ class Result < ApplicationRecord
 	belongs_to :measurement, class_name: "Measurement", foreign_key: "MeasurementId"
 	has_many :analyte_results, class_name: "AnalyteResult", foreign_key: "ResultId", dependent: :destroy
 
-  def readonly?
-    true
-  end
+  # def readonly?
+  #   true
+  # end
 	
 end

@@ -25,7 +25,8 @@ class Fv1::KitController < V1::KitController
     @contractor_id = Current.api_account.contractor.Id
 
     ActiveRecord::Base.transaction do
-      assignment_params[:test_ids].each do |test|
+      @current_rsc.reserved_tests.destroy_all
+      assignment_params[:test_ids].each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
