@@ -90,6 +90,14 @@ Rails.application.routes.draw do
     post "/notifications/sample_status_changed/:sample_id", to: 'notification#sample_status_changed'
   end
 
+
+  #########################################################
+  ### PATIENT_PORTAL
+  #########################################################
+  namespace :patient_portal, defaults: {format: :json} do
+    resources :results, only: :index
+  end
+
   # get '*path' => redirect('/')
 
 end
