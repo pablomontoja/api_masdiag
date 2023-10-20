@@ -10,7 +10,7 @@ class PatientPortal::Result
  private
 
  	def prepare
-		@samples_code = @measurement.sample.Code
+		@sample_code = @measurement.sample.Code
 		@authorization_date = @measurement.AuthorizedAt
 		@test_name = @measurement.project.Name
 		@measurement_id = @measurement.Id
