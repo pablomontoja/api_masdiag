@@ -2,7 +2,9 @@ class RawResultResource < ApplicationService
 	OneAnalyteRes = Struct.new(:parameter, :value, :unit)
 
   def initialize(meas)
-    @meas = meas
+    @meas = Measurement.includes(result: {analyte_results: :analyte}).includes(:sample).find(meas.Id)
+    @product = @meas.sample.rsc&.package&.product
+    @analyte_ids = Analyte.where(ProjectId: @meas.ProjectId).pluck(:Id)
     @hash = prepare_json
   end
 
@@ -27,15 +29,13 @@ class RawResultResource < ApplicationService
   private
 
   def allowed_analyte_ids(meas)
-  	product = meas.sample.rsc&.package&.product
-
   	case 
-  	when product&.id == 16
+  	when @product&.id == 16
   		return [84]
-  	when product&.id == 17
+  	when @product&.id == 17
   		return [84, 310]
   	else
-  		return Analyte.where(ProjectId: meas.ProjectId).pluck(:Id)
+  		return @analyte_ids
   	end
   end
 
