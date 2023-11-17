@@ -6,32 +6,30 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
   def initialize(production_order, current_user)
     @current_user = current_user
     @production_order = production_order
-    # @packages = production_order.packages
     @rsc_to_do_count = @production_order.packages.map {|pack| pack.product.capacity}.sum()
-    # @prepared_reserved_sample_codes = []
     @codes_used_before = (Sample.where("LENGTH(Code) = 5").pluck(:Code) + ReservedSampleCode.all.pluck(:Code)).uniq
   end
 
   def call
     begin
       @production_order.packages.each do |pack|
-        pack.product.capacity.times {
+        pack.product.capacity.times {  
           code = get_random_code
 
-          rsc = pack.reserved_sample_codes.build(Code: code, CreatedAt: Time.current, CreatedById: @current_user.Id, IsRetailSale: 0, expiry_date: @production_order.packages_expiry_date.at_end_of_day, MaterialType: @production_order.material_type)
+          rsc = pack.reserved_sample_codes.build(Code: code, CreatedAt: Time.current, CreatedById: @current_user.id, IsRetailSale: 0, expiry_date: @production_order.packages_expiry_date.at_end_of_day, MaterialType: @production_order.product.material_type, material_handler: @production_order.product.material_handler)
           @codes_used_before.push(code)
 
-        }
-      end
+        }         
+      end   
 
       handle_result(@production_order)
 
     rescue Exception => e
       handle_error(e)
-    end
+    end   
   end
 
-  private
+private
 
   # sprawdza ostatni znak czy jest zgodny z sumą kontrolną
   def control_sum(code)
@@ -62,22 +60,22 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
     final_code = ""
     while is_invalid
       chars = ('A'..'Z').to_a - ['O']
-      integers = (1..9).to_a
+      integers = (1..9).to_a 
       all_chars = chars + integers
       final_code = get_code_with_control_char(all_chars.shuffle[0,4].join)
       is_invalid = !is_code_valid?(final_code)
     end
-    final_code
+    final_code  
   end
 
   def is_code_valid?(code)
     return false if is_i?(code)
-    return false if @codes_used_before.include?(code)
+    return false if @codes_used_before.include?(code)   
     return true
   end
 
   def is_i?(code)
-    /\A[-+]?\d+\z/ === code
+     /\A[-+]?\d+\z/ === code
   end
 
 end
