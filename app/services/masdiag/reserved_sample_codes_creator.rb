@@ -3,7 +3,7 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
   attr_reader :prepared_reserved_sample_codes
   attr_reader :current_user
 
-  def initialize(production_order, current_user)
+  def initialize(production_order, current_user)    
     @current_user = current_user
     @production_order = production_order
     @rsc_to_do_count = @production_order.packages.map {|pack| pack.product.capacity}.sum()
@@ -11,8 +11,8 @@ class Masdiag::ReservedSampleCodesCreator < ApplicationService
   end
 
   def call
-    begin
-      @production_order.packages.each do |pack|
+    begin      
+      @production_order.packages.each do |pack|        
         pack.product.capacity.times {  
           code = get_random_code
 
