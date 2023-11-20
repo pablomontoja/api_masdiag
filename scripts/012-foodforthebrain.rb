@@ -1,11 +1,11 @@
 ###################
 # staging
-# ###################
-# inst = Institution.create!(name: "FoodForTheBrain", nip: "GB unknown", address: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street, London", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street, London", street: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street", postal_code: "W1W 8DW", city: "London", company_for_shipments: nil, shipment_street: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street", shipment_postal_code: "W1W 8DW", shipment_city: "London", region_of_activity: 0 )
+###################
+inst = Institution.create!(name: "FoodForTheBrain", nip: "GB unknown", address: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street, London", wants_summary_of_performed_samples: false, auto_test_charge: false, has_disabled_invoices: true, shipping_address: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street, London", street: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street", postal_code: "W1W 8DW", city: "London", company_for_shipments: nil, shipment_street: "34-35 Nabarro, Chartered Accountants, 4th Floor, 34-35 Eastcastle Street", shipment_postal_code: "W1W 8DW", shipment_city: "London", region_of_activity: 0 )
 
-# contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "foodforthebrain@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
+contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "foodforthebrain@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
 
-# ApiAccount.create!(username: "foodforthebrain", password: "KRZsuT8MJ2xDUdNv", password_confirmation: "KRZsuT8MJ2xDUdNv", contractor_id: contractor.Id, language: "en")
+ApiAccount.create!(username: "foodforthebrain", password: "KRZsuT8MJ2xDUdNv", password_confirmation: "KRZsuT8MJ2xDUdNv", contractor_id: contractor.Id, language: "en")
 
 
 
@@ -114,8 +114,8 @@ pp "cancelled - #{cancelled_code}"
 pp "expired - #{expired_code}"
 
 
-"free_codes - [\"EUAA00009\", \"EUAA00007\", \"EUAA00004\", \"EUAA00003\"]"
-"accepted but without results yet - EUAA00010"
-"accepted with resuls: - [\"EUAA00005\", \"EUAA00001\", \"EUAA00006\"]"
-"cancelled - EUAA00008"
-"expired - EUAA00002"
+# "free_codes - [\"EUAA00009\", \"EUAA00007\", \"EUAA00004\", \"EUAA00003\"]"
+# "accepted but without results yet - EUAA00010"
+# "accepted with resuls: - [\"EUAA00005\", \"EUAA00001\", \"EUAA00006\"]"
+# "cancelled - EUAA00008"
+# "expired - EUAA00002"
