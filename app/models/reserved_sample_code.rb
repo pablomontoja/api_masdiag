@@ -24,7 +24,9 @@ class ReservedSampleCode < ApplicationRecord
   end
 
   def projects_names
-    return self.projects.map { |p| p.Name  }
+    proj_ids = self.projects.map { |p| p.Id  }
+    tests = V1::Common::AVAILABLE_TESTS
+    return tests.select{|t| proj_ids.include?(t[:id]) }.map{|t| t[:name]}
   end
 
   def as_json(options = {})

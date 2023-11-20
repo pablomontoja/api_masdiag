@@ -8,12 +8,8 @@ class ProductionOrder < ApplicationRecord
   validates :packages_count, presence: true
   validates :lot, presence: true, uniqueness: true
   validates :packages_count, numericality: { only_integer: true }
-  validates :material_type, numericality: { only_integer: true }, presence: true
-
-  # enum :material_type, { capillary_blood: 0, blood_serum: 1, blood_plasma: 2, hair: 3, nails: 4, urine: 5, saliva: 6 }
 
   before_create :set_expiry_date_at_end_of_day
-
 
   private
 

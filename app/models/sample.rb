@@ -15,7 +15,16 @@ class Sample < ApplicationRecord
 
   # walidacja
   validates :Code, presence: true, uniqueness: true
-  validates :Code, length: { is: 5 }
+
+  with_options({on: :v1}) do |v1_sample|
+    v1_sample.validates :Code, length: { is: 5 }
+  end
+
+  # TODO - it need to be tested
+  with_options({on: :fv1}) do |fv1_sample|
+    fv1_sample.validates :Code, length: { minimum: 5, maximum: 9 }
+  end
+
   validates :sample_collection_date, presence: true, comparison: { less_than_or_equal_to: :today_date }
   validates :RegistrationDate, presence: true
   validates_inclusion_of :IsWrongRegistration, in: [true, false]

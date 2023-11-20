@@ -6,7 +6,9 @@ class SampleResource
   attribute :code, &:Code
 
   attribute :tests do |resource|
-    resource.measurements.map { |m| m.project.Name }
+    proj_ids = resource.measurements.map { |m| m.ProjectId }
+    tests = V1::Common::AVAILABLE_TESTS
+    tests.select{|t| proj_ids.include?(t[:id]) }.map{|t| t[:name]}
   end
 
 end

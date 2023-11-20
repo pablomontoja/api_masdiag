@@ -96,6 +96,7 @@ Rails.application.routes.draw do
   #########################################################
   namespace :patient_portal, defaults: {format: :json} do
     resources :results, only: :index
+    resources :samples, only: :index
   end
 
   # get '*path' => redirect('/')
