@@ -1,4 +1,6 @@
 class Patient < ApplicationRecord
+  include Patients::FoodForTheBrainModificator
+
   self.table_name = "Patients"
   self.primary_key = "Id"
   attr_accessor :email_confirmation
