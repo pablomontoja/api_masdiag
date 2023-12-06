@@ -120,3 +120,10 @@ pp "expired - #{expired_code}"
 # cancelled - EUAA00003
 # expired - EUAA00007
 
+
+# DEV
+# "free_codes - [\"EUAA00009\", \"EUAA00010\", \"EUAA00003\", \"EUAA00006\"]"
+# "accepted but without results yet - EUAA00004"
+# "accepted with resuls: - [\"EUAA00005\", \"EUAA00001\", \"EUAA00008\"]"
+# "cancelled - EUAA00002"
+# "expired - EUAA00007"
