@@ -9,11 +9,11 @@ module V1::Common
     7 => "PESEL opiekuna prawnego gdy pacjentem jest noworodek"
   }.freeze
 
-  CURRENT_VERSION = "1.06"
+  CURRENT_VERSION = "1.07"
 
-  CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EZB734xoYNxLusNIzco9RJMBrXQSUHrQ5XIhC6XnuN3q9A?e=sQEgL6"
-  FV1_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EWhdRskIXuNJkDbbcKiUvRQB0RsZbvhNaaRNnjeCZE57iw?e=Ex8zQ3"
-  NUME_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EdEeLAWEcytPrBFIX65x2S4BqZDx0RLLSHirIDihyJhMig?e=8CDGj4"
+  CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EenLLdV5t-dMk71yga-TJiMBlPd9c8jwnHHVD6M4tPWSUg?e=sKEq5c"
+  FV1_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EfgjGaaBxYpFmFcWI7A50WIBLuzELM0NPUfCEvYilzsXaw?e=ezJUtw"
+  NUME_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ESuHUfA4IxlNnWdO7NDeyVABRgMAGFLDSY2hite7jJeKGQ?e=GItJh0"
 
   AVAILABLE_TESTS = [{id: 2, name: "Vitamin D metabolites", material: "DBS", weight: 1, comment: ""},
                      {id: 3, name: "Aminoacids", material: "DBS", weight: 1, comment: ""},
