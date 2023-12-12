@@ -34,6 +34,7 @@ class ResultResource < ApplicationService
         # TODO it needs to be tested, in particular presence of raw_result RawResultResource.call(meas)
         h = { sample_code: meas.sample.Code, test: meas.project.eng_name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: nil, raw_result: RawResultResource.call(meas) }
         h[:rejection_reason] = rejection_reason(meas.sample) if meas.sample.SampleStatus == 4
+        h[:raw_result] = [] if meas.Status != 5
         results << h
       end
     end
