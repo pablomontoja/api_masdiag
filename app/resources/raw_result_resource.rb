@@ -15,7 +15,7 @@ class RawResultResource < ApplicationService
   def prepare_json
     result = []
 
-    return {raw_result: result} if @meas.nil?
+    return {raw_result: result} if @meas.nil? || @meas&.result.nil?
 
     @meas.result&.analyte_results&.each do |anres|
     	next if !(allowed_analyte_ids(@meas).include?(anres.AnalyteId))
