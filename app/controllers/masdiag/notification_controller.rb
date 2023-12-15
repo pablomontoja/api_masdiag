@@ -24,6 +24,7 @@ class Masdiag::NotificationController < ApplicationController
     if errors.count.zero?
       render json: { message: "result endpoint responded with status 200" }, status: 200
     else
+      pp errors
       render json: { message: errors.join(", ")}, status: 500
     end
   end
@@ -129,13 +130,13 @@ class Masdiag::NotificationController < ApplicationController
         dbfile = f.db_files.build
         dbfile.file_content = meas.online_file.file_contents
         dbfile.file_type = "application/pdf"
-        dbfile.file_length = dbfile.file_content.size
-
-        f.save
+        dbfile.file_length = dbfile.file_content.size        
 
         meas.online_file.update_attribute(:is_notification_send, true)
         meas.online_file.update_attribute(:when_notification_send, Time.current)
       end
+
+      f.save
       
     end
   end
