@@ -13,7 +13,7 @@ class Masdiag::NotificationController < ApplicationController
     Measurement.where(Id: meas_ids).each do |meas|
       res = Notification::ResultService.call(meas.sample)
       if res.success?
-        @meases_done[meas.online_file] = res.payload.to_json
+        @meases_done[meas] = res.payload.to_json
       else
         errors << res.error&.join(", ")
       end
@@ -87,7 +87,7 @@ class Masdiag::NotificationController < ApplicationController
   end
 
   def build_res_sending_events
-    return nil if @meases_done == nil
+    return nil if @meases_done.empty?
 
     @meases_done.each do |meas, json|
 
