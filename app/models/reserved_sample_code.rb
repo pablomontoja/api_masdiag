@@ -2,7 +2,7 @@ class ReservedSampleCode < ApplicationRecord
   self.table_name = "ReservedSampleCodes"
   self.primary_key = "Id"
 
-  belongs_to :package
+  belongs_to :package, optional: true
   belongs_to :institution, class_name: "Institution", foreign_key: "InstitutionId", optional: true
   # belongs_to :project, class_name: "Project", foreign_key: "ProjectId", optional: true
   has_many :reserved_tests
