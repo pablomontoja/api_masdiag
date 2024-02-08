@@ -54,6 +54,24 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
       end
     end
 
+    context 'with valid params but RSC with nil package_id' do
+      let!(:valid_sample) { FactoryBot.create(:sample) }
+      let!(:project_vitd) { create(:project, Id: 2) }
+      let!(:project_aa) { create(:project, Id: 3) }
+      # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
+      let!(:inst) { create(:institution, name: "Nume") }
+      let!(:rsc) { create(:reserved_sample_code, package_id: nil, InstitutionId: inst.id, IsRetailSale: true) }
+      let!(:contractor) {create(:contractor, institution_id: inst.id)}
+      let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+      let(:assign_params) { build(:test_assignment)}
+
+      it 'returns status 204' do
+        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(rsc.reserved_tests.count).to be(2)
+        expect(response).to have_http_status(204)
+      end
+    end
+
     context 'with invalid params' do
       let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:product) { create(:product) }
