@@ -10,11 +10,7 @@ class Notification::ResultService < ApplicationService
     api_account = ApiAccount.all.select { |a| a.institution.id == institution_id  }.first
     url = api_account.result_post_endpoint
 
-    return handle_error(["blank result post endpoint url"]) if url.blank?
-
-    # pp "============================== Notification::ResultService =============================="
-    # pp result
-    # pp "============================== Notification::ResultService =============================="
+    return handle_error(["#{@sample&.Code} - blank result post endpoint url"]) if url.blank?
 
     begin
       conn = Faraday.new() do |f|

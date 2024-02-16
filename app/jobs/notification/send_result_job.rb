@@ -1,0 +1,78 @@
+class Notification::SendResultJob < ApplicationJob
+  retry_on StandardError, wait: :exponentially_longer, attempts: 3 do |job, error|
+    errors = [Time.current.to_s, "MASDIAG API", job.class.name, "Exception - #{error}", "Job details: #{job.to_json}"]
+    puts errors
+    # IndMailer.after_error(errors).deliver_later
+  end
+  queue_as :default
+
+  def perform(measurement_id)
+  	@meases_done = Hash.new
+
+    meas = Measurement.find(measurement_id)
+    res = Notification::ResultService.call(meas.sample)
+    if res.success?
+      @meases_done[meas] = res.payload.to_json
+      build_res_sending_events() 
+    else
+      puts res.error&.join(", ")
+    end   
+  end
+
+private
+
+  def build_res_sending_events
+    return nil if @meases_done.empty?
+
+    @meases_done.each do |meas, json|
+
+      f = Fileable.new
+      event = f.build_result_sending_event
+
+      event.measurement = meas
+      event.sample = meas.sample
+      event.sent_date = Time.current
+      event.sent_through = 6   # MasdiagAPI
+      event.recipient = "MasdiagAPI"
+      event.address = "MasdiagAPI /masdiag/notifications/trigger"
+
+                                          # public enum MethodsOfSendingEnum
+                                          # {
+                                          #     Undefined = 0,
+                                          #     EmailNotification,
+                                          #     EmailPdf,
+                                          #     CerascreenAPI,
+                                          #     EmailCsv,
+                                          #     GenericAssaysAPI,
+                                          #     MasdiagAPI
+                                          # }
+
+      # mail content
+      tmpfile = Tempfile.new([SecureRandom.uuid,'.json'], Rails.root.join('tmp') )
+      tmpfile.binmode
+      tmpfile.write(json)
+      tmpfile.rewind
+
+      dbfile = f.db_files.build
+      dbfile.file_content = tmpfile.read
+      dbfile.file_type = "application/json"
+      dbfile.file_length = dbfile.file_content.size
+      tmpfile.close
+
+      if meas.online_file
+        # pdf content
+        dbfile = f.db_files.build
+        dbfile.file_content = meas.online_file.file_contents
+        dbfile.file_type = "application/pdf"
+        dbfile.file_length = dbfile.file_content.size        
+
+        meas.online_file.update_attribute(:is_notification_send, true)
+        meas.online_file.update_attribute(:when_notification_send, Time.current)
+      end
+
+      f.save
+      
+    end
+  end
+	
+end

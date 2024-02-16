@@ -12,7 +12,8 @@ class V1::WrongSampleUpdater < ApplicationService
 
     if [4,5].include?(@sample.soaking_degree_id)
       @sample.measurements.destroy_all
-      SendMailNotificationJob.perform_later("send_cancellation_notifications", @sample)
+      Notification::SampleChangedJob.perform_later(@sample.Id)
+      # SendMailNotificationJob.perform_later("send_cancellation_notifications", @sample)
     else
       # SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
       SendMailNotificationJob.perform_later("send_notification_after_delayed_reg", @sample)
