@@ -38,7 +38,7 @@ class Fv1::SampleController < ApplicationController
     end
   end
 
-  # TODO - rspec tests needed
+  # TODO - activate_confirmation_test - rspec tests needed
   def activate_confirmation_test
     sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
 

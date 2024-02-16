@@ -1,7 +1,7 @@
 class Masdiag::NotificationController < ApplicationController
   include MasdiagCheck
 
-  # TODO it need to be tested
+  # TODO - trigger - it need to be tested
   def trigger
     errors = []
     ids = ApiAccount.pluck(:contractor_id)

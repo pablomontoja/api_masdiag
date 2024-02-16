@@ -20,7 +20,7 @@ class Sample < ApplicationRecord
     v1_sample.validates :Code, length: { is: 5 }
   end
 
-  # TODO - it need to be tested
+  # TODO - fv1 validation of Code length - it need to be tested
   with_options({on: :fv1}) do |fv1_sample|
     fv1_sample.validates :Code, length: { minimum: 5, maximum: 10 }
   end
