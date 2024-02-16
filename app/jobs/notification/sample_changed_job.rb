@@ -7,16 +7,17 @@ class Notification::SampleChangedJob < ApplicationJob
   queue_as :default
 
 	def perform(sample_id)
-		sample = Sample.find(sample_id)
+		@sample = Sample.find(sample_id)
     @samples_done = Hash.new
 
-    res = Notification::ResultService.call(sample)
+    res = Notification::ResultService.call(@sample)
 
     if res.success?
-      @samples_done[sample] = res.payload.to_json
+      @samples_done[@sample] = res.payload.to_json
       build_notification_sending_events()
     else
       puts res.error&.join(", ")
+      raise Notification::JobError.new("Notification::SampleChangedJob has problems with sending result for sample #{@sample&.Code}")
     end
 	end
 

@@ -24,7 +24,7 @@ class Notification::ResultService < ApplicationService
       handle_result(result)
     rescue Faraday::Error => e
       return handle_error([e.to_s]) if e.response.nil?
-      err = ["status: #{e.response[:status]}", "body: #{e.response[:body]}"]
+      err = ["Notification::ResultService - sample: #{@sample.Code} - ERROR - status: #{e.response[:status]}", "body: #{e.response[:body]}"]
       handle_error(err)
     end
   end
