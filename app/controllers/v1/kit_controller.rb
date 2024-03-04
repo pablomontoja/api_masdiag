@@ -15,6 +15,7 @@ class V1::KitController < ApplicationController
 
     response_hash[:test_names] = @current_rsc.projects.map(&:eng_name)
     response_hash[:test_ids] = @current_rsc.projects.map(&:Id)
+    response_hash[:kit_type] = @current_rsc.package&.product&.name
 
     json_response(response_hash)
   end

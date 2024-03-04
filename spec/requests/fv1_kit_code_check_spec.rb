@@ -23,12 +23,13 @@ RSpec.describe 'Fv1::KitController#check_code', type: :request do
       end
 
       it 'returns status 200 for fv1' do
-        get "/fv1/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
+        get "/fv1/kits/check_code/#{rsc.Code}", params: assign_params, headers: http_auth_header
         expect(response).to have_http_status(200)
         expect(json.dig("test_ids")).to eq([2, 3])
         expect(json.dig("test_names")).to eq(["Vitamin D metabolites", "Aminoacids"])
         expect(json.dig("masdiag_check_sum")).to eq("ok")
-        expect(json.dig("code")).to eq("JV4XJ")
+        expect(json.dig("code")).to eq(rsc.Code)
+        expect(json.dig("kit_type")).to eq(product.name)
       end
     end
 
