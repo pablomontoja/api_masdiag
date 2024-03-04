@@ -9,8 +9,9 @@ RSpec.describe 'Nume::KitController#check_code', type: :request do
       let!(:project_vitd) { create(:project, Id: 2, eng_name: "Vitamin D metabolites") }
       let!(:project_aa) { create(:project, Id: 3, eng_name: "Aminoacids") }
       # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
-      let!(:product) { create(:product) }
-      let!(:package) { create(:package, product: product) }
+      let!(:product_plus) { create(:product, id: 15) }
+      let!(:product_standard) { create(:second_product, id: 16) }
+      let!(:package) { create(:package, product: product_plus) }
       let!(:inst) { create(:institution, name: "Nume") }
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) {create(:contractor, institution_id: inst.id)}
@@ -28,7 +29,19 @@ RSpec.describe 'Nume::KitController#check_code', type: :request do
         expect(json.dig("test_ids")).to eq([2, 3])
         expect(json.dig("test_names")).to eq(["Vitamin D metabolites", "Aminoacids"])
         expect(json.dig("masdiag_check_sum")).to eq("ok")
-        expect(json.dig("code")).to eq("JV4XJ")
+        expect(json.dig("code")).to eq(rsc.Code)
+        
+      end
+
+      it 'returns VITAMIN D PLUS kit_type' do
+        get "/nume/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
+        expect(json.dig("kit_type")).to eq("VITAMIN D PLUS")
+      end
+
+      it 'returns VITAMIN D STANDARD kit_type' do
+        package.update(product_id: 16)
+        get "/nume/kits/check_code/JV4XJ", params: assign_params, headers: http_auth_header
+        expect(json.dig("kit_type")).to eq("VITAMIN D STANDARD")
       end
     end
 
