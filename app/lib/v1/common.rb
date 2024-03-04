@@ -27,5 +27,6 @@ module V1::Common
                      {id: 18, name: "Acylcarnitines", material: "DBS", weight: 1, comment: ""},
                      {id: 19, name: "Borreliosis Confirmation", material: "DBS", weight: 1, comment: ""},
                      {id: 21, name: "Omega Acids", material: "DBS", weight: 1, comment: "A special DBS card is required"},
-                     {id: 22, name: "Vitamin D Basic", material: "DBS", weight: 1, comment: ""}].freeze
+                     {id: 22, name: "Vitamin D Basic", material: "DBS", weight: 1, comment: ""},
+                     {id: 23, name: "HbA1c", material: "DBS", weight: 1, comment: ""}].freeze
 end
