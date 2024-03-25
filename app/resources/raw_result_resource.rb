@@ -32,7 +32,7 @@ class RawResultResource < ApplicationService
   	case 
   	when @product&.id == 16
   		return [84]
-  	when @product&.id == 17
+  	when @product&.id == 15
   		return [84, 310]
   	else
   		return @analyte_ids

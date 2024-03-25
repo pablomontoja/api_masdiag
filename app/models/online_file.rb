@@ -16,4 +16,9 @@ class OnlineFile < ApplicationRecord
     # puts "#{filename} - Active Storage successfully synchronized"
   end
 
+  def force_prepare_active_storage
+    encrypted_result.attach(io: StringIO.new(encrypted_file_contents), filename: filename, content_type: content_type) unless encrypted_file_contents.nil?
+    unencrypted_result.attach(io: StringIO.new(file_contents), filename: filename, content_type: content_type) unless file_contents.nil?    
+  end
+
 end
