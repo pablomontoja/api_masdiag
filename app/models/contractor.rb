@@ -5,6 +5,7 @@ class Contractor < ApplicationRecord
   has_many :patients, class_name: "Patient", foreign_key: "ContractorId", dependent: :destroy
   has_many :samples, through: :patients, class_name: "Sample", foreign_key: "PatientId"
   belongs_to :institution
+  has_one :api_account
 
   def fullname
     "#{first_name} #{last_name}"

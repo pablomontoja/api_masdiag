@@ -11,7 +11,7 @@ class ResultResource < ApplicationService
     @hash
   end
 
-  # TODO - prepare_json - it needs refactoring
+  # TODO - prepare_json - it needs to be refactored
   def prepare_json
     results = []
 
