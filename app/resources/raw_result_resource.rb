@@ -34,7 +34,7 @@ class RawResultResource < ApplicationService
   		return [84]
   	when @product&.id == 15
   		return [84, 310]
-    # TO DO type of test needs to be properly implemented in DB (luxbiotech - Omega3Index problem)
+    # TODO type of test needs to be properly implemented in DB (luxbiotech - Omega3Index problem)
     when meas.sample.patient.contractor.api_account&.username == "luxbiotech" && meas.ProjectId == 21
       return [278] # only omega 3 index
   	else

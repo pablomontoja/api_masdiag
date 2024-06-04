@@ -3,6 +3,32 @@ require 'rails_helper'
 
 RSpec.describe 'Fv1::SampleController#create', type: :request do
   describe 'POST /fv1/sample' do
+    
+    context 'with code contains dash' do
+      let!(:product) { create(:product) }
+      let!(:project) { create(:project) }
+      let!(:package) { create(:package, product: product) }
+      let!(:inst) { create(:institution) }
+      let!(:rsc) { create(:rsc_code_with_dash, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
+      let!(:contractor) { create(:contractor, institution_id: inst.id) }
+      let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+      let(:smp_params) { build(:sample_foreigner) }
+
+      before :each do
+        rsc.reserved_tests.create!(project_id: 2)
+        rsc.update(IsRetailSale: true, InstitutionId: inst.id)
+      end
+
+      it 'returns code and tests' do
+        smp_params.tap{ |h| h[:sample][:code] = rsc.Code }
+        post '/fv1/sample', params: smp_params, headers: http_auth_header
+        expect(json.dig("sample", "code")).to eq(smp_params[:sample][:code])
+        expect(json.dig("sample", "tests")).to eq(rsc.projects_names)
+        expect(response).to have_http_status(201)
+      end
+
+    end
+
     context 'with valid parameters' do
       # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:product) { create(:product) }

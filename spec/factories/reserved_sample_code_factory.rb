@@ -21,4 +21,11 @@ FactoryBot.define do
     CreatedAt { Time.now }
     package_id { 1 }
   end
+
+  factory :rsc_code_with_dash, class: ReservedSampleCode do
+    Code { "E1A-71498" }
+    expiry_date { 1.year.since }
+    CreatedAt { Time.now }
+    package_id { 1 }
+  end  
 end
