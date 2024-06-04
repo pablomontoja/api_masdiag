@@ -90,7 +90,7 @@ RSpec.describe 'Nume::KitController#assign_tests', type: :request do
       end
 
       it 'returns error message when weight limit exceeded for DBS material' do
-        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2, 3, 14]}
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2, 3, 26]}
         post "/nume/kits/assign_tests", params: tmp_params, headers: http_auth_header
         expect(response).to have_http_status(422)
         expect(json.dig("message")).to eq("Weight limit exceeded for DBS material")
