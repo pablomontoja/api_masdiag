@@ -90,6 +90,18 @@ Rails.application.routes.draw do
     post "/notifications/sample_status_changed/:sample_id", to: 'notification#sample_status_changed'
   end
 
+  #########################################################
+  ### LALEN
+  #########################################################
+  namespace :lalen, defaults: {format: :json} do
+    resources :sample, only: %i{create} do
+      delete "/delete/:code",on: :collection, to: 'sample#destroy'
+    end
+
+    # get "/result/get/:code", to: 'result#show'
+    # post "/kits/assign_tests", to: 'kit#assign_tests'
+  end
+
 
   #########################################################
   ### PATIENT_PORTAL
