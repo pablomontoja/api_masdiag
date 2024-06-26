@@ -32,7 +32,7 @@ class V1::SampleController < ApplicationController
     @sample.validate
 
     if @sample.save!(context: :v1)
-      ::LalenApi::RegisterKitJob.perform_later(@sample) if [85, 89].include?(@sample.patient&.contractor&.institution_id)
+      ::LalenApi::RegisterKitJob.perform_later(@sample) if [85, 89, 93].include?(@sample.patient&.contractor&.institution_id)
       json_response(SampleResource.new(@sample), :created)
     else
       json_response({message: @sample.errors}, :unprocessable_entity)
