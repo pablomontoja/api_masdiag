@@ -5,7 +5,7 @@ module LalenCheck
     before_action :only_lalen_access
 
     def lalen_institution_ids
-    	[85, 89, 93]
+    	[85, 89, 93, 95] # LalenAU, LalenEU, AMC Israel, Luxbiotech
     end
   end
 
