@@ -27,7 +27,11 @@ class Masdiag::NotificationController < ApplicationController
   # TODO - sample_status_changed - it need to be tested
   def sample_status_changed
     begin
-      Notification::SampleChangedJob.perform_later(params[:sample_id])
+      sample = Sample.find(params[:sample_id])
+      allowed_contractor_ids = [637, 638, 659, 671] # epiexpert, nume, physikit, trime, luxbiotech=745
+      inst_id = sample.rsc.InstitutionId
+      notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
+      Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
       render json: { message: "notification was properly scheduled" }, status: 200
     rescue StandardError => ex
       pp ex
@@ -36,3 +40,5 @@ class Masdiag::NotificationController < ApplicationController
   end
 
 end
+
+

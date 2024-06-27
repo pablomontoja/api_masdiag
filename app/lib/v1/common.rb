@@ -11,6 +11,9 @@ module V1::Common
 
   CURRENT_VERSION = "1.07"
 
+  # TODO lista instytucji Lalena nie moze byc w kodzie aplikacji
+  LALEN_INSTITUTION_IDS = [85, 89, 93, 95]
+
   CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EenLLdV5t-dMk71yga-TJiMBlPd9c8jwnHHVD6M4tPWSUg?e=sKEq5c"
   FV1_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EfgjGaaBxYpFmFcWI7A50WIBLuzELM0NPUfCEvYilzsXaw?e=ezJUtw"
   NUME_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ESuHUfA4IxlNnWdO7NDeyVABRgMAGFLDSY2hite7jJeKGQ?e=GItJh0"
