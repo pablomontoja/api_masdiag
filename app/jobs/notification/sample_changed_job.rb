@@ -12,6 +12,11 @@ class Notification::SampleChangedJob < ApplicationJob
 
     res = Notification::ResultService.call(@sample)
 
+    Thread.new do
+      res = Notification::LalenResultService.call(@sample)
+      puts res.error&.join(", ") unless res.success?
+    end
+
     if res.success?
       @samples_done[@sample] = res.payload.to_json
       build_notification_sending_events()

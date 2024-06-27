@@ -75,7 +75,7 @@ class Lalen::SampleController < ApplicationController
     end
 
     # lalen_institution_ids is included from LalenCheck
-    @current_rsc = ReservedSampleCode.where(InstitutionId: lalen_institution_ids).find_by(Code: code)
+    @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: code)
 
     if @current_rsc.nil?
       json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
