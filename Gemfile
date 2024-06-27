@@ -61,5 +61,6 @@ end
 
 
 gem 'faraday'
+gem 'faraday-net_http_persistent', '~> 2.0'
 gem "lockbox"
 gem 'composite_primary_keys', '=14.0.6'
