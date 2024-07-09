@@ -11,6 +11,12 @@ class Notification::SendResultJob < ApplicationJob
 
     meas = Measurement.find(measurement_id)
     res = Notification::ResultService.call(meas.sample)
+
+    Thread.new do
+      res_lalen = Notification::LalenResultService.call(meas.sample)
+      puts res_lalen.error&.join(", ") unless res_lalen.success?
+    end
+
     if res.success?
       @meases_done[meas] = res.payload.to_json
       build_res_sending_events() 
@@ -35,6 +41,7 @@ private
       event.sent_date = Time.current
       event.sent_through = 6   # MasdiagAPI
       event.recipient = "MasdiagAPI"
+      event.result_text_representation = json
       event.address = "MasdiagAPI /masdiag/notifications/trigger"
 
                                           # public enum MethodsOfSendingEnum
