@@ -22,7 +22,7 @@ class Notification::SendResultJob < ApplicationJob
       build_res_sending_events() 
     else
       puts res.error&.join(", ")
-      raise Notification::JobError.new("Notification::SendResultJob has problems with sending result for meas #{meas&.Id}")
+      raise Notification::JobError.new("Notification::SendResultJob has problems with sending result for meas #{meas&.Id}, sample code: #{meas.sample.Code}")
     end   
   end
 
