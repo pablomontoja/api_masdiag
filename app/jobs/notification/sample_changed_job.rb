@@ -40,6 +40,7 @@ private
       event.sent_date = Time.current
       event.sent_through = 6   # MasdiagAPI
       event.recipient = "MasdiagAPI"
+      event.result_text_representation = json
       event.address = "MasdiagAPI /masdiag/notifications/sample_status_changed"
 
                                           # public enum MethodsOfSendingEnum
@@ -52,7 +53,7 @@ private
                                           #     GenericAssaysAPI,
                                           #     MasdiagAPI
                                           # }
-
+                                          
       # mail content
       tmpfile = Tempfile.new([SecureRandom.uuid,'.json'], Rails.root.join('tmp') )
       tmpfile.binmode
