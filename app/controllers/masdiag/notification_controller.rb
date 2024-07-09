@@ -6,7 +6,7 @@ class Masdiag::NotificationController < ApplicationController
   def trigger
     begin
       errors = []
-      ids = ApiAccount.pluck(:contractor_id)
+      ids = ApiAccount.pluck(:contractor_id) + Contractor.where(institution_id: V1::Common::LALEN_INSTITUTION_IDS).pluck(:Id)
       meas_ids = Measurement.includes(sample: :patient).where(Status: 5).where(Patients: {ContractorId: ids}).pluck(:Id)
       sent_meas_ids = ResultSendingEvent.where(sent_through: 6, measurement_id: meas_ids).pluck(:measurement_id)
       meas_ids = meas_ids - sent_meas_ids
@@ -29,7 +29,15 @@ class Masdiag::NotificationController < ApplicationController
     begin
       sample = Sample.find(params[:sample_id])
       allowed_contractor_ids = [637, 638, 659, 671] # epiexpert, nume, physikit, trime, luxbiotech=745
-      inst_id = sample.rsc.InstitutionId
+      inst_id = sample.rsc&.InstitutionId
+      if inst_id.nil?
+        puts "-------------------------------------------------------------"
+        puts "Masdiag::NotificationController#sample_status_changed aborted"
+        puts "sample #{sample.Code} doesn't have ReservedSampleCode."
+        puts "-------------------------------------------------------------"
+        return
+      end
+
       notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
       Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
       render json: { message: "notification was properly scheduled" }, status: 200
