@@ -2,6 +2,7 @@ class Notification::LalenResultService < ApplicationService
 
   def initialize(sample)
     @sample = sample
+    @meases_done = Hash.new
   end
 
   def call    
@@ -23,6 +24,10 @@ class Notification::LalenResultService < ApplicationService
       end
       
       response = conn.post(url, result.to_json)
+
+      @meases_done[@sample] = result.to_json
+      build_res_sending_events() 
+
       handle_result(result)
     rescue Faraday::Error => e
       return handle_error([e.to_s]) if e.response.nil?
@@ -30,4 +35,53 @@ class Notification::LalenResultService < ApplicationService
       handle_error(err)
     end
   end
+
+private
+
+  def build_res_sending_events
+    return nil if @meases_done.empty?
+
+    @meases_done.each do |sample, json|
+
+      f = Fileable.new
+      event = f.build_result_sending_event
+
+      event.measurement = nil
+      event.sample = sample
+      event.sent_date = Time.current
+      event.sent_through = 6   # MasdiagAPI
+      event.recipient = "MasdiagAPI"
+      event.result_text_representation = json
+      event.address = "MasdiagAPI --> LALEN MasdiagComAPI"
+
+                                          # public enum MethodsOfSendingEnum
+                                          # {
+                                          #     Undefined = 0,
+                                          #     EmailNotification,
+                                          #     EmailPdf,
+                                          #     CerascreenAPI,
+                                          #     EmailCsv,
+                                          #     GenericAssaysAPI,
+                                          #     MasdiagAPI
+                                          # }
+
+      # mail content
+      tmpfile = Tempfile.new([SecureRandom.uuid,'.json'], Rails.root.join('tmp') )
+      tmpfile.binmode
+      tmpfile.write(json)
+      tmpfile.rewind
+
+      dbfile = f.db_files.build
+      dbfile.file_content = tmpfile.read
+      dbfile.file_type = "application/json"
+      dbfile.file_length = dbfile.file_content.size
+      tmpfile.close
+
+      f.save
+      
+    end
+  end
+
+
+
 end
