@@ -8,9 +8,11 @@ class Notification::ResultService < ApplicationService
     result = ResultResource.call(@sample, @sample.rsc)
     # institution_id = @sample.rsc.InstitutionId
     institution_id = @sample.patient.contractor.institution_id
-    api_account = ApiAccount.all.select { |a| a.institution.id == institution_id  }.first
-    url = api_account.result_post_endpoint
 
+    api_account = ApiAccount.all.select { |a| a.institution.id == institution_id  }.first
+    return handle_error(["#{@sample&.Code} - there are no api_account for this sample"]) if api_account.blank?
+
+    url = api_account.result_post_endpoint
     return handle_error(["#{@sample&.Code} - blank result post endpoint url"]) if url.blank?
 
     begin
