@@ -38,5 +38,7 @@ module ApiMasdiag
 
     config.autoload_paths << Rails.root.join('lib')
     config.eager_load_paths << Rails.root.join('lib')
+
+    config.solid_queue.use_skip_locked = false
   end
 end

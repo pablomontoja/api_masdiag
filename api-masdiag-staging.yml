@@ -44,7 +44,7 @@ services:
     image: 127.0.0.1:5000/api-masdiag-staging:latest
     environment:
       RAILS_LOG_TO_STDOUT: 'true'
-      RAILS_ENV: production
+      RAILS_ENV: staging
     command: sh -c "bundle exec rake solid_queue:start"     
     # networks:
     #   - appnet
