@@ -12,10 +12,7 @@ class Notification::SendResultJob < ApplicationJob
     meas = Measurement.find(measurement_id)
     res = Notification::ResultService.call(meas.sample)
 
-    Thread.new do
-      res_lalen = Notification::LalenResultService.call(meas.sample)
-      puts res_lalen.error&.join(", ") unless res_lalen.success?
-    end
+    Notification::LalenResultSender.perform_later(meas.sample)
 
     if res.success?
       @meases_done[meas] = res.payload.to_json
