@@ -1,11 +1,9 @@
-class Notification::LalenResultService < ApplicationService
+class Notification::LalenResultSender < ApplicationJob
 
-  def initialize(sample)
+  def perform(sample)
     @sample = sample
     @meases_done = Hash.new
-  end
 
-  def call    
     institution_id = @sample.rsc.InstitutionId
     return unless V1::Common::LALEN_INSTITUTION_IDS.include?(institution_id)
 
