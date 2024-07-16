@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   app:
-    image: 127.0.0.1:5000/api-masdiag-production
+    image: 127.0.0.1:5000/api-masdiag-production:latest
     hostname: api-masdiag-production
     build:
       context: .
