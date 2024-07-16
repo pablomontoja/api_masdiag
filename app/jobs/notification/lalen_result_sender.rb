@@ -26,7 +26,6 @@ class Notification::LalenResultSender < ApplicationJob
       @meases_done[@sample] = result.to_json
       build_res_sending_events() 
 
-      handle_result(result)
     rescue Faraday::Error => e
       return handle_error([e.to_s]) if e.response.nil?
       err = ["Notification::ResultService - sample: #{@sample.Code} - ERROR - status: #{e.response[:status]}", "body: #{e.response[:body]}"]
@@ -35,6 +34,10 @@ class Notification::LalenResultSender < ApplicationJob
   end
 
 private
+
+  def handle_error(err)
+    pp err
+  end
 
   def build_res_sending_events
     return nil if @meases_done.empty?
