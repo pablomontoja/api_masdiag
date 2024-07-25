@@ -9,10 +9,22 @@ class Notification::SampleChangedJob < ApplicationJob
 	def perform(sample_id)
 		@sample = Sample.find(sample_id)
     @samples_done = Hash.new
+    inst_id = @sample&.rsc&.InstitutionId
 
-    res = Notification::ResultService.call(@sample)
+    if inst_id.nil?
+      puts "-------------------------------------------------------------"
+      puts "Masdiag::NotificationController#sample_status_changed aborted"
+      puts "sample #{sample.Code} doesn't have ReservedSampleCode."
+      puts "-------------------------------------------------------------"
+      return
+    end
 
-    Notification::LalenResultSender.perform_later(@sample)
+    if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
+      Notification::LalenResultSender.perform_later(@sample)
+      return
+    end
+
+    res = Notification::ResultService.call(@sample)    
 
     if res.success?
       @samples_done[@sample] = res.payload.to_json

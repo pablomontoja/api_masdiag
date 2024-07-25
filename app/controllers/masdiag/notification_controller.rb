@@ -38,10 +38,13 @@ class Masdiag::NotificationController < ApplicationController
         return
       end
 
-      Notification::LalenResultSender.perform_later(sample) if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
-
-      notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
-      Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
+      if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
+        Notification::LalenResultSender.perform_later(sample)
+      else
+        notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
+        Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
+      end
+      
       render json: { message: "notification was properly scheduled" }, status: 200
     rescue StandardError => ex
       pp ex
