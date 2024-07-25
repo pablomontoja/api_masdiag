@@ -6,7 +6,7 @@ class Masdiag::NotificationController < ApplicationController
   def trigger
     begin
       errors = []
-      ids = ApiAccount.pluck(:contractor_id) #+ Contractor.where(institution_id: V1::Common::LALEN_INSTITUTION_IDS).pluck(:Id)
+      ids = ApiAccount.pluck(:contractor_id) + Contractor.where(institution_id: V1::Common::LALEN_INSTITUTION_IDS).pluck(:Id)
       meas_ids = Measurement.includes(sample: :patient).where(Status: 5).where(Patients: {ContractorId: ids}).pluck(:Id)
       sent_meas_ids = ResultSendingEvent.where(sent_through: 6, measurement_id: meas_ids).pluck(:measurement_id)
       meas_ids = meas_ids - sent_meas_ids
@@ -37,6 +37,8 @@ class Masdiag::NotificationController < ApplicationController
         puts "-------------------------------------------------------------"
         return
       end
+
+      Notification::LalenResultSender.perform_later(sample) if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
 
       notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
       Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
