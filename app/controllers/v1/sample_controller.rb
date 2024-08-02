@@ -48,7 +48,7 @@ class V1::SampleController < ApplicationController
     end
 
     if sample.nil?
-      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
+      json_response({ message: "This sample does not exist or cannot be deleted." }, :unprocessable_entity)
       return
     end
 

@@ -29,7 +29,7 @@ RSpec.describe 'Fv1::SampleController#delete', type: :request do
       it 'returns error message when sample is accepted in lab' do
         valid_sample.update(AcceptanceDate: Date.today)
         delete '/fv1/sample/delete/JV4XJ', headers: http_auth_header
-        expect(json.dig("message")).to eq("This sample cannot be deleted.")
+        expect(json.dig("message")).to eq("This sample does not exist or cannot be deleted.")
         expect(response).to have_http_status(422)
       end
     end
