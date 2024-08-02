@@ -9,3 +9,18 @@ FactoryBot.define do
     contractor
   end
 end
+
+
+FactoryBot.define do
+  factory :virtual_patient, class: Patient do
+    email { Faker::Internet.email }
+    email_confirmation { email }
+    FirstName { "Wirtualny" }
+    LastName { "Pacjent" }
+    Pesel { nil }
+    Gender { 0 }
+    BirthDate { Date.parse "2000-01-02 00:00:00" }
+    IsVirtual { true }
+    contractor
+  end
+end

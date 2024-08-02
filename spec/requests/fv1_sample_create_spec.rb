@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe 'Fv1::SampleController#create', type: :request do
   describe 'POST /fv1/sample' do
-    
+  
     context 'with code contains dash' do
       let!(:product) { create(:product) }
       let!(:project) { create(:project) }

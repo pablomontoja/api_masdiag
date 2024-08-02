@@ -11,7 +11,7 @@ class Fv1::KitController < V1::KitController
 
     @sample = Sample.find_by(Code: assignment_params[:code])
 
-    if @sample.present?
+    if @sample.present? && @sample&.IsWrongRegistration == false
       json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_entity)
       return
     end
