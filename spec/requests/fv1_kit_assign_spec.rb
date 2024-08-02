@@ -54,6 +54,64 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
       end
     end
 
+
+    context 'with valid params but not registered sample' do
+      let!(:not_registered_sample) { FactoryBot.create(:not_registered_sample_in_lab) }
+      let!(:project_vitd) { create(:project, Id: 2) }
+      let!(:project_aa) { create(:project, Id: 3) }
+      # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
+      let!(:product) { create(:product) }
+      let!(:package) { create(:package, product: product) }
+      let!(:inst) { create(:institution, name: "Nume") }
+      let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
+      let!(:contractor) {create(:contractor, institution_id: inst.id)}
+      let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+      let(:assign_params) { build(:test_assignment)}
+
+      it 'returns status 204' do
+        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(response).to have_http_status(204)
+      end
+
+      it 'returns status 422 if IsWrongRegistration false' do
+        not_registered_sample.update!(IsWrongRegistration: false)
+        post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns status 204 for string array of test_ids' do
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=["2", "3"]}
+        post "/fv1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+        expect(response).to have_http_status(204)
+      end      
+
+      it 'changes number of institution_tests by 0' do
+        expect {
+          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { InstitutionTest.count }.by(0)
+        expect(response).to have_http_status(204)
+      end      
+
+      it 'changes number of reserved_tests by 2' do
+        expect {
+          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { ReservedTest.where(reserved_sample_code_id: rsc.Id).count }.by(2)        
+        expect(response).to have_http_status(204)
+      end
+
+      it 'override assignment if assigned' do
+        rsc.reserved_tests.create!(project_id: 2)
+        rsc.reserved_tests.create!(project_id: 3)
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2]}
+        post "/fv1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+
+        expect(rsc.reserved_tests.count).to be(1)
+        expect(rsc.project_ids).to include(2)
+        expect(rsc.project_ids).not_to include(3)
+      end
+    end
+
+
     context 'with valid params but RSC with nil package_id' do
       # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:project_vitd) { create(:project, Id: 2) }
