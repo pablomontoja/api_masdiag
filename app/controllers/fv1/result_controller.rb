@@ -20,7 +20,7 @@ class Fv1::ResultController < ApplicationController
     @sample = Sample.find_by(Code: sample_code)
 
     if @sample.nil?
-      json_response({ message: "Unknown sample code." }, :unprocessable_entity)
+      json_response({ message: "Unknown sample code or sample does not exist." }, :unprocessable_entity)
     end
   end
 

@@ -86,7 +86,7 @@ class Lalen::SampleController < ApplicationController
     @sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
 
     if @sample.nil?
-      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
+      json_response({ message: "This sample does not exist or cannot be deleted." }, :unprocessable_entity)
     end
   end
 
