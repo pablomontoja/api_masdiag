@@ -14,6 +14,24 @@ end
 
 
 FactoryBot.define do
+  factory :not_registered_sample_in_lab, class: Sample do
+    Code { "JV4XJ" }
+    sample_collection_date { Date.today }
+    RegistrationDate { Date.today }
+    AcceptanceDate { 2.days.ago }
+    IsWrongRegistration { true }
+    WasWrongRegistration { false }
+    SampleState { 2 }
+    SampleStatus { 2 }
+    WrongRegistrationStatus { 1 }
+    MaterialType { 0 }
+    association :patient, factory: :virtual_patient
+  end
+end
+
+
+
+FactoryBot.define do
   factory :sample_with_pesel, class: Hash do
     sample do
       {

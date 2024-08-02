@@ -93,6 +93,102 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
       end
     end
 
+    context 'with valid params but not registered sample' do
+      # let!(:valid_sample) { FactoryBot.create(:sample) }
+      let!(:not_registered_sample) { FactoryBot.create(:not_registered_sample_in_lab) }
+      let!(:project_vitd) { create(:project, Id: 2) }
+      let!(:project_aa) { create(:project, Id: 3) }
+      # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
+      let!(:product) { create(:product) }
+      let!(:package) { create(:package, product: product) }
+      let!(:inst) { create(:institution) }
+      let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
+      let!(:contractor) {create(:contractor, institution_id: inst.id)}
+      let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+      let(:assign_params) { build(:test_assignment)}
+
+      before do
+        TestTransaction.create(project_id: project_vitd.Id, amount_change: 2, contractor_id: contractor.Id)
+        TestTransaction.create(project_id: project_aa.Id, amount_change: 2, contractor_id: contractor.Id)
+      end
+
+      it 'returns status 204' do
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(response).to have_http_status(204)
+      end
+
+      it 'returns status 422 if IsWrongRegistration false' do
+        not_registered_sample.update!(IsWrongRegistration: false)
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        expect(response).to have_http_status(422)
+      end
+
+      it 'returns status 204 for string array of test_ids' do
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=["2", "3"]}
+        post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of used institution_tests by 2' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { InstitutionTest.where(used: true).count }.by(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of used institution_tests by 2 even if action is used multiple times' do
+        prev = InstitutionTest.where(used: true).count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        curr = InstitutionTest.where(used: true).count
+        expect(curr - prev).to be(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of institution_tests by 0' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { InstitutionTest.count }.by(0)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of transactions by 2' do
+        previous = TestTransaction.count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        current = TestTransaction.count
+        expect(current - previous).to be(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of transactions by 6' do
+        previous = TestTransaction.count
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        current = TestTransaction.count
+        expect(current - previous).to be(6)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'changes number of reserved_tests by 2' do
+        expect {
+          post "/v1/kits/assign_tests", params: assign_params, headers: http_auth_header
+        }.to change { ReservedTest.where(reserved_sample_code_id: rsc.Id).count }.by(2)
+        expect(response).to have_http_status(204)
+      end
+
+      it 'override assignment if assigned' do
+        rsc.reserved_tests.create!(project_id: 2)
+        rsc.reserved_tests.create!(project_id: 3)
+        tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2]}
+        post "/fv1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+
+        expect(rsc.reserved_tests.count).to be(1)
+        expect(rsc.project_ids).to include(2)
+        expect(rsc.project_ids).not_to include(3)
+      end
+    end
+
     context 'with invalid params' do
       # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:project_vitd) { create(:project, Id: 2) }
