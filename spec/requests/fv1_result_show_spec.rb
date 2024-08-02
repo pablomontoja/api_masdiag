@@ -83,7 +83,7 @@ RSpec.describe 'Fv1::ResultController#show', type: :request do
       it 'returns error message when sample is not found' do
         valid_sample.destroy
         get "/fv1/result/get/#{valid_sample.Code}", headers: http_auth_header
-        expect(json.dig("message")).to eq("Unknown sample code.")
+        expect(json.dig("message")).to eq("Unknown sample code or sample does not exist.")
         expect(response).to have_http_status(422)
       end
     end

@@ -5,7 +5,7 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
   describe 'POST /v1/kits/assign_tests' do
 
     context 'with valid params' do
-      let!(:valid_sample) { FactoryBot.create(:sample) }
+      # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:project_vitd) { create(:project, Id: 2) }
       let!(:project_aa) { create(:project, Id: 3) }
       # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
@@ -94,7 +94,7 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
     end
 
     context 'with invalid params' do
-      let!(:valid_sample) { FactoryBot.create(:sample) }
+      # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:project_vitd) { create(:project, Id: 2) }
       let!(:project_aa) { create(:project, Id: 3) }
       # let!(:measurement) { create(:measurement, sample: valid_sample, project: project) }
@@ -170,6 +170,7 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
       end
 
       it 'returns error message when sample in lab is found' do
+        valid_sample = FactoryBot.create(:sample)
         tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2, 3]}
         valid_sample.update(AcceptanceDate: 2.days.ago)
         post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header

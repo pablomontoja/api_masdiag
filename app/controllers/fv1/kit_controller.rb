@@ -9,9 +9,9 @@ class Fv1::KitController < V1::KitController
       return
     end
 
-    @sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: assignment_params[:code])
+    @sample = Sample.find_by(Code: assignment_params[:code])
 
-    if !@sample.nil?
+    if @sample.present?
       json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_entity)
       return
     end

@@ -1,6 +1,5 @@
 class Fv1::SampleController < ApplicationController
   before_action :set_rsc
-  before_action :set_sample, only: :destroy
 
   def create
     if @current_rsc&.expiry_date < Time.zone.now
@@ -34,6 +33,13 @@ class Fv1::SampleController < ApplicationController
   end
 
   def destroy
+    @sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
+
+    if @sample.nil?
+      json_response({ message: "This sample does not exist or cannot be deleted." }, :unprocessable_entity)
+      return
+    end
+
     if @sample.destroy
       head :no_content
     end
@@ -78,14 +84,6 @@ class Fv1::SampleController < ApplicationController
 
     if @current_rsc.nil?
       json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
-    end
-  end
-
-  def set_sample
-    @sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
-
-    if @sample.nil?
-      json_response({ message: "This sample cannot be deleted." }, :unprocessable_entity)
     end
   end
 
