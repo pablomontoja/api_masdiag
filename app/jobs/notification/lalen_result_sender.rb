@@ -4,7 +4,7 @@ class Notification::LalenResultSender < ApplicationJob
     @sample = sample
     @meases_done = Hash.new
 
-    institution_id = @sample.rsc.InstitutionId
+    institution_id = @sample.rsc&.InstitutionId
     return unless V1::Common::LALEN_INSTITUTION_IDS.include?(institution_id)
 
     result = ResultResource.call(@sample, @sample.rsc)

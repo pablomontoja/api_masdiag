@@ -28,7 +28,7 @@ module V1::Common
                      {id: 17, name: "SAICAr and S-Ado", material: "urine", weight: 1, comment: ""},
                      {id: 18, name: "Acylcarnitines", material: "DBS", weight: 1, comment: ""},                    
                      {id: 21, name: "Omega Acids", material: "DBS", weight: 1, comment: "A special DBS card is required"},
-                     {id: 22, name: "Vitamin D Basic", material: "DBS", weight: 1, comment: ""},
+                     {id: 22, name: "Vitamin D", material: "DBS", weight: 1, comment: ""},
                      {id: 23, name: "HbA1c", material: "DBS", weight: 1, comment: ""},
                      {id: 26, name: "GSSG/GSH - Glutathione Index", material: "DBS", weight: 2, comment: "A special DBS card is required"}                     
                    ].freeze
