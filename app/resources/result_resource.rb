@@ -27,12 +27,12 @@ class ResultResource < ApplicationService
 
         if meas&.online_file&.file_contents.present?
           meas.online_file.prepare_active_storage
-          results << { sample_code: meas.sample.Code, test: meas.project.eng_name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: url_for(meas.online_file.unencrypted_result), raw_result: RawResultResource.call(meas) }
+          results << { sample_code: meas.sample.Code, test: meas.project.eng_name, authorized_at: meas.AuthorizedAt, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: url_for(meas.online_file.unencrypted_result), raw_result: RawResultResource.call(meas) }
           next
         end
 
         # TODO it needs to be tested, in particular presence of raw_result RawResultResource.call(meas)
-        h = { sample_code: meas.sample.Code, test: meas.project.eng_name, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: nil, raw_result: RawResultResource.call(meas) }
+        h = { sample_code: meas.sample.Code, test: meas.project.eng_name, authorized_at: meas.AuthorizedAt, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: nil, raw_result: RawResultResource.call(meas) }
         h[:rejection_reason] = rejection_reason(meas.sample) if meas.sample.SampleStatus == 4
         h[:raw_result] = [] if meas.Status != 5
         results << h
