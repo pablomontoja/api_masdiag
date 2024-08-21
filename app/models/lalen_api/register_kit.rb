@@ -20,7 +20,8 @@ module LalenApi
 		validates :first_name, presence: true
 		validates :last_name, presence: true
 		validates :birth_date, presence: true
-		validates :sample_collection_date, presence: true
+		# TO DO at some point in time FAKE PATIENT conditions should be removed
+		validates :sample_collection_date, presence: true, unless: Proc.new { |rk| rk.first_name == "FAKE" && rk.last_name == "PATIENT" }
 		validates :gender, presence: true
 
 	private
