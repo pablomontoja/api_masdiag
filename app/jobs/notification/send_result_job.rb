@@ -4,7 +4,6 @@ class Notification::SendResultJob < ApplicationJob
     puts errors
     # IndMailer.after_error(errors).deliver_later
   end
-  queue_as :default
 
   def perform(measurement_id)
   	@meases_done = Hash.new

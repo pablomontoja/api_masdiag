@@ -15,8 +15,8 @@ class V1::WrongSampleUpdater < ApplicationService
       Notification::SampleChangedJob.perform_later(@sample.Id)
       # SendMailNotificationJob.perform_later("send_cancellation_notifications", @sample)
     else
-      # SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
-      SendMailNotificationJob.perform_later("send_notification_after_delayed_reg", @sample)
+      SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+      # SendMailNotificationJob.perform_later("send_notification_after_delayed_reg", @sample)
     end
 
     @sample

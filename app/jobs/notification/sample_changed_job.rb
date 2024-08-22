@@ -4,7 +4,6 @@ class Notification::SampleChangedJob < ApplicationJob
     puts errors
     # IndMailer.after_error(errors).deliver_later
   end
-  queue_as :default
 
 	def perform(sample_id)
 		@sample = Sample.find(sample_id)

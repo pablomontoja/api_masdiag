@@ -38,5 +38,7 @@ module ApiMasdiag
 
     config.autoload_paths << Rails.root.join('lib')
     config.eager_load_paths << Rails.root.join('lib')
+
+    config.last_use_of_send_all_mail = Time.now
   end
 end
