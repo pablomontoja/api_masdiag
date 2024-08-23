@@ -2,8 +2,6 @@ module MasdiagMailer
   class EmailsController < ApplicationController
     include MasdiagCheck
 
-    protect_from_forgery except: [:send_cancellation_notifications, :send_error_notifications, :send_notification_after_delayed_reg, :after_sample_registration, :aqipharm_registration, :shipping_after_new_order, :after_new_order_save, :masdiag_website_contact_form, :send_acceptance_notifications]
-
     # GET /mailer/send_all_mails
     # wykorzystywany przez LabSample do uruchomienia wysyłki maili do zlecających i pacjentów
     def send_all
@@ -23,7 +21,7 @@ module MasdiagMailer
     # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla anulowanych próbek
     def send_cancellation_notifications
       begin
-        SendCancellationNotificationsJob.delay.perform_later(params["sample_ids"])
+        SendCancellationNotificationsJob.perform_later(params["sample_ids"])
         render plain: "OK", status: 200
       rescue Exception => ex
         render json: { "error": ex.message }, status: 500
