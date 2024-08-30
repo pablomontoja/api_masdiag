@@ -13,10 +13,22 @@ RSpec.describe MasdiagMailer::SendNotificationsJob, type: :job do
     let!(:online_file1) { create(:online_file, measurement: measurement1, is_notification_send: false) }
     let!(:online_file2) { create(:online_file, measurement: measurement2, is_notification_send: false) }
 
+    before(:each) do
+      ActionMailer::Base.delivery_method = :test
+      ActionMailer::Base.perform_deliveries = true
+      ActionMailer::Base.deliveries = []
+    end
+
+    after(:each) do
+      ActionMailer::Base.deliveries.clear
+    end
+
     it 'sends notifications for enabled contractors' do
     	expect{ MasdiagMailer::SendNotificationsJob.perform_later }.to have_enqueued_job(MasdiagMailer::SendNotificationsJob)
-      expect(MasdiagMailer::ResultNotificationMailer).to receive(:send_mail).with(contractor1.Id, [online_file1.id]).and_call_original
-      # expect { MasdiagMailer::SendNotificationsJob.perform_now }.to change { ActionMailer::Base.deliveries.count }.by(1)
+      perform_enqueued_jobs
+      # expect { MasdiagMailer::SendNotificationsJob.perform_now }.to have_been_enqueued(MasdiagMailer::ResultNotificationMailer)#.with(contractor1.Id, [online_file1.id])
+      # expect(MasdiagMailer::ResultNotificationMailer).to receive(:send_mail).with(contractor1.Id, [online_file1.id]).and_call_original
+      expect { MasdiagMailer::SendNotificationsJob.perform_now }.to change { ActionMailer::Base.deliveries.count }.by(1)
     end
 
     it 'does not send notifications for disabled contractors' do

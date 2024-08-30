@@ -17,7 +17,7 @@
     <% @files.each do |file| %>
     	<tr> 
     	<td><%= file.measurement.sample.Code %></td>
-    	<td><%= link_to image_tag(attachments["pdf.jpg"].url, size: "30x30"), online_file_url(id: file.measurement_id) %></td>
+    	<td><%= link_to image_tag(attachments["pdf.jpg"].url, size: "30x30"), b2b_online_file_url(file.measurement_id) %></td>
       <td><%= file.measurement.project.Name %></td>
     	</tr>
     <% end %>

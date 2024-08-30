@@ -1,5 +1,7 @@
 module MasdiagMailer
   class ResultNotificationForPatientMailer < ApplicationMailer
+    include ActionView::Helpers::AssetTagHelper
+    include ActionView::Helpers::UrlHelper  
     default :template_path => "mailers/#{self.class.name.underscore}"
     after_action :set_sendmail
 

@@ -1,8 +1,16 @@
 module MasdiagMailer
   class ResultNotificationMailer < ApplicationMailer
-    after_action :set_sendmail 
+    include ActionView::Helpers::AssetTagHelper
+    include ActionView::Helpers::UrlHelper
+    include ActionController::UrlFor
+    include Rails.application.routes.url_helpers
+
+    default :template_path => "mailers/#{self.name.underscore}"
+    after_action :set_sendmail
+    helper_method :b2b_online_file_url
 
     def send_mail(contractor_id, file_ids)
+      byebug
       @contractor = Contractor.find(contractor_id)
       return nil if @contractor.are_notifications_enabled == false
       return nil if @contractor&.api_account
@@ -11,7 +19,7 @@ module MasdiagMailer
       attachments["pdf.jpg"] = File.read(Rails.root.join("app/assets/images/pdf.jpg"))
 
       attachments['ulotka.pdf'] = @contractor.institution.email_attachment_pdf if @contractor.institution.email_attachment_pdf != nil
-
+      # byebug
       if @contractor.institution.contractor_email_template_body.blank?
         @mail = mail(to: @contractor.email, subject: 'Laboratorium Masdiag - powiadomienie')
       else

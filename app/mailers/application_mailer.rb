@@ -1,13 +1,26 @@
-class ApplicationMailer < ActionMailer::Base
-  include ActionView::Helpers::AssetTagHelper
-  include ActionView::Helpers::UrlHelper
-  
-  layout "mailer"
+class ApplicationMailer < ActionMailer::Base  
+  # layout "mailer"
   default from:     "powiadomienia@masdiag.pl",
           reply_to: "pomoc@masdiag.pl"
+
+  helper_method :email_image_tag
+  helper_method :b2b_online_file_url
+  
+  before_action :wait_three_seconds
 
   def email_image_tag(image, **options)
     attachments[image] = File.read(Rails.root.join("app/assets/images/#{image}"))
     image_tag attachments[image].url, **options
   end
+
+  def b2b_online_file_url(meas_id)
+    "https://partnerzy.masdiag.pl/online_files/#{meas_id}"
+  end
+
+private
+
+  def wait_three_seconds
+    sleep(3)
+  end
+
 end
