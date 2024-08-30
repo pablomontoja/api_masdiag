@@ -1,7 +1,6 @@
 module MasdiagEvent
   class SendNotificationAfterDelayedRegJob < ApplicationJob
     require 'json'
-    queue_as :default
 
     def perform(sample_id)
     	meases = Measurement.joins(:sample, :project).where(SampleId: sample_id)
