@@ -59,10 +59,14 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
 
-  config.active_job.queue_adapter = :inline
+  # config.active_job.queue_adapter = :inline
+  config.active_job.queue_adapter = :test
+
   config.action_controller.asset_host = "http://127.0.0.1:3002"
-  # config.action_mailer.default_url_options = { host: '127.0.0.1' }
+  config.action_mailer.default_url_options = { host: '127.0.0.1' }
   config.action_mailer.delivery_method = :test
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.deliver_later_queue_name = 'mailers'
 
 end

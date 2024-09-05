@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base  
-  # layout "mailer"
+  layout "mailer"
   default from:     "powiadomienia@masdiag.pl",
           reply_to: "pomoc@masdiag.pl"
 
@@ -20,7 +20,7 @@ class ApplicationMailer < ActionMailer::Base
 private
 
   def wait_three_seconds
-    sleep(3)
+    sleep(3) if Rails.env.production?
   end
 
 end
