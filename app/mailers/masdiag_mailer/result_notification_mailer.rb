@@ -10,7 +10,7 @@ module MasdiagMailer
     helper_method :b2b_online_file_url
 
     def send_mail(contractor_id, file_ids)
-      byebug
+      # byebug
       @contractor = Contractor.find(contractor_id)
       return nil if @contractor.are_notifications_enabled == false
       return nil if @contractor&.api_account
