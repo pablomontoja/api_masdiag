@@ -1,16 +1,15 @@
-module MasdiagMailer
-  class ResultNotificationMailer < ApplicationMailer
-    include ActionView::Helpers::AssetTagHelper
-    include ActionView::Helpers::UrlHelper
-    include ActionController::UrlFor
-    include Rails.application.routes.url_helpers
+# module MasdiagMailer
+  class MasdiagMailer::ResultNotificationMailer < ApplicationMailer
+    # include ActionView::Helpers::AssetTagHelper
+    # include ActionView::Helpers::UrlHelper
+    # include ActionController::UrlFor
+    # include Rails.application.routes.url_helpers
 
     default :template_path => "mailers/#{self.name.underscore}"
     after_action :set_sendmail
     helper_method :b2b_online_file_url
 
     def send_mail(contractor_id, file_ids)
-      # byebug
       @contractor = Contractor.find(contractor_id)
       return nil if @contractor.are_notifications_enabled == false
       return nil if @contractor&.api_account
@@ -68,7 +67,7 @@ module MasdiagMailer
   	end
 
   end
-end
+# end
 
   # ############## LIQUID #####################
   #   LIQUID_METHODS = %i{order_signature order_institution_name order_orderer_signature}
