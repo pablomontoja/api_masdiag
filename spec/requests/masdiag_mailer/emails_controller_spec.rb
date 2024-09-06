@@ -23,9 +23,9 @@
 #         expect(response.body).to include_json(error: "too many requests, the use of this endpoint is limited to 1 request per 30 seconds")
 #       end
 
-#       it 'not enqueues SendNotificationsJob and SendNotificationForPatients' do
-#         expect(MasdiagMailer::SendNotificationsJob).not_to receive(:perform_later)
-#         expect(MasdiagMailer::SendNotificationForPatients).not_to receive(:perform_later)
+#       it 'not enqueues ContractorResultsNotifierJob and PatientResultsNotifierJob' do
+#         expect(MasdiagMailer::ContractorResultsNotifierJob).not_to receive(:perform_later)
+#         expect(MasdiagMailer::PatientResultsNotifierJob).not_to receive(:perform_later)
 
 #         get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header
 #       end
@@ -36,9 +36,9 @@
 #         Rails.configuration.last_use_of_send_all_mail = current_time - 31.seconds
 #       end
 
-#       it 'enqueues SendNotificationsJob and SendNotificationForPatients' do
-#         expect(MasdiagMailer::SendNotificationsJob).to receive(:perform_later)
-#         expect(MasdiagMailer::SendNotificationForPatients).to receive(:perform_later)
+#       it 'enqueues ContractorResultsNotifierJob and PatientResultsNotifierJob' do
+#         expect(MasdiagMailer::ContractorResultsNotifierJob).to receive(:perform_later)
+#         expect(MasdiagMailer::PatientResultsNotifierJob).to receive(:perform_later)
 
 #         get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header
 #       end

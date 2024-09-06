@@ -2,7 +2,7 @@ require 'rails_helper'
 
 include MasdiagMailer
 
-RSpec.describe SendNotificationsJob, type: :job do
+RSpec.describe ContractorResultsNotifierJob, type: :job do
   include ActiveJob::TestHelper
   include ActionMailer::TestHelper
   subject(:job) { described_class.perform_later() }
@@ -24,7 +24,7 @@ RSpec.describe SendNotificationsJob, type: :job do
     end
 
     it 'is in background queue' do
-      expect(SendNotificationsJob.new.queue_name).to eq('background')
+      expect(ContractorResultsNotifierJob.new.queue_name).to eq('background')
     end
 
     it 'sends notifications for enabled contractors' do	    
@@ -56,7 +56,6 @@ RSpec.describe SendNotificationsJob, type: :job do
 
       allow(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).and_call_original
       expect(MasdiagMailer::ContractorResultNotificationMailer).not_to receive(:send_mail)
-      # expect { SendNotificationsJob.perform_now }.not_to change { ActionMailer::Base.deliveries.count }
       perform_enqueued_jobs { job }
       expect(ActionMailer::Base.deliveries.count).to eq(0)
     end

@@ -10,8 +10,8 @@ module MasdiagMailer
         return
       end
 
-      MasdiagMailer::SendNotificationsJob.perform_later
-      MasdiagMailer::SendNotificationForPatients.perform_later
+      MasdiagMailer::ContractorResultsNotifierJob.perform_later
+      MasdiagMailer::PatientResultsNotifierJob.perform_later
       Rails.configuration.last_use_of_send_all_mail = Time.now
 
       render plain: "OK", status: 200
