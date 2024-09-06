@@ -27,11 +27,38 @@ RSpec.describe SendNotificationsJob, type: :job do
       expect(SendNotificationsJob.new.queue_name).to eq('background')
     end
 
-    it 'executes perform' do	    
-	    allow(ResultNotificationMailer).to receive(:send_mail).and_call_original
-	    expect(ResultNotificationMailer).to receive(:send_mail)
-
+    it 'sends notifications for enabled contractors' do	    
+	    allow(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).with(contractor1.Id, [online_file1.measurement_id]).and_call_original
+	    expect(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).with(contractor1.Id, [online_file1.measurement_id])
 	    perform_enqueued_jobs { job }
+    end
+
+    it 'does not send notifications for disabled contractors' do
+    	allow(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).and_call_original
+      expect(MasdiagMailer::ContractorResultNotificationMailer).not_to receive(:send_mail).with(contractor2.Id, [online_file2.measurement_id])
+      perform_enqueued_jobs { job }
+    end
+
+    it 'send notifications if there are files' do			
+			# contractor2.update(are_notifications_enabled: true) # if you uncomment deliveries.count should be 2
+      online_file1.update(is_notification_send: false)
+      online_file2.update(is_notification_send: false)
+
+      allow(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).and_call_original
+      expect(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail)
+      perform_enqueued_jobs { job }
+      expect(ActionMailer::Base.deliveries.count).to eq(1)
+    end
+
+		it 'does not send notifications if there are no files' do
+      online_file1.update(is_notification_send: true)
+      online_file2.update(is_notification_send: true)
+
+      allow(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).and_call_original
+      expect(MasdiagMailer::ContractorResultNotificationMailer).not_to receive(:send_mail)
+      # expect { SendNotificationsJob.perform_now }.not_to change { ActionMailer::Base.deliveries.count }
+      perform_enqueued_jobs { job }
+      expect(ActionMailer::Base.deliveries.count).to eq(0)
     end
 
     after do
@@ -39,29 +66,5 @@ RSpec.describe SendNotificationsJob, type: :job do
       clear_performed_jobs
     end
 
-    # it 'sends notifications for enabled contractors' do
-    # 	expect{ SendNotificationsJob.perform_later }.to have_enqueued_job(SendNotificationsJob)
-    #   perform_enqueued_jobs
-    #   # expect { SendNotificationsJob.perform_now }.to have_been_enqueued(ResultNotificationMailer)#.with(contractor1.Id, [online_file1.id])
-    #   # expect(ResultNotificationMailer).to receive(:send_mail).with(contractor1.Id, [online_file1.id]).and_call_original
-    #   expect { SendNotificationsJob.perform_now }.to change { ActionMailer::Base.deliveries.count }.by(1)
-    # end
-
-    # it 'does not send notifications for disabled contractors' do
-    #   expect(ResultNotificationMailer).not_to receive(:send_mail).with(contractor2.Id, anything)
-    #   # expect { SendNotificationsJob.perform_now }.not_to change { ActionMailer::Base.deliveries.count }
-    # end
-
-    # it 'marks files as sent' do
-    #   SendNotificationsJob.perform_now
-    #   expect(online_file1.reload.is_notification_send).to be true
-    # end
-
-    # it 'does not send notifications if there are no files' do
-    #   online_file1.update(is_notification_send: true)
-    #   online_file2.update(is_notification_send: true)
-    #   expect(ResultNotificationMailer).not_to receive(:send_mail)
-    #   expect { SendNotificationsJob.perform_now }.not_to change { ActionMailer::Base.deliveries.count }
-    # end
   end
 end

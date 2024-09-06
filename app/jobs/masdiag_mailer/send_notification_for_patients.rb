@@ -27,7 +27,7 @@ module MasdiagMailer
         next if patient&.contractor&.api_account
         next if patient&.contractor&.institution&.kind == "Hospital" && patient&.contractor&.institution_id != 69
 
-        ResultNotificationForPatientMailer.send_mail(patient_id, file_id).deliver_later
+        PatientResultNotificationMailer.send_mail(patient_id, file_id).deliver_later
       end
     	
     	# h = Hash.new  # hash gdzie kluczami są idki z OnlineFile a wartościami są idki z Patients
@@ -41,8 +41,8 @@ module MasdiagMailer
      #    next if pat.email.blank? || !pat.send_results_on_mail
     	# 	file_ids = patient_files.keys      
 
-    	# 	ResultNotificationForPatientMailer.send_mail(patient, file_ids).deliver_later
-     #    # ResultNotificationForPatientMailer.send_special_mail(patient, file_ids).deliver_later if pat.ContractorId == 373 # targi@masdiag.pl
+    	# 	PatientResultNotificationMailer.send_mail(patient, file_ids).deliver_later
+     #    # PatientResultNotificationMailer.send_special_mail(patient, file_ids).deliver_later if pat.ContractorId == 373 # targi@masdiag.pl
     	# end
       # Do something later
     end

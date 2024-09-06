@@ -15,8 +15,8 @@ module MasdiagMailer
 
     	contractors.each do |contractor|
     		contractor_files = h.select{|x,y| y==contractor}
-    		file_ids = contractor_files.keys            
-    		MasdiagMailer::ResultNotificationMailer.send_mail(contractor, file_ids).deliver_later             
+    		file_ids = contractor_files.keys          
+    		MasdiagMailer::ContractorResultNotificationMailer.send_mail(contractor, file_ids).deliver_later         
     	end
     end
     

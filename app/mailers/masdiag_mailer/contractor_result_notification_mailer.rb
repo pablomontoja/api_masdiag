@@ -1,5 +1,5 @@
-# module MasdiagMailer
-  class MasdiagMailer::ResultNotificationMailer < ApplicationMailer
+module MasdiagMailer
+  class ContractorResultNotificationMailer < ApplicationMailer
     # include ActionView::Helpers::AssetTagHelper
     # include ActionView::Helpers::UrlHelper
     # include ActionController::UrlFor
@@ -67,7 +67,7 @@
   	end
 
   end
-# end
+end
 
   # ############## LIQUID #####################
   #   LIQUID_METHODS = %i{order_signature order_institution_name order_orderer_signature}
