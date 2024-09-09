@@ -20,7 +20,7 @@ class Notification::SampleChangedJob < ApplicationJob
     end
 
     if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
-      Notification::LalenResultSender.perform_later(@sample)
+      Notification::LalenSampleResultSender.perform_later(@sample)
       return
     end
 

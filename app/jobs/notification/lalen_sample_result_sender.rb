@@ -1,17 +1,17 @@
-class Notification::LalenResultSender < ApplicationJob
+class Notification::LalenSampleResultSender < ApplicationJob
 
-  def perform(meas)
-    @meas = meas
+  def perform(sample)
+    @sample = sample
     @meases_done = Hash.new
 
-    institution_id = @meas.sample.rsc&.InstitutionId
+    institution_id = @sample.rsc&.InstitutionId
     return unless V1::Common::LALEN_INSTITUTION_IDS.include?(institution_id)
 
-    result = ResultResource.call(@meas.sample, @meas.sample.rsc)
+    result = ResultResource.call(@sample, @sample.rsc)
     api_account = ApiAccount.find_by(username: "lalenAU")
     url = api_account.result_post_endpoint
 
-    return handle_error(["#{@meas.sample&.Code} - blank result post endpoint url"]) if url.blank?
+    return handle_error(["#{@sample&.Code} - blank result post endpoint url"]) if url.blank?
 
     begin
       conn = Faraday.new() do |f|
@@ -23,12 +23,12 @@ class Notification::LalenResultSender < ApplicationJob
       
       response = conn.post(url, result.to_json)
 
-      @meases_done[@meas] = result.to_json
+      @meases_done[@sample] = result.to_json
       build_res_sending_events() 
 
     rescue Faraday::Error => e
       return handle_error([e.to_s]) if e.response.nil?
-      err = ["Notification::ResultService - sample: #{@meas.sample.Code} - ERROR - status: #{e.response[:status]}", "body: #{e.response[:body]}"]
+      err = ["Notification::ResultService - sample: #{@sample.Code} - ERROR - status: #{e.response[:status]}", "body: #{e.response[:body]}"]
       handle_error(err)
     end
   end
@@ -42,18 +42,18 @@ private
   def build_res_sending_events
     return nil if @meases_done.empty?
 
-    @meases_done.each do |meas, json|
+    @meases_done.each do |sample, json|
 
       f = Fileable.new
       event = f.build_result_sending_event
 
-      event.measurement = meas
-      event.sample = meas.sample
+      event.measurement = nil
+      event.sample = sample
       event.sent_date = Time.current
       event.sent_through = 6   # MasdiagAPI
       event.recipient = "MasdiagAPI"
       event.result_text_representation = json
-      event.address = "MasdiagAPI --> LALEN MasdiagComAPI"
+      event.address = "MasdiagAPI --> LALEN MasdiagComAPI (sample info delivery)"
 
                                           # public enum MethodsOfSendingEnum
                                           # {
