@@ -40,7 +40,8 @@ class Masdiag::NotificationController < ApplicationController
 
       if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
         ::LalenApi::RegisterKitJob.perform_later(sample) if inst_id == 89
-        Notification::LalenResultSender.perform_later(sample)
+        Notification::SampleChangedJob.perform_later(sample.Id)
+        # Notification::LalenResultSender.perform_later(sample.measurements.first)
       else
         notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
         Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
