@@ -21,7 +21,7 @@ class ResultResource < ApplicationService
       results << h
     else
       @current_rsc&.projects&.each do |pr|
-        meas = @sample.measurements.order(Status: :desc).find_by(ProjectId: pr.Id)
+        meas = @sample.measurements.where(Status: 5).find_by(ProjectId: pr.Id)
 
         next if meas.nil?
 
