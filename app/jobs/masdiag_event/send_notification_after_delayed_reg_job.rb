@@ -1,4 +1,8 @@
 module MasdiagEvent
+
+  # Jeśli próbka rejestrowana jest przez pacjenta już po dotarciu próbki do laboratorium, konieczne jest poinformowanie 
+  # osób, które odpowiadają za wykonanie zleconych pomiarów. Jeśli wynik pomiaru jest już gotowy to konieczne jest przeliczenie wyniku 
+  # i autoryzacja używając LabSample.  
   class SendNotificationAfterDelayedRegJob < ApplicationJob
     require 'json'
 

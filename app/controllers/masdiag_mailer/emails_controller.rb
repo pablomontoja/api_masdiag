@@ -5,8 +5,8 @@ module MasdiagMailer
     # GET /mailer/send_all_mails
     # wykorzystywany przez LabSample do uruchomienia wysyłki maili do zlecających i pacjentów
     def send_all
-      if (Time.now - Rails.configuration.last_use_of_send_all_mail) < 30.seconds
-        render json: {"error": "too many requests, the use of this endpoint is limited to 1 request per 30 seconds"}, status: 429
+      if (Time.now - Rails.configuration.last_use_of_send_all_mail) < 60.seconds
+        render json: {"error": "too many requests, the use of this endpoint is limited to 1 request per 60 seconds"}, status: 429
         return
       end
 
