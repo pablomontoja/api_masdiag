@@ -14,6 +14,8 @@ class ReservedSampleCode < ApplicationRecord
   belongs_to :reserved_by, foreign_key: :reserved_by_contractor_id, class_name: "Contractor", optional: true
   has_many :used_institution_tests, foreign_key: 'used_by_test_transaction_id', class_name: 'InstitutionTest', through: :test_transactions
 
+  validates :Code, presence: true, uniqueness: true
+
   def is_regspec_sample?
     (self.project_ids & [15, 16, 17]).any?
   end
