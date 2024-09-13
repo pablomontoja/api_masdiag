@@ -97,8 +97,9 @@ Rails.application.routes.draw do
     # post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
     # post "/trigger/send_result/:code", to: 'trigger#send_result'
 
-    # post "/kits/assign_tests", to: 'kit#assign_tests'
-    # get "/kits/check_code/:code", to: 'kit#check_code'
+    post "/kits/declare", to: 'kit#declare'
+    post "/kits/assign_tests", to: 'kit#assign_tests'
+    get "/kits/check_code/:code", to: 'kit#check_code'
   end
 
 

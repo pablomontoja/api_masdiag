@@ -3,4 +3,5 @@ module MaterialHandlers
 	MODEL_HASH = { dbs_t4: 0, dbs_t5: 1, dbs_b4: 2, dbs_b5: 3, dbs_f4: 4, urine_vial: 5, blood_vial: 6 }
 	OPTIONS_FOR_SELECT = HASH.map{|m| [m[1],m[0]]}.freeze
 	MATERIAL_TYPE = { dbs_t4: :dbs, dbs_t5: :dbs, dbs_b4: :dbs, dbs_b5: :dbs, dbs_f4: :dbs, urine_vial: :urine, blood_vial: :blood_serum }
+	MATERIAL_TYPE_BASED_ON_MODIFICATOR = { dbs_faps: :dbs, dbs_nem: :dbs, dbs_bht: :dbs, dbs_tfn: :dbs, blood_vial: :blood_serum, urine_vial: :urine }
 end
