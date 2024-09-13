@@ -8,7 +8,7 @@ class ReservedSampleCode < ApplicationRecord
   belongs_to :package, optional: true
   belongs_to :institution, class_name: "Institution", foreign_key: "InstitutionId", optional: true
   # belongs_to :project, class_name: "Project", foreign_key: "ProjectId", optional: true
-  has_many :reserved_tests
+  has_many :reserved_tests, dependent: :destroy
   has_many :projects, through: :reserved_tests
   has_many :test_transactions
   belongs_to :reserved_by, foreign_key: :reserved_by_contractor_id, class_name: "Contractor", optional: true

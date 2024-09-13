@@ -99,6 +99,7 @@ Rails.application.routes.draw do
 
     post "/kits/declare", to: 'kit#declare'
     post "/kits/declare/generic", to: 'kit#declare_generic'
+    delete "/kits/remove/declared/:code", to: 'kit#destroy_declared'
     post "/kits/assign_tests", to: 'kit#assign_tests'
     get "/kits/check_code/:code", to: 'kit#check_code'
   end

@@ -138,6 +138,30 @@ class Lalen::KitController < Fv1::KitController
       json_response({ message: e.message }, :unprocessable_entity)
   end
 
+  # DELETE /kits/remove/declared/:code
+  # response: NO_CONTENT, STATUS 204
+  def destroy_declared
+    @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: code_params)
+
+    if @current_rsc.nil?
+      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_entity)
+      return
+    end
+
+    @sample = Sample.find_by(Code: code_params)
+    if @sample.present? && @sample&.IsWrongRegistration == false
+      json_response({ message: "This kit declaration cannot be removed" }, :unprocessable_entity)
+      return
+    end
+
+    @current_rsc.destroy
+
+    head :no_content
+
+    rescue StandardError => e
+      json_response({ message: e.message }, :unprocessable_entity)
+  end
+
 private
 
   def declare_params
