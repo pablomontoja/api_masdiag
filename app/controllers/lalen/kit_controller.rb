@@ -102,7 +102,8 @@ class Lalen::KitController < Fv1::KitController
       end
     end
 
-    head :no_content
+    # head :no_content
+    json_response({}, :created)
 
     rescue StandardError => e
       json_response({ message: e.message }, :unprocessable_entity)
@@ -132,7 +133,8 @@ class Lalen::KitController < Fv1::KitController
                               )
     end
 
-    head :no_content
+    # head :no_content
+    json_response({}, :created)
 
     rescue StandardError => e
       json_response({ message: e.message }, :unprocessable_entity)
