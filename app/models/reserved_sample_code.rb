@@ -2,14 +2,19 @@ class ReservedSampleCode < ApplicationRecord
   self.table_name = "ReservedSampleCodes"
   self.primary_key = "Id"
 
+  enum :material_handler, MaterialHandlers::MODEL_HASH
+  enum :MaterialType, MaterialTypes::MODEL_HASH
+
   belongs_to :package, optional: true
   belongs_to :institution, class_name: "Institution", foreign_key: "InstitutionId", optional: true
   # belongs_to :project, class_name: "Project", foreign_key: "ProjectId", optional: true
-  has_many :reserved_tests
+  has_many :reserved_tests, dependent: :destroy
   has_many :projects, through: :reserved_tests
   has_many :test_transactions
   belongs_to :reserved_by, foreign_key: :reserved_by_contractor_id, class_name: "Contractor", optional: true
   has_many :used_institution_tests, foreign_key: 'used_by_test_transaction_id', class_name: 'InstitutionTest', through: :test_transactions
+
+  validates :Code, presence: true, uniqueness: true
 
   def is_regspec_sample?
     (self.project_ids & [15, 16, 17]).any?
