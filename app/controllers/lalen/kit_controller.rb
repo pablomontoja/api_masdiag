@@ -125,7 +125,7 @@ class Lalen::KitController < Fv1::KitController
                                 CreatedAt: Time.current,
                                 assignment_date: Time.current,
                                 CreatedById: 1, 
-                                IsRetailSale: true, 
+                                IsRetailSale: false, 
                                 expiry_date: declare_generic_params[:expiry_date], 
                                 InstitutionId: inst_id,
                                 MaterialType: material_type,
