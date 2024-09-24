@@ -18,20 +18,21 @@ default: &default
 development:
   <<: *default
   # database: api_masdiag_staging
-  database: LabSample
+  database: LSI_validation
   username: <%= Rails.application.credentials.db.username %>
   password: <%= Rails.application.credentials.db.password %>
   host: <%= Rails.application.credentials.db.host %>
+  port: <%= Rails.application.credentials.db.port %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
-test:
-  <<: *default
-  database: api_masdiag_test
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
+# test:
+#   <<: *default
+#   database: api_masdiag_test
+#   username: <%= Rails.application.credentials.db.username %>
+#   password: <%= Rails.application.credentials.db.password %>
+#   host: <%= Rails.application.credentials.db.host %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -53,16 +54,16 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
-production:
-  <<: *default
-  database: LabSample
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
+# production:
+#   <<: *default
+#   database: LabSample
+#   username: <%= Rails.application.credentials.db.username %>
+#   password: <%= Rails.application.credentials.db.password %>
+#   host: <%= Rails.application.credentials.db.host %>
 
-staging:
-  <<: *default
-  database: api_masdiag_staging
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
+# staging:
+#   <<: *default
+#   database: api_masdiag_staging
+#   username: <%= Rails.application.credentials.db.username %>
+#   password: <%= Rails.application.credentials.db.password %>
+#   host: <%= Rails.application.credentials.db.host %>
