@@ -42,10 +42,11 @@ class MailNotificationService < ApplicationService
       if response.code != "200"
         errors = [Time.current.to_s, "MASDIAG API --> #{self.class.name}", "action: #{@action}", "message - #{response.msg}", "response body - #{response.body}", caller_locations.join("<br>")]
         puts errors
-        # IndMailer.after_error(errors.flatten).deliver_later
+        # IndMailer.after_error(errorsSentry.capture_exception(ex).flatten).deliver_later
         raise StandardError
       end
     rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => ex
+      Sentry.capture_exception(ex)
       if (attempts += 1) < 10
         sleep attempts*10
         puts "<--------- retrying #{self.class.name} - attempt: #{attempts} --------->"
