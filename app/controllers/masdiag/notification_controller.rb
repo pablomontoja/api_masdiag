@@ -12,7 +12,7 @@ class Masdiag::NotificationController < ApplicationController
       meas_ids = meas_ids - sent_meas_ids
       @meases_done = Hash.new
 
-      Measurement.where(Id: meas_ids).each do |meas|
+      Measurement.where(Id: meas_ids.uniq).each do |meas|
         Notification::SendResultJob.perform_later(meas.Id)
       end
 
