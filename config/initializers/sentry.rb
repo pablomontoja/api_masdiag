@@ -5,4 +5,5 @@ Sentry.init do |config|
   config.send_default_pii = true
   config.traces_sample_rate = 1.0 # 0 no errors, 1 all errors
   config.include_local_variables = true
+  config.enabled_environments = %w[production]
 end
