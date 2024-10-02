@@ -26,6 +26,7 @@ class Notification::ResultService < ApplicationService
       response = conn.post(url, result.to_json)
       handle_result(result)
     rescue Faraday::Error => e
+      Sentry.capture_exception(e)
       return handle_error([e.to_s]) if e.response.nil?
       err = ["Notification::ResultService - sample: #{@sample.Code} - ERROR - status: #{e.response[:status]}", "body: #{e.response[:body]}"]
       handle_error(err)

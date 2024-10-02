@@ -18,7 +18,7 @@ class Masdiag::NotificationController < ApplicationController
 
       render json: { message: "result notifications was properly scheduled" }, status: 200
     rescue StandardError => ex
-      pp ex
+      Sentry.capture_exception(ex)
       render json: { message: "there are problems with scheduling notification jobs"}, status: 500
     end
   end
@@ -48,7 +48,7 @@ class Masdiag::NotificationController < ApplicationController
       
       render json: { message: "notification was properly scheduled" }, status: 200
     rescue StandardError => ex
-      pp ex
+      Sentry.capture_exception(ex)
       render json: { message: "there are problems with scheduling notification job"}, status: 500
     end
   end
