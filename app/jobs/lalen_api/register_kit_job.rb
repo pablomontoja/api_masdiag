@@ -34,8 +34,7 @@ module LalenApi
 
 	      
 	    rescue Faraday::Error => e
-	      err = ["body: #{e.inspect}"]
-	      pp(err)
+	      Sentry.capture_exception(e)
 	      raise e
 	    end
 		end

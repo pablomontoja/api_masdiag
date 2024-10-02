@@ -66,3 +66,5 @@ gem "lockbox"
 gem 'composite_primary_keys', '=14.0.6'
 gem "solid_queue"
 gem "groupdate", "~> 6.4"
+gem "sentry-ruby"
+gem "sentry-rails"

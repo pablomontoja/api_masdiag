@@ -30,7 +30,8 @@ class Masdiag::PackagesCreator < ApplicationService
 
       handle_result(@production_order)
 
-    rescue Exception => e
+    rescue StandardError => e
+      Sentry.capture_exception(e)
       handle_error(e)
     end
   end

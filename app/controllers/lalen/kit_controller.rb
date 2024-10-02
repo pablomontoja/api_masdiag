@@ -28,6 +28,7 @@ class Lalen::KitController < Fv1::KitController
     json_response(response_hash)
 
     rescue StandardError => e
+      Sentry.capture_exception(e)
       json_response({ message: e.message }, :unprocessable_entity)
   end
 
@@ -106,6 +107,7 @@ class Lalen::KitController < Fv1::KitController
     json_response({}, :created)
 
     rescue StandardError => e
+      Sentry.capture_exception(e)
       json_response({ message: e.message }, :unprocessable_entity)
   end
 
@@ -137,6 +139,7 @@ class Lalen::KitController < Fv1::KitController
     json_response({}, :created)
 
     rescue StandardError => e
+      Sentry.capture_exception(e)
       json_response({ message: e.message }, :unprocessable_entity)
   end
 
@@ -161,6 +164,7 @@ class Lalen::KitController < Fv1::KitController
     head :no_content
 
     rescue StandardError => e
+      Sentry.capture_exception(e)
       json_response({ message: e.message }, :unprocessable_entity)
   end
 

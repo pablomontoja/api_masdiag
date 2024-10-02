@@ -3,7 +3,9 @@ class ApplicationRecord < ActiveRecord::Base
 
   def is_integer(string)
     true if Integer string
-  rescue StandardError
-    false
+    
+    rescue StandardError => e
+      Sentry.capture_exception(e)
+      false
   end
 end
