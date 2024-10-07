@@ -6,14 +6,23 @@ class Masdiag::NotificationController < ApplicationController
   def trigger
     begin
       errors = []
-      ids = ApiAccount.pluck(:contractor_id) + Contractor.where(institution_id: V1::Common::LALEN_INSTITUTION_IDS).pluck(:Id)
+      ids = ApiAccount.pluck(:contractor_id)
       meas_ids = Measurement.includes(sample: :patient).where(Status: 5).where(Patients: {ContractorId: ids}).pluck(:Id)
-      sent_meas_ids = ResultSendingEvent.where(sent_through: 6, measurement_id: meas_ids).pluck(:measurement_id)
+      sent_meas_ids = ResultSendingEvent.where(sent_through: 6, measurement_id: meas_ids).where.not("address LIKE ?", "%lalen%").pluck(:measurement_id)
       meas_ids = meas_ids - sent_meas_ids
-      @meases_done = Hash.new
+      # @meases_done = Hash.new
 
       Measurement.where(Id: meas_ids.uniq).each do |meas|
         Notification::SendResultJob.perform_later(meas.Id)
+      end
+
+      lalen_ids = Contractor.where(institution_id: V1::Common::LALEN_INSTITUTION_IDS).pluck(:Id)
+      lalen_meas_ids = Measurement.includes(sample: :patient).where(Status: 5, AuthorizedAt: DateTime.parse("09 Sep 2024 12:00:00.000000000 UTC +00:00")..nil).where(Patients: {ContractorId: lalen_ids}).pluck(:Id)
+      lalen_sent_meas_ids = ResultSendingEvent.where(sent_through: 6, measurement_id: lalen_meas_ids).where("address LIKE ?", "%lalen%").where.not("address LIKE ?", "%(sample info delivery)%").pluck(:measurement_id)
+      lalen_meas_ids = lalen_meas_ids - lalen_sent_meas_ids
+
+      Measurement.where(Id: lalen_meas_ids.uniq).each do |meas|
+        Notification::LalenResultSender.perform_later(meas)
       end
 
       render json: { message: "result notifications was properly scheduled" }, status: 200
