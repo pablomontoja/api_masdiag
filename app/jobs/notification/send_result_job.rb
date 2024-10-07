@@ -9,16 +9,17 @@ class Notification::SendResultJob < ApplicationJob
   def perform(measurement_id)
   	@meases_done = Hash.new
 
-    return if ResultSendingEvent.where(sent_through: 6, measurement_id: measurement_id).any?
-
     meas = Measurement.find(measurement_id)
-    lalen_institution_id = meas.sample.rsc&.InstitutionId
-    if V1::Common::LALEN_INSTITUTION_IDS.include?(lalen_institution_id)
-      Notification::LalenResultSender.perform_later(meas)
-      return
-    end
+    # lalen_institution_id = meas.sample.rsc&.InstitutionId
+    # if V1::Common::LALEN_INSTITUTION_IDS.include?(lalen_institution_id)
+    #   return if ResultSendingEvent.where(sent_through: 6, measurement_id: measurement_id).where("address LIKE ?", "%lalen%").any?
+    #   Notification::LalenResultSender.perform_later(meas)
+    #   return
+    # end
 
-    res = Notification::ResultService.call(meas.sample)    
+    return if ResultSendingEvent.where(sent_through: 6, measurement_id: measurement_id).where.not("address LIKE ?", "%lalen%").any?
+
+    res = Notification::ResultService.call(meas.sample)
 
     if res.success?
       @meases_done[meas] = res.payload.to_json
