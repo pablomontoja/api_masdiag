@@ -95,7 +95,7 @@ Rails.application.routes.draw do
 
     # post "/setup/set_result_post_endpoint_url", to: 'setup#result_post_endpoint'
     # post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
-    # post "/trigger/send_result/:code", to: 'trigger#send_result'
+    post "/trigger/send_result/:code", to: 'trigger#send_result'
 
     post "/kits/declare", to: 'kit#declare'
     post "/kits/declare/generic", to: 'kit#declare_generic'
