@@ -9,12 +9,13 @@ class Lalen::TriggerController < ApplicationController
       return
     end
 
-    res = Notification::ResultService.call(@sample)
+    meas = Measurement.includes(:sample).where(Status: 5).find_by(Samples: { Code: sample_code })
 
-    if res.success?
-      render json: {message: "result endpoint responded with status 200"}, status: 200
+    if meas.nil?
+      Sentry.capture_message("#{sample_code} - does not have authorized measurements.")
     else
-      render json: { message: res.error&.join(", ")}, status: 500
+      Notification::LalenResultSender.perform_later(meas) 
+      render json: {message: "result endpoint responded with status 200"}, status: 200      
     end
 
   end
