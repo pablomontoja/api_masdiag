@@ -40,5 +40,6 @@ module ApiMasdiag
     config.eager_load_paths << Rails.root.join('lib')
 
     config.solid_queue.use_skip_locked = false
+    config.last_use_of_send_all_mail = Time.now
   end
 end

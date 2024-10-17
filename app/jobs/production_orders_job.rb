@@ -1,5 +1,5 @@
+# This class is used only by scripts in /script folder (2024-08-22)
 class ProductionOrdersJob < ApplicationJob
-  queue_as :default
 
   def perform(production_order_params, current_user)
     @production_order = ProductionOrder.new(production_order_params)
@@ -12,4 +12,5 @@ class ProductionOrdersJob < ApplicationJob
 
     @production_order.save
   end
+
 end

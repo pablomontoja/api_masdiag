@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Dzień dobry</h1>
+     <p>
+      Wyniki dla poniżej wymienionych próbek są już dostępne:
+    </p>
+    <table>
+    	<tr>
+    	<th>Kod próbki</th>
+      <th>Wynik</th>
+      <th>Test</th>
+    	</tr>	
+    <% @files.each do |file| %>
+    	<tr> 
+    	<td><%= file.measurement.sample.Code %></td>
+    	<td><%= link_to image_tag(attachments["pdf.jpg"].url, size: "30x30"), b2b_online_file_url(file.measurement_id) %></td>
+      <td><%= file.measurement.project.Name %></td>
+    	</tr>
+    <% end %>
+    </table>
+    
+  </body>
+</html>
