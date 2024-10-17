@@ -2,7 +2,7 @@ module MasdiagMailer
 	class StockRoomsController < ApplicationController
 		include MasdiagCheck
 
-		protect_from_forgery except: [:stock_out_by_packages, :stock_out_by_shipment, :back_to_stock_by_shipment]
+		# protect_from_forgery except: [:stock_out_by_packages, :stock_out_by_shipment, :back_to_stock_by_shipment]
 
 		# The endpoint used by order_panel
 		# GET /api/stock_room/is_package_in_stock/:package_id
