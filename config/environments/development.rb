@@ -37,7 +37,7 @@ Rails.application.configure do
   config.active_storage.replace_on_assign_to_many = false
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.perform_caching = false
 
@@ -68,4 +68,11 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   # config.active_storage.urls_expire_in = 10.minutes
+
+  config.action_mailer.default_url_options = { host: '127.0.0.1', port: 3002 }
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = { :address => "127.0.0.1", :port => 1025 }
+
+  config.action_mailer.show_previews = true
 end

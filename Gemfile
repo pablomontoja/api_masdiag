@@ -42,6 +42,7 @@ end
 group :development, :test do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   gem 'byebug'
+  gem 'rspec-json_expectations'
 end
 
 gem 'activepesel'
