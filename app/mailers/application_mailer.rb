@@ -1,7 +1,6 @@
-class ApplicationMailer < ActionMailer::Base  
+class ApplicationMailer < ActionMailer::Base
+  default from: "powiadomienia@masdiag.pl", reply_to: "pomoc@masdiag.pl"
   layout "mailer"
-  default from:     "powiadomienia@masdiag.pl",
-          reply_to: "pomoc@masdiag.pl"
 
   helper_method :email_image_tag
   helper_method :b2b_online_file_url

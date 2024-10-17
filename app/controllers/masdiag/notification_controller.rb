@@ -37,6 +37,9 @@ class Masdiag::NotificationController < ApplicationController
   def sample_status_changed
     begin
       sample = Sample.find(params[:sample_id])
+
+      Lock::CheckJob.perform_later(sample&.rsc)
+
       allowed_contractor_ids = [637, 638, 659, 671] # epiexpert, nume, physikit, trime, luxbiotech=745
       inst_id = sample.rsc&.InstitutionId
       if inst_id.nil?
@@ -45,7 +48,7 @@ class Masdiag::NotificationController < ApplicationController
         puts "sample #{sample.Code} doesn't have ReservedSampleCode."
         puts "-------------------------------------------------------------"
         return
-      end
+      end      
 
       if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
         ::LalenApi::RegisterKitJob.perform_now(sample) if inst_id == 89
