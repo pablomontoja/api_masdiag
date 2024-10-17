@@ -1,0 +1,30 @@
+<h3>Cześć,</h3>
+<p>
+  W laboratorium przyjęto próbkę, na którą ustawiono blokadę. Szczegóły na temat blokady poniżej.      
+</p>
+
+<p>
+  Kod próbki:<br>
+  <b><%= @note.subject.Code  %></b>
+</p>
+
+<p>
+  Instytucja powiązana z próbką:<br>
+  <b><%= @note.subject.institution&.name  %></b>
+</p>
+
+<p>
+  Opis założonej blokady:<br>
+  <b><%= @note.description  %></b>
+</p>
+
+<p>
+  Z poważaniem,<br>
+  <b>Dział IT</b><br>
+  Masdiag Sp. z o.o.   
+</p>
+
+
+<p>
+  Wiadomość wygenerowana automatycznie.
+</p>

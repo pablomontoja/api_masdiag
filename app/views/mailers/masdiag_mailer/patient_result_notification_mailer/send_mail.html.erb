@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+
+<body>
+  <h3>Szanowni Państwo,</h3>
+  <p>
+    W załączeniu przesyłamy wynik badania następującej próbki:
+  </p>
+  <table style="border: 1px solid black; border-spacing: 10px;">
+    <tr>
+      <th>Kod próbki</th>
+      <th>Badanie</th>
+      <th>Pacjent</th>
+    </tr>
+    <% @files.each do |file| %>
+    <tr>
+      <td>
+        <%= file.measurement.sample.Code %>
+      </td>
+      <td>
+        <%= file.measurement.project.Name %>
+      </td>
+      <td>
+        <%= file.measurement.sample.patient.fullname %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+  <p>
+    Załączony plik PDF chroniony jest hasłem. Aby uzyskać dostęp do wyniku należy wpisać:
+    <ul>
+      <li><u>4 ostatnie</u> cyfry numeru PESEL - w przypadku Pacjentów, którzy podali numer PESEL podczas rejestracji próbki</li>
+      lub
+      <li><u>rok urodzenia</u> w formacie RRRR - w przypadku Pacjentów, którzy nie podali numeru PESEL</li>
+    </ul>
+  </p>
+  <p>
+    <b>
+      Wyniki każdego badania wysyłane są niezależnie. Jeśli dla jednej próbki zlecono kilka badań, ich wyniki będą przesyłane w osobnych wiadomościach, w różnym czasie. Termin realizacji badań zależy od rodzaju badania i można go sprawdzić na stronie internetowej <a href="https://diagnostykaprecyzyjna.pl">diagnostykaprecyzyjna.pl</a> w zakładce "OFERTA" przy danym badaniu.
+    </b>
+  </p>
+  <p>
+    Aby zapewnić najwyższą jakość i ciągłą kontrolę oferowanych usług prosimy o odpowiedź na kilka pytań: <a href="https://forms.office.com/r/RBqEHEJGks">Ankieta</a>
+  </p>
+  <p>
+    <b><i>Niektórzy dostawcy poczty elektronicznej ostrzegają przed niebezpiecznym załącznikiem w naszych wiadomościach. Dzieje się tak dlatego, że plik z wynikiem załączony do niniejszej wiadomości jest zaszyfrowany i zabezpieczony hasłem. Naszym celem nie jest rozpowszechnianie szkodliwego oprogramowania tylko przekazanie wyników w formie zabezpieczonej tak, aby osoby niepowołane nie uzyskały dostępu do danych medycznych naszych pacjentów.</i></b>
+  </p>
+  <p>
+    Ta wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.
+  </p>
+  <p>
+    Wszelkie pytania lub wątpliwości prosimy kierować na adres mailowy: <a href="mailto:badania@masdiag.pl">badania@masdiag.pl</a>
+  </p>
+  <br>
+  <p>
+    Z poważaniem,<br><br>
+    Masdiag Sp. z o.o.<br>
+    ul. Stefana Żeromskiego 33<br>
+    01–882 Warszawa<br>
+    NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+    Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>
+  </p>
+</body>
+
+</html>

@@ -5,6 +5,4 @@ class ApplicationJob < ActiveJob::Base
 
   # Most jobs are safe to ignore if the underlying records are no longer available
   # discard_on ActiveJob::DeserializationError
-
-  # TODO - ApplicationJob - API need delayed_job or other queue adapter
 end
