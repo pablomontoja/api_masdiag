@@ -5,7 +5,7 @@ module MasdiagEvent
     def send_mail(email, measurements_arr)
       return if email.blank?
       @meases = Measurement.joins(:sample, :project).where(Id: measurements_arr).all
-      mail(to: [email, "powiadomienia@masdiag.pl"], subject: 'Laboratorium Masdiag - powiadomienie o spóźnionym zarejestrowaniu próbki')
+      mail(to: email, subject: 'Laboratorium Masdiag - powiadomienie o spóźnionym zarejestrowaniu próbki')
     end
 
   end
