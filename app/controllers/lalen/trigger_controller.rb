@@ -13,9 +13,10 @@ class Lalen::TriggerController < ApplicationController
 
     if meas.nil?
       puts "#{sample_code} - does not have authorized measurements (Lalen::TriggerController)"
+      render json: { message: "#{sample_code} - does not have authorized measurements" }, status: 200      
     else
       Notification::LalenResultSender.perform_later(meas) 
-      render json: {message: "result endpoint responded with status 200"}, status: 200      
+      render json: { message: "result endpoint responded with status 200" }, status: 200      
     end
 
   end
