@@ -76,7 +76,7 @@ class Lalen::KitController < Fv1::KitController
   # response: NO_CONTENT, STATUS 204
   def declare
     material_type = MaterialHandlers::MATERIAL_TYPE_BASED_ON_MODIFICATOR[declare_params[:material_handler].to_sym] || :dbs
-    masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, urine_vial: :urine_vial, blood_vial: :blood_vial }
+    masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, dbs_iaa: :dbs_i4, urine_vial: :urine_vial, blood_vial: :blood_vial }
 
     assignment = validate_assignment(declare_params[:test_ids])
     if assignment.invalid
@@ -117,7 +117,7 @@ class Lalen::KitController < Fv1::KitController
   # response: NO_CONTENT, STATUS 204
   def declare_generic
     material_type = MaterialHandlers::MATERIAL_TYPE_BASED_ON_MODIFICATOR[declare_generic_params[:material_handler].to_sym] || :dbs
-    masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, urine_vial: :urine_vial, blood_vial: :blood_vial }
+    masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, dbs_iaa: :dbs_i4, urine_vial: :urine_vial, blood_vial: :blood_vial }
 
     ActiveRecord::Base.transaction do
       inst_id = get_lalen_institution(declare_generic_params[:code])
