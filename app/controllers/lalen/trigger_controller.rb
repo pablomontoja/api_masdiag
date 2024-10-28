@@ -27,7 +27,7 @@ class Lalen::TriggerController < ApplicationController
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: sample_code)
 
     if @current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution." }, :not_found)
     end
   end
 
@@ -35,7 +35,7 @@ class Lalen::TriggerController < ApplicationController
     @sample = Sample.find_by(Code: sample_code)
 
     if @sample.nil?
-      json_response({ message: "Unknown sample code or sample does not exist." }, :unprocessable_entity)
+      json_response({ message: "Unknown sample code or sample does not exist." }, :not_found)
     end
   end
 
