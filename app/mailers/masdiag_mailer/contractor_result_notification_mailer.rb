@@ -1,8 +1,5 @@
 module MasdiagMailer
   class ContractorResultNotificationMailer < ApplicationMailer
-    include ActionView::Helpers::AssetTagHelper
-    include ActionView::Helpers::UrlHelper
-
     default :template_path => "mailers/#{self.name.underscore}"
     after_action :set_sendmail
     helper_method :b2b_online_file_url
