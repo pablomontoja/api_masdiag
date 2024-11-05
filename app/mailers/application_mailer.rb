@@ -1,4 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
+  include ActionView::Helpers::AssetTagHelper
+  include ActionView::Helpers::UrlHelper
   default from: "powiadomienia@masdiag.pl", reply_to: "pomoc@masdiag.pl"
   layout "mailer"
 
