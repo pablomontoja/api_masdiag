@@ -13,6 +13,7 @@ class ReservedSampleCode < ApplicationRecord
   has_many :test_transactions
   belongs_to :reserved_by, foreign_key: :reserved_by_contractor_id, class_name: "Contractor", optional: true
   has_many :used_institution_tests, foreign_key: 'used_by_test_transaction_id', class_name: 'InstitutionTest', through: :test_transactions
+  has_many :notes, as: :subject
 
   validates :Code, presence: true, uniqueness: true
 

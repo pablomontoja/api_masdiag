@@ -40,7 +40,7 @@ class Masdiag::NotificationController < ApplicationController
 
       Lock::CheckJob.perform_later(sample&.rsc)
 
-      allowed_contractor_ids = [637, 638, 659, 671] # epiexpert, nume, physikit, trime, luxbiotech=745
+      allowed_contractor_ids = [637, 638, 659, 671, 699] # epiexpert, nume, physikit, trime, FFTB, luxbiotech=745
       inst_id = sample.rsc&.InstitutionId
       if inst_id.nil?
         puts "-------------------------------------------------------------"
