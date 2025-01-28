@@ -40,7 +40,7 @@ class Masdiag::NotificationController < ApplicationController
 
       Lock::CheckJob.perform_later(sample&.rsc)
 
-      allowed_contractor_ids = [637, 638, 659, 671] # epiexpert, nume, physikit, trime, luxbiotech=745
+      allowed_contractor_ids = [637, 638, 659, 671, 699] # epiexpert, nume, physikit, trime, FFTB, luxbiotech=745
       inst_id = sample.rsc&.InstitutionId
       if inst_id.nil?
         puts "-------------------------------------------------------------"
@@ -51,7 +51,7 @@ class Masdiag::NotificationController < ApplicationController
       end      
 
       if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
-        ::LalenApi::RegisterKitJob.perform_now(sample) if inst_id == 89
+        # ::LalenApi::RegisterKitJob.perform_now(sample) if inst_id == 89
         Notification::SampleChangedJob.perform_later(sample.Id)
       else
         notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 

@@ -15,6 +15,7 @@ private
 				included-in-monthly-ptc-report
 				cerascreen-dao-declaration-email
 				kit-lock
+				lalen-eu-result-exit-in-xlsx
 			)
 	end
 
