@@ -188,6 +188,8 @@ private
       89
     when "AU"
       85
+    when "GB"
+      83
     else
       85
       # raise StandardError.new("Recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
