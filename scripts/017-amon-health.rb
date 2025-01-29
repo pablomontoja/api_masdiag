@@ -101,10 +101,10 @@ ActiveRecord::Base.transaction do
 
 
 pp "free_codes - #{all_codes.join(", ")}"
-pp "accepted but without results yet - #{accepted_code.join(", ")}"
+pp "accepted but without results yet - #{accepted_code}"
 pp "accepted with resuls: - #{codes.join(", ")}"
-pp "cancelled - #{cancelled_code.join(", ")}"
-pp "expired - #{expired_code.join(", ")}"
+pp "cancelled - #{cancelled_code}"
+pp "expired - #{expired_code}"
 end
 
 # STAGING
