@@ -1,5 +1,7 @@
 class AddPhosphatidylethanolToProjects < ActiveRecord::Migration[7.0]
   def change
+    add_column :Projects, :is_active, :boolean, default: true, null: false
+
     ActiveRecord::Base.transaction do
       project = Project.create!(                                                       
         Name: "PEth - Fosfatydyloetanol",                                     
@@ -22,7 +24,7 @@ class AddPhosphatidylethanolToProjects < ActiveRecord::Migration[7.0]
         has_selectable_analytes: false,
         InjectionVolume: 0.22e2,
         eng_name: "Phosphatidylethanol",
-        is_active: false
+        is_active: true
       )
 
       analyte = Analyte.create!(
