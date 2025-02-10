@@ -9,8 +9,8 @@ class Project < ApplicationRecord
 	has_many :reserved_tests
 	has_many :reserved_sample_codes, through: :reserved_tests
 
-  def readonly?
-    Rails.env.test? ? false : true
-  end
+  # def readonly?
+  #   Rails.env.test? ? false : true
+  # end
 
 end
