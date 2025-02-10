@@ -277,7 +277,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_10_113601) do
     t.boolean "has_selectable_analytes"
     t.decimal "InjectionVolume", precision: 4, scale: 1, null: false
     t.string "eng_name"
-    t.boolean "is_active", null: false
+    t.boolean "is_active", default: true, null: false
   end
 
   create_table "ProtocolSamples", primary_key: ["Protocol_Id", "Sample_Id"], charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
