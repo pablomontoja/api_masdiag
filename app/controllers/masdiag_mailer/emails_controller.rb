@@ -2,11 +2,13 @@ module MasdiagMailer
   class EmailsController < ApplicationController
     include MasdiagCheck
 
-    # GET /mailer/send_all_mails
-    # wykorzystywany przez LabSample do uruchomienia wysyłki maili do zlecających i pacjentów
+    # TODO all mailer endpoints in LabSample must be updated
+    # GET /masdiag_mailer/send_all_mails(.:format)  ---->  masdiag_mailer/emails#send_all
+    #                                                       
+    # wykorzystywany przez LabSample do uruchomienia wysyłki wszystkich maili do zlecających i pacjentów
     def send_all
       if (Time.now - Rails.configuration.last_use_of_send_all_mail) < 60.seconds
-        render json: {"error": "too many requests, the use of this endpoint is limited to 1 request per 60 seconds"}, status: 429
+        render json: { "error": "too many requests, the use of this endpoint is limited to 1 request per 60 seconds" }, status: 429
         return
       end
 
@@ -17,11 +19,12 @@ module MasdiagMailer
       render plain: "OK", status: 200
     end
 
-    # POST /mailer/send_cancellation_notifications
+    # POST   /masdiag_mailer/send_cancellation_notifications(.:format)  ---->  masdiag_mailer/emails#send_cancellation_notifications
+    #
     # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla anulowanych próbek
     def send_cancellation_notifications
       begin
-        SendCancellationNotificationsJob.perform_later(params["sample_ids"])
+        MasdiagEvent::SendCancellationNotificationsJob.perform_later(params["sample_ids"])
         render plain: "OK", status: 200
       rescue Exception => ex
         render json: { "error": ex.message }, status: 500
@@ -50,11 +53,11 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/send_notification_after_delayed_reg
+    # POST   /masdiag_mailer/send_notification_after_delayed_reg(.:format)  ---->   masdiag_mailer/emails#send_notification_after_delayed_reg
     #
     def send_notification_after_delayed_reg
       begin
-        SendNotificationAfterDelayedRegJob.delay.perform_later(params[:sample_id])
+        MasdiagEvent::SendNotificationAfterDelayedRegJob.delay.perform_later(params[:sample_id])
         render plain: "OK", status: 200
       rescue StandardError => ex
         render json: { "error": ex.message }, status: 500

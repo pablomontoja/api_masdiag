@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+
+<body>
+  <h3>Szanowni Państwo,</h3>
+  <p>
+    Z przykrością informujemy, że nie jesteśmy w stanie wykonać analiz dla próbki, która dotarła od Państwa do naszego laboratorium.
+  </p>
+  <p>
+    Istnieją dwa powody, dla których diagnosta laboratoryjny odrzuca próbkę:
+  </p>
+
+  <% if @sample.MaterialType.to_sym == :dbs  %>
+    <ul>
+      <li>Ilość krwi na bibule jest niewystarczająca do wykonania analiz.</li>
+      lub
+      <li>Bibuła nie została wysuszona przed wysłaniem jej do laboratorium.</li>
+    </ul>
+    <% elsif @sample.MaterialType.to_sym == :urine %>
+    <ul>
+      <li>Ilość moczu jest niewystarczająca do wykonania analiz.</li>
+      lub
+      <li>Próbka moczu uległa zniszczeniu podczas transportu.</li>
+    </ul>
+  <% end  %>
+
+  <p>Kod anulowanej próbki: <b>
+      <%= @sample.Code %></b></p>
+
+  <p>Doślemy Państwu zapasowy zestaw do pobrania materiału. <b>Prosimy w wiadomości zwrotnej przekazać nam dane adresowe do wysyłki zapasowego zestawu. Ewentualnie prosimy podać numer telefonu i <u>numer/adres paczkomatu InPost</u> jeśli zapasowy zestaw ma być dostarczony do paczkomatu.</b></p>
+  
+  <% if @sample.MaterialType.to_sym == :dbs  %>
+    <p>Jednocześnie zachęcamy do przestudiowania <a href="https://diagnostykaprecyzyjna.pl/instrukcja/">instrukcji pobierania krwi na bibułę</a> lub do obejrzenia <a href="https://youtu.be/s5icMekcoX4">filmu</a> pokazującego jak prawidłowo pobrać krew na bibułę.</p>
+  <% end  %>
+
+  <br>
+  <p>
+    Z poważaniem,<br><br>
+    <%= email_image_tag("logo_masdiag.png", width: "300px") %><br>
+    Masdiag Sp. z o.o.<br>
+    ul. Stefana Żeromskiego 33<br>
+    01–882 Warszawa<br>
+    NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+    Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>
+  </p>
+  <p>
+    Wiadomość wygenerowana automatycznie.
+  </p>
+</body>
+
+</html>

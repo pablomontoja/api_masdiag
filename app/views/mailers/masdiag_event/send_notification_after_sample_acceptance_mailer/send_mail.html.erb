@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+
+<body>
+  <h3>Cześć,</h3>
+  <p>
+    <%= @user["first_name"] %>
+    <%= @user["last_name"] %> przyjął/przyjęła próbkę/próbki, które są do zrobienia w projekcie, za który jesteś odpowiedzialny/odpowiedzialna.
+    Poniżej znajduje się tabelka z informacjami na temat próbek.
+  </p>
+  <table style="border: 1px solid black; border-spacing: 15px;">
+    <tr>
+      <th>Kod próbki</th>
+      <th>Imię i Nazwisko pacjenta</th>
+      <th>Test</th>
+    </tr>
+    <% @meases.each do |m| %>
+    <tr>
+      <td>
+        <%= m.sample.Code %>
+      </td>
+      <td>
+        <%= "#{m.sample.patient.FirstName} #{m.sample.patient.LastName}" %>
+      </td>
+      <td>
+        <%= m.project.Name %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+  <br>
+  <p>
+    Z poważaniem,<br><br>
+    <%= email_image_tag("logo_masdiag.png", width: "300px") %><br>
+    Masdiag Sp. z o.o.<br>
+    ul. Stefana Żeromskiego 33<br>
+    01–882 Warszawa<br>
+    NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+    Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>
+  </p>
+  <p>
+    Wiadomość wygenerowana automatycznie.
+  </p>
+</body>
+
+</html>

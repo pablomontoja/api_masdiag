@@ -9,6 +9,8 @@ class Sample < ApplicationRecord
   has_many :test_transactions
   has_many :notes, as: :subject
 
+  enum MaterialType: MaterialTypes::MODEL_HASH
+
   attr_accessor :approve
 
   # callbacks
