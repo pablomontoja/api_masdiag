@@ -30,7 +30,8 @@ module V1::Common
                      {id: 21, name: "Omega Acids", material: "DBS", weight: 1, comment: "A special DBS card is required"},
                      {id: 22, name: "Vitamin D", material: "DBS", weight: 1, comment: ""},
                      {id: 23, name: "HbA1c", material: "DBS", weight: 1, comment: ""},
-                     {id: 26, name: "GSSG/GSH - Glutathione Index", material: "DBS", weight: 2, comment: "A special DBS card is required"}                     
+                     {id: 26, name: "GSSG/GSH - Glutathione Index", material: "DBS", weight: 2, comment: "A special DBS card is required"},
+                     {id: 27, name: "Phosphatidylethanol", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"}             
                    ].freeze
 end
 
