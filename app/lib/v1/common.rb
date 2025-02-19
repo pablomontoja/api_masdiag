@@ -32,7 +32,7 @@ module V1::Common
                      {id: 23, name: "HbA1c", material: "DBS", weight: 1, comment: ""},
                      {id: 26, name: "GSSG/GSH - Glutathione Index", material: "DBS", weight: 2, comment: "A special DBS card is required"},
                      {id: 27, name: "Phosphatidylethanol", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"},
-                     {id: 28, name: "Goldencup TOXO", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"}             
+                     {id: 28, name: "Goldcup TOXO", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"}             
                    ].freeze
 end
 
