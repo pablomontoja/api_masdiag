@@ -25,7 +25,7 @@ class Sample < ApplicationRecord
 
   # TODO - fv1 validation of Code length - it need to be tested
   with_options({on: :fv1}) do |fv1_sample|
-    fv1_sample.validates :Code, length: { minimum: 5, maximum: 10 }
+    fv1_sample.validates :Code, length: { minimum: 5, maximum: 20 }
   end
 
   validates :sample_collection_date, presence: true, comparison: { less_than_or_equal_to: :today_date }
