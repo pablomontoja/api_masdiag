@@ -8,7 +8,6 @@ ActiveRecord::Base.transaction do
 
 	ApiAccount.create!(username: "goldcup.ahum", password: "cDYtVLmjG3xeEX4p", password_confirmation: "cDYtVLmjG3xeEX4p", contractor_id: contractor.Id, language: "en")
 
-
 	require 'faker'
 
 	inst = Institution.find_by(name: "Goldcup (Ahum)")
@@ -49,10 +48,27 @@ ActiveRecord::Base.transaction do
 	end
 
 	file = File.open("scripts/blank.pdf")
+	user = User.first
 	Measurement.includes(:sample).where(sample: {Code: codes}).each do |meas|
 	  meas.online_file&.destroy
+	  # of = OnlineFile.new(measurement_id: meas.Id, file_size: file.size, encrypted_file_size: file.size, filename: "#{meas.sample.Code}_#{meas.ProjectId}", content_type: "application/pdf")
+	  # of.file_contents = file.read
+	  # file.rewind
+	  # of.encrypted_file_contents = file.read
+	  # file.rewind
+	  # of.save
 	  meas.update(Status: 5, MeasureDate: DateTime.now, AuthorizedAt: DateTime.now, CuttedAt: DateTime.now, InstrumentId: 1)
 	  meas.sample.update(AcceptanceDate: DateTime.now-2.days, soaking_degree_id: 1, SampleStatus: 2, SampleState: 2)
+
+	  #RESULTS SEED
+	  meas.result&.destroy
+		result = Result.create(MeasurementId: meas.Id, ImportDate: Time.now - 14.days, IsValid: true, ImportUserId: user.Id)
+
+		meas.project.analytes.where(is_required: true).each do |analyte|
+			fake_value = Faker::Number.within(range: 0.0..100.0)
+			fake_value = Faker::Number.within(range: analyte.CutoffMin..analyte.CutoffMax) if !analyte.CutoffMin.nil? && !analyte.CutoffMax.nil?
+			result.analyte_results.create(AnalyteId: analyte.Id, Value: fake_value, Unit: analyte.Unit, MeasuredValue: fake_value)
+		end
 	end
 
 	accepted_code = all_codes.sample()
