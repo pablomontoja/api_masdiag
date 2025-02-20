@@ -1,4 +1,4 @@
-module MasdiagEvent
+module MasdiagMailer
   class SendNotificationAfterDelayedRegMailer < ApplicationMailer
     default :template_path => "mailers/#{self.name.underscore}"
 

@@ -1,4 +1,4 @@
-module MasdiagEvent
+module MasdiagMailer
 
 	class SendCancellationNotificationsMailer < ApplicationMailer
 		include ActionView::Helpers::AssetTagHelper

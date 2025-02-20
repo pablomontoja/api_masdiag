@@ -24,7 +24,7 @@ module MasdiagMailer
     # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla anulowanych próbek
     def send_cancellation_notifications
       begin
-        MasdiagEvent::SendCancellationNotificationsJob.perform_later(params["sample_ids"])
+        MasdiagMailer::SendCancellationNotificationsJob.perform_later(params["sample_ids"])
         render plain: "OK", status: 200
       rescue Exception => ex
         render json: { "error": ex.message }, status: 500
@@ -32,10 +32,10 @@ module MasdiagMailer
     end
 
     # POST /mailer/send_acceptance_notifications
-    # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla anulowanych próbek
+    # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla przyjętych próbek
     def send_acceptance_notifications
       begin
-        SendAcceptanceNotificationsJob.delay.perform_later(params["sample_ids"])
+        MasdiagMailer::SendAcceptanceNotificationsJob.delay.perform_later(params["sample_ids"])
         render plain: "OK", status: 200
       rescue Exception => ex
         render json: { "error": ex.message }, status: 500
@@ -46,7 +46,7 @@ module MasdiagMailer
     # raportowanie błędów - LabSample, indclients2
     def send_error_notifications
       begin
-        SendErrorNotificationsMailer.send_mail(params.to_unsafe_hash).deliver_later
+        MasdiagMailer::SendErrorNotificationsMailer.send_mail(params.to_unsafe_hash).deliver_later
         render plain: "OK", status: 200
       rescue Exception => ex
         render json: { "error": ex.message }, status: 500
@@ -57,7 +57,7 @@ module MasdiagMailer
     #
     def send_notification_after_delayed_reg
       begin
-        MasdiagEvent::SendNotificationAfterDelayedRegJob.delay.perform_later(params[:sample_id])
+        MasdiagMailer::SendNotificationAfterDelayedRegJob.delay.perform_later(params[:sample_id])
         render plain: "OK", status: 200
       rescue StandardError => ex
         render json: { "error": ex.message }, status: 500
@@ -69,9 +69,9 @@ module MasdiagMailer
     def after_sample_registration
       begin
         if Measurement.where(SampleId: params[:sample_id], ProjectId: 25).any?
-          ThreeMethylDopaMailer.after_sample_registration(params[:sample_id]).deliver_later     
+          MasdiagMailer::ThreeMethylDopaMailer.after_sample_registration(params[:sample_id]).deliver_later     
         else
-          IndMailer.after_sample_registration(params[:sample_id]).deliver_later
+          MasdiagMailer::IndMailer.after_sample_registration(params[:sample_id]).deliver_later
         end
         render plain: "OK", status: 200
       rescue StandardError => ex

@@ -15,7 +15,7 @@ class V1::WrongSampleUpdater < ApplicationService
       Notification::SampleChangedJob.perform_later(@sample.Id)
       # SendMailNotificationJob.perform_later("send_cancellation_notifications", @sample)
     else
-      MasdiagEvent::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+      MasdiagMailer::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
       # SendMailNotificationJob.perform_later("send_notification_after_delayed_reg", @sample)
     end
 

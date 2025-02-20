@@ -55,7 +55,7 @@
                                         <p style="margin: 0 0 16px"><b>Kod próbki:</b> <%= @sample.Code %></p>                                        
 
                                         <% unless @sample.rsc&.projects_names&.join(", ").blank? %>
-                                          <p style="margin: 0 0 16px"><b>Zlecone badania:</b> <%= @sample.rsc&.projects_names&.join(", ") %></p>
+                                          <p style="margin: 0 0 16px"><b>Zlecone badania:</b> <%= @sample.rsc&.projects_names_pl&.join(", ") %></p>
                                         <% end %>
 
                                         <p style="margin: 0 0 16px"><b>Imię i nazwisko pacjenta:</b> <%= @sample.patient.fullname %></p>                                        

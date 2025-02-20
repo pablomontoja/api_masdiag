@@ -29,6 +29,10 @@ class ReservedSampleCode < ApplicationRecord
     Sample.find_by(Code: self.Code)
   end
 
+  def projects_names_pl
+    return self.projects.map { |p| p.Name  }
+  end
+
   def projects_names
     proj_ids = self.projects.map { |p| p.Id  }
     tests = V1::Common::AVAILABLE_TESTS

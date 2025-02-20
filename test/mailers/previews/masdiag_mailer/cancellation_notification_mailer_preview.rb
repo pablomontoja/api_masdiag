@@ -5,7 +5,7 @@ class CancellationNotificationMailerPreview < ActionMailer::Preview
 		rsc_boxes = ReservedSampleCode.includes(package: :product).where(Code: cancelled).where(package: {products: {type: [1, 4]}}).where(IsRetailSale: true).limit(100).pluck(:Code)
 		sample = Sample.includes(:patient).where(Code: rsc_boxes).where(soaking_degree_id: [4, 5]).where(Patients: {IsVirtual: false}).where.not(Patients: {email: nil}).limit(10).sample
 
-		MasdiagEvent::SendCancellationNotificationsMailer.send_mail_to_patient(sample.Id)	
+		MasdiagMailer::SendCancellationNotificationsMailer.send_mail_to_patient(sample.Id)	
 	end
 
 	def send_mail_to_contractor
@@ -13,7 +13,7 @@ class CancellationNotificationMailerPreview < ActionMailer::Preview
 		not_rsc_boxes = ReservedSampleCode.includes(package: :product).where(Code: cancelled).where.not(package: {products: {type: [1, 4]}}).limit(100).pluck(:Code)
 		sample = Sample.includes(:patient).where(Code: not_rsc_boxes).where(soaking_degree_id: [4, 5]).where(Patients: {IsVirtual: false}).where.not(Patients: {email: nil}).limit(10).sample
     contractor = Contractor.find(sample.patient.ContractorId)
-    MasdiagEvent::SendCancellationNotificationsMailer.send_mail_to_contractor(sample.Id, contractor.email)
+    MasdiagMailer::SendCancellationNotificationsMailer.send_mail_to_contractor(sample.Id, contractor.email)
 	end
 
 	

@@ -7,7 +7,7 @@ class NotificationAfterDelayedRegMailerPreview < ActionMailer::Preview
   	key = grouped_by_email.keys.first
   	values = grouped_by_email.values.first
     
-    MasdiagEvent::SendNotificationAfterDelayedRegMailer.send_mail(key, values.map{|m| m.Id})
+    MasdiagMailer::SendNotificationAfterDelayedRegMailer.send_mail(key, values.map{|m| m.Id})
 	end
 	
 	

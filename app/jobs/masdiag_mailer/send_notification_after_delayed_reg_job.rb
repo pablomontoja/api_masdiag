@@ -1,4 +1,4 @@
-module MasdiagEvent
+module MasdiagMailer
 
   # Jeśli próbka rejestrowana jest przez pacjenta już po dotarciu próbki do laboratorium, konieczne jest poinformowanie 
   # osób, które odpowiadają za wykonanie zleconych pomiarów. Jeśli wynik pomiaru jest już gotowy to konieczne jest przeliczenie wyniku 
@@ -10,7 +10,7 @@ module MasdiagEvent
     	meases = Measurement.joins(:sample, :project).where(SampleId: sample_id)
     	grouped_by_email = meases.group_by{ |m| m.project.responsible_person_email }
       grouped_by_email.each do |k, v|
-        MasdiagEvent::SendNotificationAfterDelayedRegMailer.send_mail(k, v.map{|m| m.Id}).deliver_later
+        MasdiagMailer::SendNotificationAfterDelayedRegMailer.send_mail(k, v.map{|m| m.Id}).deliver_later
       end
     end
 

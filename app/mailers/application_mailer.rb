@@ -1,4 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
+  self.delivery_job = MasdiagMailDeliveryJob
   include ActionView::Helpers::AssetTagHelper
   include ActionView::Helpers::UrlHelper
   default from: "powiadomienia@masdiag.pl", reply_to: "pomoc@masdiag.pl"

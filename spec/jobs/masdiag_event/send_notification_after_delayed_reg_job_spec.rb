@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe MasdiagEvent::SendNotificationAfterDelayedRegJob, type: :job do
+RSpec.describe MasdiagMailer::SendNotificationAfterDelayedRegJob, type: :job do
   describe '#perform' do
     let(:sample_id) { 123 }
     let(:project1) { create(:project, responsible_person_email: 'person1@example.com') }
@@ -12,15 +12,15 @@ RSpec.describe MasdiagEvent::SendNotificationAfterDelayedRegJob, type: :job do
     let!(:measurement3) { create(:measurement, Id: 3, project: project2, sample: sample) }
 
     before do
-      allow(MasdiagEvent::SendNotificationAfterDelayedRegMailer).to receive(:send_mail).and_return(double(deliver_later: true))
+      allow(MasdiagMailer::SendNotificationAfterDelayedRegMailer).to receive(:send_mail).and_return(double(deliver_later: true))
     end
 
     it 'groups measurements by project responsible person email' do
       subject.perform(sample_id)
 
-      expect(MasdiagEvent::SendNotificationAfterDelayedRegMailer).to have_received(:send_mail)
+      expect(MasdiagMailer::SendNotificationAfterDelayedRegMailer).to have_received(:send_mail)
         .with('person1@example.com', [1, 2])
-      expect(MasdiagEvent::SendNotificationAfterDelayedRegMailer).to have_received(:send_mail)
+      expect(MasdiagMailer::SendNotificationAfterDelayedRegMailer).to have_received(:send_mail)
         .with('person2@example.com', [3])
     end
 
@@ -31,7 +31,7 @@ RSpec.describe MasdiagEvent::SendNotificationAfterDelayedRegJob, type: :job do
 
       it 'does not send any emails' do
         subject.perform(sample_id)
-        expect(MasdiagEvent::SendNotificationAfterDelayedRegMailer).not_to have_received(:send_mail)
+        expect(MasdiagMailer::SendNotificationAfterDelayedRegMailer).not_to have_received(:send_mail)
       end
     end
 
@@ -40,7 +40,7 @@ RSpec.describe MasdiagEvent::SendNotificationAfterDelayedRegJob, type: :job do
 
       it 'does not send any emails' do
         subject.perform(invalid_sample_id)
-        expect(MasdiagEvent::SendNotificationAfterDelayedRegMailer).not_to have_received(:send_mail)
+        expect(MasdiagMailer::SendNotificationAfterDelayedRegMailer).not_to have_received(:send_mail)
       end
     end
   end

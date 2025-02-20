@@ -19,32 +19,6 @@ module MasdiagMailer
 
       @projects = []
 
-      # measurement_id: 1098270, filename: "46XSR_2.pdf", patient_id: 160498, 9681
-      # measurement_id: 1097925, filename: "J9IPJ_2.pdf", patient_id: 119026, 1557
-      # measurement_id: 1096484, filename: "LDG7B.pdf", patient_id: 160211, 5740
-
-      # @files.each do |file|
-      #   tempfile = Tempfile.new([file.filename,'.pdf'], Rails.root.join('tmp') )
-      #   tempfile.binmode
-      #   tempfile.write(file.encrypted_file_contents) if file.encrypted_file_contents != nil
-      #   tempfile.write(file.file_contents) if file.encrypted_file_contents == nil || file.encrypted_file_contents&.size == 0
-      #   tempfile.close
-
-      #   my_pdf = Origami::PDF.read(tempfile.path, lazy: true, password: patient_password )
-
-      #   if my_pdf.encrypted?
-      #     attachments[file.filename] = File.read(tempfile.path)
-      #   else
-      #     my_pdf = Origami::PDF.read(tempfile.path)
-      #     tempfile2 = Tempfile.new([SecureRandom.hex(10),'.pdf'], Rails.root.join('tmp') )
-      #     my_pdf.encrypt(user_passwd: patient_password)
-      #     my_pdf.save(tempfile2.path)
-      #     attachments[file.filename] = File.read(tempfile2.path)
-      #   end
-
-      #   @projects.push(file.measurement.ProjectId)
-      # end
-
       @files.each do |file|
         attachments[file.filename] = file.encrypted_file_contents
         @projects.push(file.measurement.ProjectId)
