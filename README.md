@@ -6,7 +6,8 @@
 
 List of tasks to do during deployment on production
 1. perhaps Dockerfile7.1 should be used for deploy in production 
-2. rails db:prepare    ---- it is needed for solid_queue migration
+2. rails db:prepare    ---- it is needed for solid_queue migration if first task is not proceeded
+3. enabling YJIT in production and verification
 
 
 
@@ -22,6 +23,17 @@ rails runner LSI_validation.rb
 ```
 
 
+
+
+# Enabling ruby YJIT
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+rustc --version
+
+rvm reinstall 3.3.7 --reconfigure --enable-yjit
+ruby --yjit -e "p RubyVM::YJIT.enabled?" 
+```
 
 
 

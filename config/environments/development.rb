@@ -82,4 +82,11 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = { :address => "127.0.0.1", :port => 1025 }
 
   config.action_mailer.show_previews = true
+
+  if defined?(RubyVM::YJIT) && RubyVM::YJIT.respond_to?(:enable)
+    RubyVM::YJIT.enable
+     puts "YJIT is enabled :)"
+  else
+    puts "YJIT is not enabled"
+  end
 end
