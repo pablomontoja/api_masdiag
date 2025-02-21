@@ -2,12 +2,12 @@ default: &default
   dispatchers:
     - polling_interval: 1
       batch_size: 100
-  workers:
-    - queues: [ mailers background ]
-      threads: 1
-      processes: 1
-      polling_interval: 1
+  workers:    
     - queues: "*"
+      threads: 1
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      polling_interval: 0.5
+    - queues: [ mailers ]
       threads: 1
       processes: 1
       polling_interval: 1

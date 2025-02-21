@@ -16,12 +16,19 @@ default: &default
   
 
 development:
-  <<: *default
-  # database: api_masdiag_staging
-  database: LabSample
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
+  primary:
+    <<: *default
+    database: LabSample
+    username: <%= Rails.application.credentials.db.username %>
+    password: <%= Rails.application.credentials.db.password %>
+    host: <%= Rails.application.credentials.db.host %>
+  queue:
+    <<: *default
+    database: solid_queue_db
+    username: <%= Rails.application.credentials.db.username %>
+    password: <%= Rails.application.credentials.db.password %>
+    host: <%= Rails.application.credentials.db.host %>    
+    migrations_paths: db/queue_migrate
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -54,15 +61,32 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: LabSample
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
+  primary:
+    <<: *default
+    database: LabSample
+    username: <%= Rails.application.credentials.db.username %>
+    password: <%= Rails.application.credentials.db.password %>
+    host: <%= Rails.application.credentials.db.host %>
+  queue:
+    <<: *default
+    database: solid_queue_db
+    username: <%= Rails.application.credentials.db.username %>
+    password: <%= Rails.application.credentials.db.password %>
+    host: <%= Rails.application.credentials.db.host %>    
+    migrations_paths: db/queue_migrate
 
 staging:
-  <<: *default
-  database: api_masdiag_staging
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
+  primary:
+    <<: *default
+    database: api_masdiag_staging
+    username: <%= Rails.application.credentials.db.username %>
+    password: <%= Rails.application.credentials.db.password %>
+    host: <%= Rails.application.credentials.db.host %>
+  queue:
+    <<: *default
+    database: solid_queue_db
+    username: <%= Rails.application.credentials.db.username %>
+    password: <%= Rails.application.credentials.db.password %>
+    host: <%= Rails.application.credentials.db.host %>    
+    migrations_paths: db/queue_migrate
+
