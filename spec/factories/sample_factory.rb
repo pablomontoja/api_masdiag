@@ -7,7 +7,7 @@ FactoryBot.define do
     SampleState { 1 }
     SampleStatus { 1 }
     WrongRegistrationStatus { 0 }
-    MaterialType { 0 }
+    MaterialType { :dbs }
     patient
   end
 end
@@ -24,7 +24,7 @@ FactoryBot.define do
     SampleState { 2 }
     SampleStatus { 2 }
     WrongRegistrationStatus { 1 }
-    MaterialType { 0 }
+    MaterialType { :dbs }
     association :patient, factory: :virtual_patient
   end
 end

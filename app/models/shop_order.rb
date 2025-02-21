@@ -1,5 +1,5 @@
 class ShopOrder < ApplicationRecord
-	serialize :package_ids, Array
+	serialize :package_ids, type: Array
 
 	validates :number, uniqueness: true
 	validates :email, presence: true
