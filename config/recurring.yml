@@ -1,9 +1,14 @@
 default: &default
+  hourly_failed_executions_checking:
+    class: MasdiagRecurring::Hourly::FailedExecutionMonitoringJob
+    queue: background
+    args: []
+    schedule: every hour
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
-    args: [ { batch_size: 500 } ]
-    schedule: every 5 minutes   
+    args: [ { batch_size: 500 }, 100 ]
+    schedule: every 5 minutes    
     
 
 development:
