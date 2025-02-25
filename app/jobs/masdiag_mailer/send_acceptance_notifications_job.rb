@@ -18,7 +18,7 @@ module MasdiagMailer
         end
 
       rescue StandardError => err
-        MasdiagMailer::SendErrorNotificationsMailer.send_mail({SendAcceptanceNotificationsJob: "ERROR: #{err}", SampleCode: @sample.Code})
+        MasdiagMailer::SendErrorNotificationsMailer.send_mail({SendAcceptanceNotificationsJob: "ERROR: #{err}", SampleCode: @sample&.Code})
       end
     end
 
