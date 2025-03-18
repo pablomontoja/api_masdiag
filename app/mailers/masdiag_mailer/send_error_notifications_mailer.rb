@@ -4,6 +4,7 @@ module MasdiagMailer
     include ActionView::Helpers::UrlHelper
     default :template_path => "mailers/#{self.name.underscore}"
 
+    # params is a Hash
     def send_mail(params)    
       @params = params
 
