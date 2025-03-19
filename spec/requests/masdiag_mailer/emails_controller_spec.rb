@@ -339,5 +339,62 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
   end
 
 
+  describe 'POST #masdiag_website_contact_form' do
+    let(:valid_params) do
+      {
+        name: 'John Doe',
+        email: 'john@example.com',
+        message: 'Hello, this is a test message.'
+      }
+    end
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+    
+    context 'with valid parameters' do
+      it 'returns a success response' do
+        allow(MasdiagMailer::MasdiagPlContactFormMailer).to receive(:send_mail).and_return(double(deliver_later: true))
+        
+        post '/masdiag_mailer/masdiag_website_contact_form', params: valid_params.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to eq('OK')
+      end
+
+      it 'calls the mailer with correct parameters' do
+        expect(MasdiagMailer::MasdiagPlContactFormMailer).to receive(:send_mail)
+          .with({ name: 'John Doe', email: 'john@example.com', message: 'Hello, this is a test message.' })
+          .and_return(double(deliver_later: true))
+        
+        post '/masdiag_mailer/masdiag_website_contact_form', params: valid_params.to_json, headers: http_auth_header_with_json_content_type
+      end
+    end
+
+    context 'when an error occurs' do
+      it 'returns a 500 status with error message' do
+        allow(MasdiagMailer::MasdiagPlContactFormMailer).to receive(:send_mail)
+          .and_raise(StandardError.new('Something went wrong'))
+        
+        post '/masdiag_mailer/masdiag_website_contact_form', params: valid_params.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(:internal_server_error)
+        expect(JSON.parse(response.body)['error']).to eq('Something went wrong')
+      end
+    end
+
+    context 'with missing parameters' do
+      it 'fails when email is missing' do
+        allow(MasdiagMailer::MasdiagPlContactFormMailer).to receive(:send_mail)
+          .and_raise(StandardError.new('Email is required'))
+        
+        post '/masdiag_mailer/masdiag_website_contact_form', params: valid_params.except(:email).to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(:internal_server_error)
+        expect(JSON.parse(response.body)['error']).to eq('Email is required')
+      end
+    end
+  end
+
+
 
 end

@@ -114,10 +114,11 @@ module MasdiagMailer
 
     # POST /mailer/masdiag_website_contact_form
     #
+    # TODO masdiag_website_contact_form endpoint must be reconfigured at masdiag.pl site
     def masdiag_website_contact_form
       begin
         msg = { name: params[:name], email: params[:email], message: params[:message] }
-        MasdiagContactFormMailer.send_mail(msg).deliver_later
+        MasdiagMailer::MasdiagPlContactFormMailer.send_mail(msg).deliver_later
         render plain: "OK", status: 200
       rescue StandardError => ex
         render json: { "error": ex.message }, status: 500
