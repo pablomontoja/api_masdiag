@@ -200,5 +200,61 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
   end
 
 
+  describe 'POST #after_sample_registration' do
+    let(:sample_id) { 12345 }
+    let(:project_id) { 25 }
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+
+    context 'when sample is associated with project 25' do
+      before do
+        allow(Measurement).to receive(:where).with(SampleId: sample_id, ProjectId: project_id).and_return([double('Measurement')])
+        allow(MasdiagMailer::ThreeMethylDopaMailer).to receive(:after_sample_registration).with(sample_id).and_return(double('Mailer', deliver_later: true))
+      end
+
+      it 'sends email via ThreeMethylDopaMailer' do
+        expect(MasdiagMailer::ThreeMethylDopaMailer).to receive(:after_sample_registration).with(sample_id).and_return(double('Mailer', deliver_later: true))
+        
+        post '/masdiag_mailer/after_sample_registration', params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq('OK')
+      end
+    end
+
+    context 'when sample is not associated with project 25' do
+      before do
+        allow(Measurement).to receive(:where).with(SampleId: sample_id, ProjectId: project_id).and_return([])
+        allow(MasdiagMailer::IndMailer).to receive(:after_sample_registration).with(sample_id).and_return(double('Mailer', deliver_later: true))
+      end
+
+      it 'sends email via IndMailer' do
+        expect(MasdiagMailer::IndMailer).to receive(:after_sample_registration).with(sample_id).and_return(double('Mailer', deliver_later: true))
+        
+        post '/masdiag_mailer/after_sample_registration', params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq('OK')
+      end
+    end
+
+    context 'when an error occurs' do
+      before do
+        allow(Measurement).to receive(:where).with(SampleId: sample_id, ProjectId: project_id).and_raise(StandardError.new('Something went wrong'))
+      end
+
+      it 'returns 500 status with error message' do
+        post '/masdiag_mailer/after_sample_registration', params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(500)
+        expect(JSON.parse(response.body)).to eq({ 'error' => 'Something went wrong' })
+      end
+    end
+  end
+
+
+
+
 
 end
