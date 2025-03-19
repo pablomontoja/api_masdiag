@@ -7,7 +7,7 @@ module MasdiagMailer
       @sample = Sample.find(sample_id)
       return if @sample.nil?
 
-      attachments["potwierdzenie-rejestracji-próbki-#{@sample.Code}.pdf"] = RegistrationConfirmationThreeOmd.new(sample_id).render
+      attachments["potwierdzenie-rejestracji-próbki-#{@sample.Code}.pdf"] = RegistrationConfirmationThreeOmdPdf.new(sample_id).render
 
       mail(
          to: @sample.patient.email,

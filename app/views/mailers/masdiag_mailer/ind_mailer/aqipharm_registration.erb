@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h3>Cześć,</h3>
+     <p>
+      Ktoś zarejestrował próbkę z AQI PHARM poprzez stronę rejestracja.masdiag.pl:
+    </p>
+    <table style="border: 1px solid black; border-spacing: 10px;">
+    	<tr>
+      	<th>Kod próbki</th>
+      	<th>Pacjent</th>
+        <th>Email pacjenta</th>
+    	</tr>	
+
+    	<tr> 
+      	<td><%= @sample.Code %></td>
+        <td><%= @sample.patient.fullname %></td>
+        <td><%= @sample.patient.email %></td>
+    	</tr>
+    
+    </table>
+
+    <br>
+
+    <p>
+      Z poważaniem,<br><br>
+      <%= email_image_tag("logo_masdiag.png", width: "200px") %><br>
+      <b>Dział IT</b>
+    </p>
+
+
+    <p>
+      Wiadomość wygenerowana automatycznie.
+    </p>
+  </body>
+</html>
