@@ -167,6 +167,38 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
   end
 
 
+  describe "POST #send_notification_after_delayed_reg" do
+    let(:sample_id) { 1000 }
+    let(:endpoint) { "/masdiag_mailer/send_notification_after_delayed_reg" }
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+    
+    context "when the job is successfully enqueued" do
+      it "returns status 200 with 'OK' response" do
+        expect(MasdiagMailer::SendNotificationAfterDelayedRegJob).to receive(:perform_later).with(sample_id)
+        
+        post endpoint, params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq("OK")
+      end
+    end
+    
+    context "when an error occurs" do
+      before do
+        allow(MasdiagMailer::SendNotificationAfterDelayedRegJob).to receive(:perform_later).and_raise(StandardError.new("Test error"))
+      end
+      
+      it "returns status 500 with error message" do
+        post endpoint, params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(500)
+        expect(JSON.parse(response.body)["error"]).to eq("Test error")
+      end
+    end
+  end
+
 
 
 end

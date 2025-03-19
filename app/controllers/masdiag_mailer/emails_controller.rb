@@ -57,7 +57,7 @@ module MasdiagMailer
     #
     def send_notification_after_delayed_reg
       begin
-        MasdiagMailer::SendNotificationAfterDelayedRegJob.delay.perform_later(params[:sample_id])
+        MasdiagMailer::SendNotificationAfterDelayedRegJob.perform_later(params[:sample_id])
         render plain: "OK", status: 200
       rescue StandardError => ex
         render json: { "error": ex.message }, status: 500
