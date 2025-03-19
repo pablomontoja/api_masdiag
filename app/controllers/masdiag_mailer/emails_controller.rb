@@ -79,22 +79,22 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/aqipharm_registration
-    #
-    def aqipharm_registration
-      begin
-        IndMailer.aqipharm_registration(params[:sample_id]).deliver_later
-        render plain: "OK", status: 200
-      rescue StandardError => ex
-        render json: { "error": ex.message }, status: 500
-      end
-    end
+    # # POST /mailer/aqipharm_registration
+    # #
+    # def aqipharm_registration
+    #   begin
+    #     IndMailer.aqipharm_registration(params[:sample_id]).deliver_later
+    #     render plain: "OK", status: 200
+    #   rescue StandardError => ex
+    #     render json: { "error": ex.message }, status: 500
+    #   end
+    # end
 
     # POST /mailer/shipping_after_new_order
     #
     def shipping_after_new_order
       begin
-        IndMailer.shipping_after_new_order(params[:shop_order_id]).deliver_later
+        MasdiagMailer::IndMailer.shipping_after_new_order(params[:shop_order_id]).deliver_later
         render plain: "OK", status: 200
       rescue StandardError => ex
         render json: { "error": ex.message }, status: 500
@@ -105,7 +105,7 @@ module MasdiagMailer
     #
     def after_new_order_save
       begin
-        IndMailer.after_new_order_save(params[:shop_order_id]).deliver_later
+        MasdiagMailer::IndMailer.after_new_order_save(params[:shop_order_id]).deliver_later
         render plain: "OK", status: 200
       rescue StandardError => ex
         render json: { "error": ex.message }, status: 500

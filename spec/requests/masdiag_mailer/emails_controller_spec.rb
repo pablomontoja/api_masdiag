@@ -254,6 +254,89 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
   end
 
 
+  describe "POST shipping_after_new_order" do
+    let(:shop_order_id) { 123 }
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+    
+    context "when successful" do
+      before do
+        allow(MasdiagMailer::IndMailer).to receive(:shipping_after_new_order).with(shop_order_id).and_return(double(deliver_later: true))
+      end
+      
+      it "returns a 200 OK status" do
+        post "/masdiag_mailer/shipping_after_new_order", params: { shop_order_id: shop_order_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq("OK")
+      end
+      
+      it "calls the MasdiagMailer::IndMailer with the shop_order_id" do
+        expect(MasdiagMailer::IndMailer).to receive(:shipping_after_new_order).with(shop_order_id)
+        
+        post "/masdiag_mailer/shipping_after_new_order", params: { shop_order_id: shop_order_id }.to_json, headers: http_auth_header_with_json_content_type
+      end
+    end
+    
+    context "when an error occurs" do
+      let(:error_message) { "Something went wrong" }
+      
+      before do
+        allow(MasdiagMailer::IndMailer).to receive(:shipping_after_new_order).with(shop_order_id).and_raise(StandardError.new(error_message))
+      end
+      
+      it "returns a 500 status with the error message" do
+        post "/masdiag_mailer/shipping_after_new_order", params: { shop_order_id: shop_order_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(500)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response["error"]).to eq(error_message)
+      end
+    end
+  end
+
+  describe "POST after_new_order_save" do
+    let(:shop_order_id) { 123 }
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+    
+    context "when successful" do
+      before do
+        allow(MasdiagMailer::IndMailer).to receive(:after_new_order_save).with(shop_order_id).and_return(double(deliver_later: true))
+      end
+      
+      it "returns a 200 OK status" do
+        post "/masdiag_mailer/after_new_order_save", params: { shop_order_id: shop_order_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq("OK")
+      end
+      
+      it "calls the MasdiagMailer::IndMailer with the shop_order_id" do
+        expect(MasdiagMailer::IndMailer).to receive(:after_new_order_save).with(shop_order_id)
+        
+        post "/masdiag_mailer/after_new_order_save", params: { shop_order_id: shop_order_id }.to_json, headers: http_auth_header_with_json_content_type
+      end
+    end
+    
+    context "when an error occurs" do
+      let(:error_message) { "Something went wrong" }
+      
+      before do
+        allow(MasdiagMailer::IndMailer).to receive(:after_new_order_save).with(shop_order_id).and_raise(StandardError.new(error_message))
+      end
+      
+      it "returns a 500 status with the error message" do
+        post "/masdiag_mailer/after_new_order_save", params: { shop_order_id: shop_order_id }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(500)
+        parsed_response = JSON.parse(response.body)
+        expect(parsed_response["error"]).to eq(error_message)
+      end
+    end
+  end
 
 
 
