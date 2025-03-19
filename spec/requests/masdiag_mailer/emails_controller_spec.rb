@@ -89,4 +89,84 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
     end
   end
 
+  describe "POST #send_acceptance_notifications" do
+    let(:sample_ids) { [1, 2, 3] }
+    let(:endpoint) { "/masdiag_mailer/send_acceptance_notifications" }
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+    
+    context "when the job is successfully enqueued" do
+      it "returns status 200 with 'OK' response" do
+        expect(MasdiagMailer::SendAcceptanceNotificationsJob).to receive(:perform_later).with(sample_ids)
+        
+        post endpoint, params: { sample_ids: sample_ids }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq("OK")
+      end
+    end
+    
+    context "when an error occurs" do
+      before do
+        allow(MasdiagMailer::SendAcceptanceNotificationsJob).to receive(:perform_later).and_raise(StandardError.new("Test error"))
+      end
+      
+      it "returns status 500 with error message" do
+        post endpoint, params: { sample_ids: sample_ids }.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(500)
+        expect(JSON.parse(response.body)["error"]).to eq("Test error")
+      end
+    end
+  end
+
+  describe 'POST #send_error_notifications' do
+    let(:params) { { error_message: 'Something went wrong', application: 'TestApp' } }
+    let!(:inst) { create(:institution, id: 1) }
+    let!(:contractor) { create(:contractor, institution_id: inst.id) }
+    let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+
+    context 'when email delivery is successful' do
+      before do
+        allow(MasdiagMailer::SendErrorNotificationsMailer).to receive(:send_mail).and_return(
+          double(deliver_later: true)
+        )
+      end
+
+      it 'returns a 200 OK status with "OK" text' do
+        post '/masdiag_mailer/send_error_notifications', params: params.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq('OK')
+      end
+
+      it 'calls the mailer with the correct parameters' do
+        expect(MasdiagMailer::SendErrorNotificationsMailer).to receive(:send_mail).with(
+          hash_including(params)
+        ).and_return(double(deliver_later: true))
+        
+        post '/masdiag_mailer/send_error_notifications', params: params.to_json, headers: http_auth_header_with_json_content_type
+      end
+    end
+
+    context 'when email delivery fails' do
+      before do
+        allow(MasdiagMailer::SendErrorNotificationsMailer).to receive(:send_mail).and_raise(
+          StandardError.new('Email delivery failed')
+        )
+      end
+
+      it 'returns a 500 status with error details' do
+        post '/masdiag_mailer/send_error_notifications', params: params.to_json, headers: http_auth_header_with_json_content_type
+        
+        expect(response).to have_http_status(500)
+        expect(JSON.parse(response.body)['error']).to eq('Email delivery failed')
+      end
+    end
+  end
+
+
+
+
 end

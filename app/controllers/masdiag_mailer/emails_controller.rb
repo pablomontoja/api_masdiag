@@ -35,7 +35,7 @@ module MasdiagMailer
     # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla przyjętych próbek
     def send_acceptance_notifications
       begin
-        MasdiagMailer::SendAcceptanceNotificationsJob.delay.perform_later(params["sample_ids"])
+        MasdiagMailer::SendAcceptanceNotificationsJob.perform_later(params["sample_ids"])
         render plain: "OK", status: 200
       rescue Exception => ex
         render json: { "error": ex.message }, status: 500
