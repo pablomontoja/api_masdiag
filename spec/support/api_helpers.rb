@@ -13,6 +13,10 @@ module ApiHelpers
     {"Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("username","password")}
   end
 
+  def http_auth_header_with_json_content_type
+    {"Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("username","password"), 'Content-Type' => 'application/json'}
+  end
+
   def generate_results(codes: [])
     file = File.open("scripts/blank.pdf")
     Measurement.includes(:sample).where(sample: {Code: codes}).each do |meas|

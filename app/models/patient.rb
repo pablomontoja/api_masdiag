@@ -63,6 +63,7 @@ class Patient < ApplicationRecord
     self.Gender = pesel.sex - 1 # js activepesel uses 1, 2 codes for gender whereas our app uses 0, 1
   end
 
+# TODO - I think that send_results_on_mail shouldn't be here in set_time_stamps method because it is trigerred before each save
   def set_time_stamps
     self.CreatedAt = DateTime.now if self.new_record?
     self.RegistrationDate = DateTime.now if self.new_record?
