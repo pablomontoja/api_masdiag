@@ -7,6 +7,7 @@ class Measurement < ApplicationRecord
 	belongs_to :sample, class_name: 'Sample', foreign_key: 'SampleId', inverse_of: :measurements
 	belongs_to :project, class_name: "Project", foreign_key: "ProjectId"
 	has_one :online_file, dependent: :destroy
+	has_one :plate_measurement, class_name: "PlateMeasurement", foreign_key: "MeasurementId", dependent: :destroy
 	has_one :result, class_name: "Result", foreign_key: "MeasurementId"
   
   def set_time_stamps

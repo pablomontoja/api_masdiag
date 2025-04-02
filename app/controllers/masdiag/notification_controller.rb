@@ -5,6 +5,8 @@ class Masdiag::NotificationController < ApplicationController
   # TODO - trigger - it need to be tested
   def trigger
     begin
+      Cerascreen::Labordatenbank::GetResultsJob.perform_later()
+      
       errors = []
       ids = ApiAccount.pluck(:contractor_id)
       meas_ids = Measurement.includes(sample: :patient).where(Status: 5).where(Patients: {ContractorId: ids}).pluck(:Id)
