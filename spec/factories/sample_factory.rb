@@ -9,6 +9,7 @@ FactoryBot.define do
     WrongRegistrationStatus { 0 }
     MaterialType { 0 }
     patient
+    # soaking_degree
   end
 end
 
@@ -26,6 +27,7 @@ FactoryBot.define do
     WrongRegistrationStatus { 1 }
     MaterialType { 0 }
     association :patient, factory: :virtual_patient
+    # soaking_degree
   end
 end
 

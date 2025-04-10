@@ -10,9 +10,12 @@ module Cerascreen
 			def call
 				begin
 					resp = @connection.get("#{Rails.application.credentials.labordatenbank_api.url}/#{@sample_code}")
-					return nil if resp.body.nil?
+					j = Oj.dump(resp.body)
+					pp j
+					return nil if j == "null"
+					return nil unless j.is_a?(Array)
 
-					r = Cerascreen::Labordatenbank::Result.new(resp.body.last)
+					r = Cerascreen::Labordatenbank::Result.new(j.last)
 					handle_result(r)
 				rescue StandardError => e
 		      Sentry.capture_exception(e)
