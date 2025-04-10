@@ -1,8 +1,6 @@
 class Notification::SendResultJob < ApplicationJob
   retry_on StandardError, wait: :exponentially_longer, attempts: 3 do |job, error|
-    errors = [Time.current.to_s, "MASDIAG API", job.class.name, "Exception - #{error}", "Job details: #{job.to_json}"]
-    puts errors
-    # IndMailer.after_error(errors).deliver_later
+    Sentry.capture_exception(error)
   end
 
   def perform(measurement_id)

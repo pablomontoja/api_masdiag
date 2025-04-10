@@ -5,6 +5,7 @@ FactoryBot.define do
     expiry_date { 1.year.since }
     CreatedAt { Time.now }
     package_id { 1 }
+    IsRetailSale { true }
   end
 
   factory :second_reserved_sample_code, class: ReservedSampleCode do
@@ -13,6 +14,7 @@ FactoryBot.define do
     expiry_date { 1.year.since }
     CreatedAt { Time.now }
     package_id { 2 }
+    IsRetailSale { true }
   end
 
   factory :rsc_without_institution, class: ReservedSampleCode do

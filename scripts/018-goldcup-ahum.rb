@@ -15,7 +15,7 @@ ActiveRecord::Base.transaction do
 	user = User.find_by(email: "pawel.swider@masdiag.pl")
 
 
-	po = ProductionOrder.new(lot: "006.Goldcup (Ahum)", packages_expiry_date: Date.parse("2025-04-01"), packages_count: 10, product_id: 1, stock_room_id: 1)
+	po = ProductionOrder.new(lot: "006.Goldcup (Ahum)", packages_expiry_date: Date.parse("2035-04-01"), packages_count: 10, product_id: 1, stock_room_id: 1)
 	ProductionOrdersJob.perform_now(po.attributes, user)
 
   omegaquant_codes = %w[SEGU386L SEJP83BU SECG2I6D SEIGWXJU SELZAHE6 SEC9I5KB SE83ECJJ SEFN234B SEMIDKL1 SEWBLDJB]
