@@ -1,9 +1,7 @@
 module LalenApi
 	class RegisterKitJob < ApplicationJob
 		retry_on StandardError, wait: :exponentially_longer, attempts: 10 do |job, error|
-	    errors = [Time.current.to_s, "module LalenApi", job.class.name, "Exception - #{error}", "Job details: #{job.to_json}"]
-	    puts errors
-	    # IndMailer.after_error(errors).deliver_later
+	    Sentry.capture_exception(error)
 	  end
 
 		def perform(sample)
@@ -31,7 +29,7 @@ module LalenApi
         end    
 
 	      
-	    rescue Faraday::Error => e
+	    rescue StandardError => e
 	      Sentry.capture_exception(e)
 	      raise e
 	    end
