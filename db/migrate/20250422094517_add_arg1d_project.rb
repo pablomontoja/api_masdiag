@@ -133,9 +133,9 @@ class AddArg1dProject < ActiveRecord::Migration[7.0]
       analyte = Analyte.create!(
         Name: "Arg/Orn",                                                  
         ProjectId: project.Id,                                                 
-        IsCalculatedFromOthers: false,                                 
+        IsCalculatedFromOthers: true,                                 
         CutoffMin: 0.01,                                                
-        CutoffMax: nil,                                              
+        CutoffMax: 403.25,                                              
         Unit: nil,                                                
         NameInReport: "Arginina/Ornityna",                                          
         NameInAPI: "arginine/ornithine",                                             
