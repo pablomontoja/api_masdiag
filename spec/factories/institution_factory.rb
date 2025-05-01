@@ -3,7 +3,7 @@ FactoryBot.define do
     name { "Masdiag Sp. z o.o." }
     address { "ul. Żeromskiego 33, 01-882 Warszawa"}
     nip { "5222996468" }
-    region_of_activity { 0 }
+    # region_of_activity { 0 }
   end
 end
 
