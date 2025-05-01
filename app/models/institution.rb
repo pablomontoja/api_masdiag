@@ -13,10 +13,13 @@ class Institution < ApplicationRecord
   # validates :email, presence: true, if: Proc.new { |i| i.approve_contractor_after_registration }
 
   def fullname
-    if self.region_of_activity == 0
-      "#{self.name} - NIP #{self.nip}"
-    else
+    case self.kind
+    when "Hospital"
+      "#{self.name} - NIP #{self.nip} - Szpitalne"
+    when "ForeignInstitution"
       "#{self.name} - Instytucja Zagraniczna #{self.nip}"
+    else
+      "#{self.name} - NIP #{self.nip}"
     end
   end
 

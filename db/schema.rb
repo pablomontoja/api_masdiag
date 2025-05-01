@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_30_092913) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -563,21 +563,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "discounts", id: :integer, charset: "utf8", force: :cascade do |t|
-    t.string "name"
-    t.decimal "value", precision: 5, scale: 2
-    t.date "date_from"
-    t.date "date_to"
-    t.integer "type_of_discount"
-    t.boolean "is_permanent"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.decimal "value_step_two", precision: 5, scale: 2
-    t.integer "treshold_step_two"
-    t.decimal "value_step_three", precision: 5, scale: 2
-    t.integer "treshold_step_three"
-  end
-
   create_table "discounts_invoices", id: :integer, charset: "utf8", force: :cascade do |t|
     t.integer "invoice_id"
     t.integer "discount_id"
@@ -658,12 +643,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.binary "logo_file", size: :medium
     t.string "krs"
     t.string "regon"
-    t.integer "discount_id"
     t.boolean "has_disabled_invoices", default: false, null: false
     t.boolean "approve_contractor_after_registration", default: false, null: false
     t.string "email"
     t.integer "created_by_agent_id"
-    t.integer "region_of_activity", null: false
     t.boolean "wants_summary_of_performed_samples"
     t.text "footer_phone_and_email", size: :long
     t.text "patient_email_template_body"
@@ -690,14 +673,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.string "shipment_city"
     t.string "kind", default: "Institution", null: false
     t.string "email_for_results"
+    t.string "assigned_masdiag_bban", default: "09 2490 0005 0000 4530 4006 9262"
+    t.integer "days_for_payment"
     t.index ["created_by_agent_id"], name: "fk_rails_4adfc629f3"
-  end
-
-  create_table "institutions_projects", id: false, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
-    t.integer "institution_id"
-    t.integer "project_id"
-    t.index ["institution_id"], name: "index_institutions_projects_on_institution_id"
-    t.index ["project_id"], name: "index_institutions_projects_on_project_id"
   end
 
   create_table "instruments", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
@@ -709,7 +687,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.integer "lp"
     t.text "product_name"
     t.string "pkwiu"
-    t.decimal "unit_price", precision: 6, scale: 2
+    t.decimal "unit_price", precision: 9, scale: 2
     t.decimal "netto_value", precision: 9, scale: 2
     t.decimal "vat", precision: 4, scale: 2
     t.decimal "vat_value", precision: 8, scale: 2
@@ -720,8 +698,13 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.decimal "amount", precision: 8, scale: 2
     t.text "measurements_properties"
     t.integer "contractor_id"
+    t.integer "institution_id"
+    t.string "currency", default: "PLN"
+    t.bigint "test_id"
     t.index ["contractor_id"], name: "index_invoice_components_on_contractor_id"
+    t.index ["institution_id"], name: "fk_rails_49b9961858"
     t.index ["invoice_id"], name: "index_invoice_components_on_invoice_id"
+    t.index ["test_id"], name: "fk_rails_0c513b6435"
   end
 
   create_table "invoices", id: :integer, charset: "utf8", force: :cascade do |t|
@@ -741,13 +724,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.boolean "was_sent_by_mail"
     t.datetime "when_was_sent_by_mail", precision: nil
     t.binary "pdf_file", size: :medium
-    t.integer "institution_order_id", null: false
+    t.integer "institution_order_id"
     t.string "pdf_filename"
     t.string "ifirma_invoice_signature"
     t.date "issue_date"
     t.date "date_of_payment"
     t.boolean "is_paid", default: false
     t.date "was_paid_on"
+    t.integer "status", limit: 1, default: 0
+    t.integer "ifirma_fv_id"
     t.index ["institution_id"], name: "index_invoices_on_institution_id"
   end
 
@@ -1148,6 +1133,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
+  create_table "storage_delayed_jobs", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
   create_table "survey_question_translations", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "question_text"
     t.string "locale", null: false
@@ -1194,6 +1194,30 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
     t.index ["contractor_id"], name: "index_test_transactions_on_contractor_id"
     t.index ["project_id"], name: "index_test_transactions_on_project_id"
     t.index ["sample_id"], name: "index_test_transactions_on_sample_id"
+  end
+
+  create_table "tests", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.string "name"
+    t.string "acronym"
+    t.string "name_in_invoice"
+    t.integer "project_id", null: false
+    t.integer "default_price_cents", default: 0, null: false
+    t.string "default_price_currency", default: "PLN", null: false
+    t.integer "material_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "fk_rails_2ed91c6953"
+  end
+
+  create_table "tests_prices", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.bigint "test_id", null: false
+    t.integer "institution_id", null: false
+    t.integer "price_cents", default: 0, null: false
+    t.string "price_currency", default: "PLN", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id"], name: "fk_rails_f9edb21757"
+    t.index ["test_id"], name: "fk_rails_82784d5d9d"
   end
 
   add_foreign_key "AnalyteRanges", "Analytes", column: "AnalyteId", primary_key: "Id", name: "FK_AnalyteRanges_Analytes_AnalyteId"
@@ -1250,7 +1274,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
   add_foreign_key "db_files", "fileables", name: "FK_db_files_fileables_fileable_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institutions", "agents", column: "created_by_agent_id"
   add_foreign_key "invoice_components", "Contractors", column: "contractor_id", primary_key: "Id"
+  add_foreign_key "invoice_components", "institutions"
   add_foreign_key "invoice_components", "invoices"
+  add_foreign_key "invoice_components", "tests"
   add_foreign_key "invoices", "institutions"
   add_foreign_key "kits", "ReservedSampleCodes", column: "reserved_sample_code_id", primary_key: "Id"
   add_foreign_key "kits", "Samples", column: "sample_id", primary_key: "Id"
@@ -1275,4 +1301,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_22_094517) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "survey_questions", "Projects", primary_key: "Id"
   add_foreign_key "survey_reports", "Projects", column: "project_id", primary_key: "Id"
+  add_foreign_key "tests", "Projects", column: "project_id", primary_key: "Id"
+  add_foreign_key "tests_prices", "institutions"
+  add_foreign_key "tests_prices", "tests"
 end
