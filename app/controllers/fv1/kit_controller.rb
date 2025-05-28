@@ -29,8 +29,9 @@ class Fv1::KitController < V1::KitController
       assignment_params[:test_ids].each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
-      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
+      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: Current.api_account.institution.api_contractor_id)
     end
+    
     head :no_content
   end
 

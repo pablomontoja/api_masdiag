@@ -55,18 +55,17 @@ class Lalen::KitController < Fv1::KitController
     end
 
     @contractor_id = Current.api_account.contractor.Id
+    inst_id = get_lalen_institution(assignment_params[:code])
 
     ActiveRecord::Base.transaction do
       @current_rsc.reserved_tests.destroy_all
       assignment_params[:test_ids].each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
-      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
+      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
     end
+
     head :no_content
-
-
-
   end
 
   # POST /kits/declare
