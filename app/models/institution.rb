@@ -39,6 +39,10 @@ class Institution < ApplicationRecord
     ReservedSampleCode.where(Id: (rscs - reserved)).pluck(:Code)
   end
 
+  def api_contractor_id
+    Contractor.where(institution_id: self.id).find_by("first_name LIKE ?", "API%")&.Id
+  end
+
   private
 
   # def remove_whitespaces_and_dashes_in_nip
