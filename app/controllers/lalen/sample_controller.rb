@@ -14,6 +14,11 @@ class Lalen::SampleController < ApplicationController
       return
     end
 
+    if Sample.where(IsWrongRegistration: false).find_by(Code: @current_rsc.Code.upcase).present?
+      json_response({ message: "The sample with code #{@current_rsc.Code.upcase} already exist." }, :unprocessable_entity)
+      return
+    end
+
     @sample = Sample.where(IsWrongRegistration: true)
     .includes(measurements: %i[project result])
     .find_by(Code: @current_rsc.Code.upcase)
