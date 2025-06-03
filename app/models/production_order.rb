@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: production_orders
+#
+#  id                     :bigint           not null, primary key
+#  lot                    :string(255)
+#  packages_expiry_date   :datetime
+#  packages_count         :integer
+#  product_id             :bigint
+#  stock_room_id          :bigint
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  comment                :text(65535)
+#  sample_code_char_count :integer          default(5), not null
+#
 class ProductionOrder < ApplicationRecord
   belongs_to :product
   belongs_to :stock_room

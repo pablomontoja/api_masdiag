@@ -1,3 +1,45 @@
+# == Schema Information
+#
+# Table name: Samples
+#
+#  Id                            :integer          not null, primary key
+#  Code                          :string(50)       not null
+#  ProtocolName                  :text(4294967295)
+#  IsControlSample               :boolean          default(FALSE), not null
+#  IsWrongRegistration           :boolean          default(FALSE), not null
+#  IsSentBack                    :boolean          default(FALSE), not null
+#  SentBackDate                  :datetime
+#  Description                   :text(4294967295)
+#  RegistrationDate              :datetime
+#  IsValid                       :boolean          default(TRUE), not null
+#  PatientId                     :integer
+#  UserId                        :integer
+#  ProtocolIdOld                 :integer
+#  IsAuthWithoutResult           :boolean          default(FALSE), not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  payment_status                :integer
+#  AcceptanceDate                :datetime
+#  access_hash                   :string(255)
+#  sample_collection_date        :datetime
+#  UnsatisfactoryMaterialQuality :boolean          default(FALSE), not null
+#  soaking_degree_id             :integer
+#  WasWrongRegistration          :boolean          not null
+#  MaterialType                  :integer          not null
+#  SampleStatus                  :integer          not null
+#  SampleState                   :integer          not null
+#  Comment                       :text(4294967295)
+#  CancellationDate              :datetime
+#  ArchivingDate                 :datetime
+#  WrongRegistrationStatus       :integer          not null
+#  CancelledById                 :integer
+#  UtilizationDate               :datetime
+#  institution_custom_cbx        :boolean
+#  Lot                           :text(255)
+#  Level                         :text(255)
+#  selected_tests                :text(65535)
+#  clinical_info                 :text(65535)
+#
 class Sample < ApplicationRecord
   before_validation -> { self.Code.upcase! }
 
