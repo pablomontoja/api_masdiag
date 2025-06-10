@@ -14,9 +14,9 @@ class Regspec::InstitutionsController < ApplicationController
 
 	# regspec_institution PATCH  /regspec/institutions/:id
 	def update
-		inst = Institution.find(institution_params[:id])
+		inst = Institution.find(params[:id])
 		if inst.update(final_params)
-			json_response({ institution_id: inst.id }, :created)
+			json_response({})
 		else
 			json_response({ message: inst.errors.map(&:message).join(", ") }, :unprocessable_entity)
 		end
@@ -34,7 +34,7 @@ class Regspec::InstitutionsController < ApplicationController
 	#  nip            :string(255)
 	#
 	def institution_params
-		params.require(:institution).permit(:id, :name, :street_address, :postal_code, :city, :nip)		
+		params.require(:institution).permit(:name, :street_address, :postal_code, :city, :nip)		
 	end
 
 	def final_params
