@@ -171,6 +171,7 @@ Rails.application.routes.draw do
   #########################################################
   namespace :regspec, defaults: { format: :json } do
     resources :institutions, only: %i{ create update }
+    resources :contractors, only: %i{ create update }
   end
 
 

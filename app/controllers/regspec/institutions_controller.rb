@@ -3,7 +3,7 @@ class Regspec::InstitutionsController < ApplicationController
 
 	# regspec_institutions POST   /regspec/institutions 
 	def create
-		inst = Institution.new(final_params)
+		inst = Institution.new(creation_params)
 		if inst.save
 			json_response({ institution_id: inst.id }, :created)
 		else
@@ -15,7 +15,7 @@ class Regspec::InstitutionsController < ApplicationController
 	# regspec_institution PATCH  /regspec/institutions/:id
 	def update
 		inst = Institution.find(params[:id])
-		if inst.update(final_params)
+		if inst.update(update_params)
 			json_response({})
 		else
 			json_response({ message: inst.errors.map(&:message).join(", ") }, :unprocessable_entity)
@@ -37,7 +37,7 @@ class Regspec::InstitutionsController < ApplicationController
 		params.require(:institution).permit(:name, :street_address, :postal_code, :city, :nip)		
 	end
 
-	def final_params
+	def creation_params
 		ip = institution_params
 		ip.merge!(
 			address: "#{ ip[:street_address] }, #{ ip[:postal_code] }, #{ ip[:city] }", 
@@ -75,6 +75,18 @@ class Regspec::InstitutionsController < ApplicationController
 			shipment_city: "#{ ip[:city] }", 
 			kind: "Hospital", 
 			email_for_results: nil
+		).except(:street_address)
+	end
+
+	def update_params
+		ip = institution_params
+		ip.merge!(
+			address: "#{ ip[:street_address] }, #{ ip[:postal_code] }, #{ ip[:city] }",			
+			shipping_address: "#{ ip[:street_address] }, #{ ip[:postal_code] }, #{ ip[:city] }",
+			street: "#{ ip[:street_address] }",
+			shipment_street: "#{ ip[:street_address] }", 
+			shipment_postal_code: "#{ ip[:postal_code] }", 
+			shipment_city: "#{ ip[:city] }"
 		).except(:street_address)
 	end
 
