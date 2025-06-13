@@ -4,9 +4,7 @@ class Regspec::ContractorsController < ApplicationController
 	# regspec_institutions POST   /regspec/contractors 
 	def create
 		contractor = Contractor.new(final_params)
-		pass = SecureRandom.alphanumeric(32)
-		contractor.password = pass
-		contractor.password_confirmation = pass
+		contractor.encrypted_password = SecureRandom.alphanumeric(32)
 		contractor.confirmed_at = Time.now
 		contractor.approved = true
 		contractor.are_notifications_enabled = false
@@ -15,7 +13,7 @@ class Regspec::ContractorsController < ApplicationController
 		contractor.invalid_first_or_last_name = false
 		contractor.patient_is_orderer = false
 		contractor.is_super_contractor = false
-		contractor.can_add_samples = tru
+		contractor.can_add_samples = true
 
 		if contractor.save
 			json_response({ contractor_id: contractor.id }, :created)
