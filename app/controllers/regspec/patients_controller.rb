@@ -1,22 +1,22 @@
-class Regspec::ContractorsController < ApplicationController
+class Regspec::PatientsController < ApplicationController
 	include MasdiagCheck
 
 	# POST   /regspec/patients 
-	def create
-		patient = Patient.new(final_params)
+	# def create
+	# 	patient = Patient.new(final_params)
 
-		if patient.save
-			json_response({ patient_id: patient.id }, :created)
-		else
-			json_response({ message: patient.errors.map(&:message).join(", ") }, :unprocessable_entity)
-		end		
-	end
+	# 	if patient.save
+	# 		json_response({ patient_id: patient.id }, :created)
+	# 	else
+	# 		json_response({ message: patient.errors.map(&:message).join(", ") }, :unprocessable_entity)
+	# 	end		
+	# end
 
 
 	# PATCH  /regspec/patients/:id
 	def update
 		patient = Patient.find(params[:id])
-		if patient.update(final_params)
+		if patient.update(update_params)
 			json_response({})
 		else
 			pp patient.errors
@@ -43,18 +43,18 @@ class Regspec::ContractorsController < ApplicationController
 	#  id_card_nr          :string(255)
 	#
 	def patient_params
-		params.require(:contractor).permit(:name, :email, :institution_id)		
+		params.require(:patient).permit(:first_name, :last_name, :gender, :birth_date, :pesel)		
 	end
 
-	def final_params
-		cp = patient_params
-		cp.merge!(
-			Name: nil,                                                        
-			Address: nil,
-			first_name: cp[:name],
-			last_name: "",
-			nip: nil
-		).except(:name)
+	def update_params
+		pat = patient_params
+		pat.merge!(
+			FirstName: pat[:first_name],                                                        
+			LastName: pat[:last_name],
+			Pesel: pat[:pesel],
+			BirthDate: pat[:birth_date],
+			Gender: pat[:gender]
+		).except(:first_name, :last_name, :gender, :birth_date, :pesel)
 	end
 
-end
+end 

@@ -1,7 +1,7 @@
 class Regspec::SamplesController < ApplicationController
 	include MasdiagCheck
 
-	# POST   /regspec/patients 
+	# POST   /regspec/samples 
 	def create
 		db_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
@@ -30,7 +30,7 @@ class Regspec::SamplesController < ApplicationController
 	end
 
 
-	# PATCH  /regspec/patients/:id
+	# PATCH  /regspec/samples/:id
 	def update
 		sample = Sample.find(params[:id])
 		if sample.update(update_params)
@@ -45,7 +45,7 @@ class Regspec::SamplesController < ApplicationController
 	private
 
 	def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).each_value do |value|
+    params.require(:sample).permit(:id, :code, :sample_collection_date, :acceptance_date, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).merge(AcceptanceDate: params[:sample][:acceptance_date]).except(:acceptance_date).each_value do |value|
       case value
       when String
         value.try(:strip!)
@@ -56,14 +56,10 @@ class Regspec::SamplesController < ApplicationController
   end
 
   def update_params
-    params.require(:sample).permit(:code, :sample_collection_date).each_value do |value|
-      case value
-      when String
-        value.try(:strip!)
-      when ActionController::Parameters
-        value.each_value { |value| value.try(:strip!) }
-      end
-    end
+    prm = params.require(:sample).permit(:sample_collection_date, :acceptance_date)
+    prm.merge!(AcceptanceDate: prm[:acceptance_date])
+    prm = prm.except(:acceptance_date)
+    prm
   end
 
   # def add_reserved_tests

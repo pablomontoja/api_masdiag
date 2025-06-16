@@ -173,6 +173,7 @@ Rails.application.routes.draw do
     resources :institutions, only: %i{ create update }
     resources :contractors, only: %i{ create update }
     resources :samples, only: %i{ create update }
+    resources :patients, only: %i{ update }
   end
 
 
