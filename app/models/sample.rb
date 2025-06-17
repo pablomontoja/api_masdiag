@@ -95,6 +95,10 @@ class Sample < ApplicationRecord
     [4,5].include?(soaking_degree_id) || SampleStatus == 4
   end
 
+  def accepted_in_lab?
+    !self.AcceptanceDate.nil?
+  end
+
   #######################
   private
   #######################

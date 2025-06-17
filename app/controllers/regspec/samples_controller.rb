@@ -3,15 +3,17 @@ class Regspec::SamplesController < ApplicationController
 
 	# POST   /regspec/samples 
 	def create
-		db_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
+		@current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
-		if db_rsc.nil?
+		if @current_rsc.nil?
 			ActiveRecord::Base.transaction do			
 				add_rsc()
 			end
 		end
 		
 		db_sample = Sample.find_by(Code: sample_params[:code])
+
+		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date] if sample_params[:sample_collection_date].blank?
 		
 		if db_sample.present?
 			json_response({ message: "Sample already exist" }, :unprocessable_entity)
@@ -23,8 +25,10 @@ class Regspec::SamplesController < ApplicationController
     @sample.validate
 
     if @sample.save!(context: :fv1)
+    	process_not_accepted_sample({}) unless params["sample"]["acceptance_date"].blank?
       json_response({ sample_id: @sample.Id, patient_id: @sample.PatientId }, :created)
     else
+    	pp @sample.errors
       json_response({ message: @sample.errors }, :unprocessable_entity)
     end		
 	end
@@ -32,17 +36,26 @@ class Regspec::SamplesController < ApplicationController
 
 	# PATCH  /regspec/samples/:id
 	def update
-		sample = Sample.find(params[:id])
-		if sample.update(update_params)
+		@sample = Sample.find(params[:id])
+		process_not_accepted_sample(update_params) unless @sample.accepted_in_lab?
+		# TODO Regspec::SamplesController#update nie może duplikować zachowania Indclients/Api::RegspecSyncController#push_sample, push_sample musi być usuniety
+		# SendMailNotificationJob.perform_later("send_acceptance_notifications", @sample) unless @sample.accepted_in_lab? && @sample.Code.size == 5
+
+		if @sample.update(update_params)
 			json_response({ })
 		else
-			pp sample.errors
-			json_response({ message: sample.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			pp @sample.errors
+			json_response({ message: @sample.errors.map(&:message).join(", ") }, :unprocessable_entity)
 		end
 	end
 
 
 	private
+
+	def process_not_accepted_sample(prms)
+    @sample.measurements.update_all(Status: 1)
+    @sample.update_columns(prms.merge({SampleStatus: 2, SampleState: 2, soaking_degree_id: 1}))
+  end
 
 	def sample_params
     params.require(:sample).permit(:id, :code, :sample_collection_date, :acceptance_date, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).merge(AcceptanceDate: params[:sample][:acceptance_date]).except(:acceptance_date).each_value do |value|
