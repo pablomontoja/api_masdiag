@@ -11,14 +11,13 @@
     Z przykrością informujemy, że nie jesteśmy w stanie wykonać analiz dla próbki, która dotarł od Państwa do naszego laboratorium.
   </p>
   <p>
-    Istnieją dwa powody, dla których diagnosta laboratoryjny odrzuca próbkę:
+    Głównymi powodami odrzucenia materiału przez diagnostę laboratoryjnego są:
   </p>
   <% if @sample.MaterialType.to_sym == :dbs  %>
-  <ul>
-    <li>Ilość krwi na bibule jest niewystarczająca do wykonania analiz.</li>
-    lub
-    <li>Bibuła nie została wysuszona przed wysłaniem jej do laboratorium.</li>
-  </ul>
+    <ul>
+      <li>niedostateczna ilość materiału do wykonania badań</li>
+      <li>zła jakość pobrania mogąca wpływać na wynik (np. w przypadku pobierania krwi na bibułę jest to m. in. brak wysuszenia krwi przed wysłaniem, kilkukrotne naniesienie krwi na to samo pole czy niedostateczne jej przesączenie na drugą stronę)</li>
+    </ul>
   <% elsif @sample.MaterialType.to_sym == :urine %>
   <ul>
     <li>Ilość moczu jest niewystarczająca do wykonania analiz.</li>
