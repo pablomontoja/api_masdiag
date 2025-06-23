@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: PlateMeasurements
+#
+#  MeasurementId :integer          not null, primary key
+#  PlatePosition :integer          not null
+#  PlateId       :integer          not null
+#  CreatedById   :integer          not null
+#  CreatedAt     :datetime         not null
+#
 class PlateMeasurement < ApplicationRecord
 	self.table_name = "PlateMeasurements"
 	self.primary_key = "MeasurementId"
