@@ -166,6 +166,17 @@ Rails.application.routes.draw do
     resources :samples, only: :index
   end
 
+  #########################################################
+  ### REGSPEC
+  #########################################################
+  namespace :regspec, defaults: { format: :json } do
+    resources :institutions, only: %i{ create update }
+    resources :contractors, only: %i{ create update }
+    resources :samples, only: %i{ create update }
+    resources :patients, only: %i{ update }
+  end
+
+
   # get '*path' => redirect('/')
 
 end
