@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: Results
+#
+#  MeasurementId :integer          not null, primary key
+#  ImportDate    :datetime         not null
+#  Description   :text(4294967295)
+#  PlateCode     :text(4294967295)
+#  IsValid       :boolean          not null
+#  ImportUserId  :integer          not null
+#
 class Result < ApplicationRecord
 	self.table_name = "Results"
 	self.primary_key = "MeasurementId"

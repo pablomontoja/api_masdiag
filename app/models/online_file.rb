@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: online_files
+#
+#  measurement_id                 :integer          not null, primary key
+#  filename                       :text(4294967295)
+#  content_type                   :text(4294967295)
+#  file_size                      :integer          not null
+#  file_contents                  :binary(429496729
+#  created_at                     :datetime         not null
+#  updated_at                     :datetime         not null
+#  is_notification_send           :boolean          default(FALSE), not null
+#  is_patient_notification_send   :boolean          default(FALSE), not null
+#  password                       :string(255)
+#  when_notification_send         :datetime
+#  when_patient_notification_send :datetime
+#  encrypted_file_size            :integer          not null
+#  encrypted_file_contents        :binary(429496729
+#
 class OnlineFile < ApplicationRecord
   self.primary_key = "measurement_id"
 

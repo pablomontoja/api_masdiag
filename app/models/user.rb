@@ -1,3 +1,36 @@
+# == Schema Information
+#
+# Table name: Users
+#
+#  Id                      :integer          not null, primary key
+#  Login                   :text(4294967295) not null
+#  Password                :text(4294967295) not null
+#  Salt                    :text(4294967295) not null
+#  FirstName               :text(4294967295)
+#  LastName                :text(4294967295)
+#  IsActive                :boolean          not null
+#  Role                    :integer          not null
+#  email                   :string(255)      default(""), not null
+#  encrypted_password      :string(255)      default(""), not null
+#  reset_password_token    :string(255)
+#  reset_password_sent_at  :datetime
+#  remember_created_at     :datetime
+#  sign_in_count           :integer          default(0), not null
+#  current_sign_in_at      :datetime
+#  last_sign_in_at         :datetime
+#  current_sign_in_ip      :string(255)
+#  last_sign_in_ip         :string(255)
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  type                    :string(255)
+#  Description             :text(4294967295)
+#  LastPasswordChangeAt    :datetime
+#  PasswordChangeRevokedAt :datetime
+#  password_changed_at     :datetime
+#  LastSelectedCertLabel   :text(4294967295)
+#  HasSmartCard            :boolean          not null
+#  TokenSerialNumber       :text(4294967295)
+#
 class User < ApplicationRecord
   # has_secure_password
   self.inheritance_column = :_type_bla_bla

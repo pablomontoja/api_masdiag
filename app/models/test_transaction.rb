@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: test_transactions
+#
+#  id                      :bigint           not null, primary key
+#  amount_change           :integer          not null
+#  project_id              :integer          not null
+#  sample_id               :integer
+#  contractor_id           :integer          not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  reserved_sample_code_id :integer
+#
 class TestTransaction < ApplicationRecord
   after_create :change_test_amount
 

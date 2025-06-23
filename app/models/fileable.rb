@@ -1,3 +1,9 @@
+# == Schema Information
+#
+# Table name: fileables
+#
+#  id :integer          not null, primary key
+#
 class Fileable < ApplicationRecord	
 	has_many :db_files, dependent: :destroy
 	has_one :result_sending_event, class_name: "ResultSendingEvent", foreign_key: "id", inverse_of: :fileable, dependent: :destroy

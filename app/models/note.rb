@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: notes
+#
+#  id           :bigint           not null, primary key
+#  description  :text(65535)
+#  key          :string(255)
+#  subject_type :string(255)      not null
+#  subject_id   :bigint           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
 class Note < ApplicationRecord
 	belongs_to :subject, polymorphic: true
 
