@@ -211,7 +211,7 @@ private
     requested_weight = requested_test.select{ |t| t[:material] == "DBS" }.sum { |t| t[:weight] }
     errors = []
     errors << "Assignment of tests for 2 different types of material is not possible" if (requested_material.count > 1)
-    errors << "Weight limit exceeded for DBS material" if requested_material.include?("DBS") && requested_weight > 4
+    errors << "Weight limit exceeded for DBS material" if requested_material.include?("DBS") && requested_weight > 6
     return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
   end
   
