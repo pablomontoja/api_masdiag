@@ -33,6 +33,16 @@ FactoryBot.define do
     IsRetailSale { true }
   end
 
+  factory :reserved_sample_code_with_institution, class: ReservedSampleCode do
+    Code { "JV4XJ" }
+    expiry_date { 1.year.since }
+    CreatedAt { Time.now }
+    package_id { 1 }
+    IsRetailSale { true }
+    institution
+    package
+  end
+
   factory :second_reserved_sample_code, class: ReservedSampleCode do
     Code { "NLEZA" }
     InstitutionId { 1 }

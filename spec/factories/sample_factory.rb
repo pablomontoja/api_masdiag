@@ -55,6 +55,21 @@ FactoryBot.define do
   end
 end
 
+FactoryBot.define do
+  factory :sample_with_soaking, class: Sample do
+    Code { "JV4XJ" }
+    sample_collection_date { Date.today }
+    RegistrationDate { 2.days.ago }
+    WasWrongRegistration { false }
+    SampleState { 1 }
+    SampleStatus { 1 }
+    WrongRegistrationStatus { 0 }
+    MaterialType { 0 }
+    patient
+    soaking_degree
+  end
+end
+
 
 FactoryBot.define do
   factory :not_registered_sample_in_lab, class: Sample do
