@@ -140,9 +140,6 @@ RSpec.describe ResultResource, type: :service do
 
         it 'returns results for all projects' do
           result = service.call
-          puts "----------------------------------------------"
-          pp result
-          puts "----------------------------------------------"
 
           expect(result[:results].size).to eq(2)
           expect(result[:results].map { |r| r[:test] }).to contain_exactly(project.eng_name, project2.eng_name)

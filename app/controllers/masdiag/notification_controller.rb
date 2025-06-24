@@ -15,6 +15,7 @@ class Masdiag::NotificationController < ApplicationController
       # @meases_done = Hash.new
 
       Measurement.where(Id: meas_ids.uniq).each do |meas|
+        next if meas.sample.patient.contractor&.api_account&.result_post_endpoint.blank?
         Notification::SendResultJob.perform_later(meas.Id)
       end
 
