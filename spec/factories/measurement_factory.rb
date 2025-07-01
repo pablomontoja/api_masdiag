@@ -31,6 +31,13 @@ FactoryBot.define do
     Status { 7 }
     # sample_collection_date { Date.today }
   end
+
+  factory :measurement_with_result, class: Measurement do
+    sample
+    # project
+    # result
+    Status { 5 }
+  end 
 end
 
 # "Id":"1105853"

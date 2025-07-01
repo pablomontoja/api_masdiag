@@ -1,157 +1,158 @@
 class ResultResource < ApplicationService
   include Rails.application.routes.url_helpers
 
+  # Status constants for better maintainability
+  SAMPLE_STATUS_CANCELLED = 4
+  MEASUREMENT_STATUS_AUTHORIZED = 5
+  SOAKING_DEGREE_INSUFFICIENT = 4
+  SOAKING_DEGREE_WET = 5
+
   def initialize(sample, current_rsc)
     @sample = sample
     @current_rsc = current_rsc
-    @hash = prepare_json
   end
 
   def call
-    @hash
+    { results: build_results }
   end
-
-  # TODO - prepare_json - it needs to be refactored
-  def prepare_json
-    results = []
-
-    if @sample.SampleStatus == 4
-      h = {sample_code: @sample.Code, sample_status: get_status(@sample), lab_arrival_time: @sample.AcceptanceDate }
-      h[:rejection_reason] = rejection_reason(@sample) if @sample.SampleStatus == 4
-      results << h
-    else
-      @current_rsc&.projects&.each do |pr|
-        meas = @sample.measurements.where(Status: 5).find_by(ProjectId: pr.Id)
-        meas = @sample.measurements.order(Status: :desc).find_by(ProjectId: pr.Id) if meas.nil?
-
-        next if meas.nil?
-
-        if meas&.online_file&.file_contents.present?
-          meas.online_file.prepare_active_storage
-          results << { sample_code: meas.sample.Code, test: meas.project.eng_name, authorized_at: meas.AuthorizedAt, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: url_for(meas.online_file.unencrypted_result), raw_result: RawResultResource.call(meas) }
-          next
-        end
-
-        # TODO it needs to be tested, in particular presence of raw_result RawResultResource.call(meas)
-        h = { sample_code: meas.sample.Code, test: meas.project.eng_name, authorized_at: meas.AuthorizedAt, lab_arrival_time: meas.sample.AcceptanceDate, measurement_status: measurement_status(meas.Status), sample_status: get_status(meas.sample), unencrypted_result: nil, raw_result: RawResultResource.call(meas) }
-        h[:rejection_reason] = rejection_reason(meas.sample) if meas.sample.SampleStatus == 4
-        h[:raw_result] = [] if meas.Status != 5
-        results << h
-      end
-    end
-
-    {results: results}
-  end
-
 
   private
 
+  def build_results
+    return [build_cancelled_sample_result] if sample_cancelled?
+    
+    build_measurement_results
+  end
+
+  def sample_cancelled?
+    @sample.SampleStatus == SAMPLE_STATUS_CANCELLED
+  end
+
+  def build_cancelled_sample_result
+    {
+      sample_code: @sample.Code,
+      sample_status: format_sample_status(@sample),
+      lab_arrival_time: @sample.AcceptanceDate,
+      rejection_reason: rejection_reason(@sample)
+    }
+  end
+
+  def build_measurement_results
+    results = []
+    
+    @current_rsc&.projects&.each do |project|
+      measurement = find_measurement_for_project(project)
+      next if measurement.nil?
+
+      results << build_measurement_result(measurement)
+    end
+    
+    results
+  end
+
+  def find_measurement_for_project(project)
+    # First try to find authorized measurement
+    measurement = @sample.measurements
+                         .where(Status: MEASUREMENT_STATUS_AUTHORIZED, ProjectId: project.Id)
+                         .first
+    
+    # Fall back to latest measurement by status if none authorized
+    measurement || @sample.measurements
+                          .where(ProjectId: project.Id)
+                          .order(Status: :desc)
+                          .first
+  end
+
+  def build_measurement_result(measurement)
+    base_result = {
+      sample_code: measurement.sample.Code,
+      test: measurement.project.eng_name,
+      authorized_at: measurement.AuthorizedAt,
+      lab_arrival_time: measurement.sample.AcceptanceDate,
+      measurement_status: measurement_status(measurement.Status),
+      sample_status: format_sample_status(measurement.sample),
+      unencrypted_result: unencrypted_result_url(measurement),
+      raw_result: raw_result_for_measurement(measurement)
+    }
+
+    # add_rejection_reason_if_needed(base_result, measurement.sample)
+    base_result
+  end
+
+  def unencrypted_result_url(measurement)
+    return nil unless measurement&.online_file&.file_contents&.present?
+    
+    measurement.online_file.prepare_active_storage
+    url_for(measurement.online_file.unencrypted_result)
+  end
+
+  def raw_result_for_measurement(measurement)
+    return [] unless measurement.Status == MEASUREMENT_STATUS_AUTHORIZED
+    
+    RawResultResource.call(measurement)
+  end
+
+  def add_rejection_reason_if_needed(result_hash, sample)
+    return unless sample.SampleStatus == SAMPLE_STATUS_CANCELLED
+    
+    result_hash[:rejection_reason] = rejection_reason(sample)
+  end
+
   def rejection_reason(sample)
-    reason = ""
-    reason = "quantity not sufficient" if sample.soaking_degree_id == 4
-    reason = "wet test card" if sample.soaking_degree_id == 5
-    reason
-  end
-
-  def get_status(sample)
-    res = ""
-    res = "#{sample_state(sample.SampleState)}, #{sample_status(sample.SampleStatus)}" if sample.SampleStatus != 4
-    res = "#{sample_status(sample.SampleStatus)}" if sample.SampleStatus == 4
-    res
-  end
-
-  def measurement_status(int)
-    case int
-    when 1
-      return "before measurement"
-    when 2
-      return "in measurement"
-    when 3
-      return "in measurement"
-    when 4
-      return "measured"
-    when 5
-      return "authorized"
-    when 6
-      return "cancelled measurement"
-    when 7
-      return "registered online"
+    case sample.soaking_degree_id
+    when SOAKING_DEGREE_INSUFFICIENT
+      "quantity not sufficient"
+    when SOAKING_DEGREE_WET
+      "wet test card"
     else
-      return "unknown"
+      ""
     end
   end
 
-  def sample_state(int)
-    case int
-    when 0
-      return "undefined"
-    when 1
-      return "out of lab"
-    when 2
-      return "in lab"
-    when 3
-      return "sent back"
-    when 4
-      return "archived"
-    when 5
-      return "utilized"
-    else
-      return "unknown"
-    end
+  def format_sample_status(sample)
+    return sample_status(sample.SampleStatus) if sample.SampleStatus == SAMPLE_STATUS_CANCELLED
+    
+    "#{sample_state(sample.SampleState)}, #{sample_status(sample.SampleStatus)}"
   end
 
-  def sample_status(int)
-    case int
-    when 0
-      return "undefined"
-    when 1
-      return "registered online"
-    when 2
-      return "accepted for measurement"
-    when 3
-      return "clarification needed"
-    when 4
-      return "cancelled"
-    when 5
-      return "pool recharged after cancellation"
-    else
-      return "unknown"
-    end
+  # Status mapping methods with improved readability
+  def measurement_status(status_code)
+    status_mappings = {
+      1 => "before measurement",
+      2 => "in measurement",
+      3 => "in measurement",
+      4 => "measured",
+      5 => "authorized",
+      6 => "cancelled measurement",
+      7 => "registered online"
+    }
+    
+    status_mappings.fetch(status_code, "unknown")
   end
 
+  def sample_state(state_code)
+    state_mappings = {
+      0 => "undefined",
+      1 => "out of lab",
+      2 => "in lab",
+      3 => "sent back",
+      4 => "archived",
+      5 => "utilized"
+    }
+    
+    state_mappings.fetch(state_code, "unknown")
+  end
 
+  def sample_status(status_code)
+    status_mappings = {
+      0 => "undefined",
+      1 => "registered online",
+      2 => "accepted for measurement",
+      3 => "clarification needed",
+      4 => "cancelled",
+      5 => "pool recharged after cancellation"
+    }
+    
+    status_mappings.fetch(status_code, "unknown")
+  end
 end
-
-
-
-# public enum SampleState
-# {
-#     [Description("Niezdefiniowany")]
-#     Undefined = 0,
-#     [Description("Poza laboratorium")]
-#     Outside,
-#     [Description("W laboratorium")]
-#     InLab,
-#     [Description("Odesłana")]
-#     SentBack,
-#     [Description("Zarchiwizowana")]
-#     Archived,
-#     [Description("Zutylizowana")]
-#     Utilized
-# }
-
-# public enum SampleStatus
-# {
-#     [Description("Niezdefiniowany")]
-#     Undefined = 0,
-#     [Description("Zarejestrowana Online")]
-#     RegisteredOnline,
-#     [Description("Zaakceptowana do wycięcia")]
-#     AcceptedForCutting,
-#     [Description("Do wyjaśnienia")]
-#     ClarificationNeeded,
-#     [Description("Anulowana")]
-#     Canceled,
-#     [Description("Przywrócono testy do puli po anulowaniu")]
-#     PoolRechargedAfterCancellation
-# }
