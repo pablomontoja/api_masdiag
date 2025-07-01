@@ -34,6 +34,31 @@ FactoryBot.define do
     PlateDimensionY { 12 }
     is_blocked_online { true }
     InjectionVolume { 0 }
+    eng_name { "Vitamin D" }
+    # initialize_with { Project.find_or_create_by(Id: 2, Name: "Witamina D", WithCutter: true, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: true, InjectionVolume: 0, eng_name: "Vitamin D") }
+  end
+
+  factory :project2, class: Project do
+    Id {3}
+    Name { "Aminokwasy" }
+    WithCutter { true }
+    PlateDimensionX { 8 }
+    PlateDimensionY { 12 }
+    is_blocked_online { true }
+    InjectionVolume { 0 }
+    eng_name { "Amino acids" }
+    # initialize_with { Project.find_or_create_by(Id: 3, Name: "Aminokwasy", WithCutter: true, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: true, InjectionVolume: 0, eng_name: "Amino acids") }
+  end
+
+  factory :project_without_fixed_id, class: Project do
+    Name { "Aminokwasy" }
+    WithCutter { true }
+    PlateDimensionX { 8 }
+    PlateDimensionY { 12 }
+    is_blocked_online { true }
+    InjectionVolume { 0 }
+    eng_name { "Amino acids" }
+    # initialize_with { Project.find_or_create_by(Id: 3, Name: "Aminokwasy", WithCutter: true, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: true, InjectionVolume: 0, eng_name: "Amino acids") }
   end
 end
 

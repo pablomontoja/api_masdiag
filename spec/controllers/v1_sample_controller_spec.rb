@@ -30,7 +30,7 @@ RSpec.describe V1::SampleController, type: :controller do
 	      expect(assigns(:sample).WasWrongRegistration).to eql(false)
 	      expect(assigns(:sample).SampleState).to eql(1)
 	      expect(assigns(:sample).SampleStatus).to eql(1)
-	      expect(assigns(:sample).MaterialType).to eql(0)
+	      expect(assigns(:sample).MaterialType).to eql("dbs")
 	      expect(assigns(:sample).WrongRegistrationStatus).to eql(0)
 	      expect(assigns(:sample).measurements.count).to eql(1)
 	      expect(assigns(:sample).measurements.pluck(:Status)).to eql([7])
