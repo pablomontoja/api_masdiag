@@ -43,6 +43,8 @@
 class Sample < ApplicationRecord
   before_validation -> { self.Code.upcase! }
 
+  enum :MaterialType, MaterialTypes::MODEL_HASH
+
   self.table_name = "Samples"
   self.primary_key = "Id"
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
