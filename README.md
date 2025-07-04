@@ -23,8 +23,27 @@ MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
 I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
 
 
+# Transfer EU barcodes to AU
+```ruby
+codes = %w[EUAC829920]
+
+ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 85)
 
 
+Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
+	puts "------------------------------------------------------------------"
+	puts "#{sample.patient.FirstName} #{sample.patient.LastName}"
+	if sample.patient.FirstName == "FAKE"
+		puts "FAKE"
+		sample.update(PatientId: 340608)
+		next
+	else
+		sample.patient.update_columns(ContractorId: 754)
+		puts "REAL PATIENT"
+	end
+	nil
+end
+```
 
 
 Things you may want to cover:

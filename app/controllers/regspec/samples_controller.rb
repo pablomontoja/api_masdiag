@@ -3,17 +3,25 @@ class Regspec::SamplesController < ApplicationController
 
 	# POST   /regspec/samples 
 	def create
+		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date] if params[:sample][:sample_collection_date].blank?
+
 		@current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
 		if @current_rsc.nil?
 			ActiveRecord::Base.transaction do			
 				add_rsc()
 			end
-		end
-		
+		end		
+
 		db_sample = Sample.find_by(Code: sample_params[:code])
 
-		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date] if sample_params[:sample_collection_date].blank?
+		puts "-----------------params---------------------"
+		pp params
+		puts "--------------------------------------------"
+
+		puts "-------------sample_params------------------"
+		pp sample_params
+		puts "--------------------------------------------"
 		
 		if db_sample.present?
 			json_response({ message: "Sample already exist" }, :unprocessable_entity)
