@@ -3,7 +3,7 @@ class Regspec::SamplesController < ApplicationController
 
 	# POST   /regspec/samples 
 	def create
-		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date] if params[:sample][:sample_collection_date].blank?
+		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date].to_date if params[:sample][:sample_collection_date].blank?
 
 		@current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
