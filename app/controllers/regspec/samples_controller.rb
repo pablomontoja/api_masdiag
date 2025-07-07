@@ -4,6 +4,7 @@ class Regspec::SamplesController < ApplicationController
 	# POST   /regspec/samples 
 	def create
 		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date].to_date if params[:sample][:sample_collection_date].blank?
+		params[:sample][:Comment] = params[:sample][:comment]
 
 		@current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
@@ -46,6 +47,7 @@ class Regspec::SamplesController < ApplicationController
 	def update
 		@sample = Sample.find(params[:id])
 		process_not_accepted_sample(update_params) unless @sample.accepted_in_lab?
+
 		# TODO Regspec::SamplesController#update nie może duplikować zachowania Indclients/Api::RegspecSyncController#push_sample, push_sample musi być usuniety
 		# SendMailNotificationJob.perform_later("send_acceptance_notifications", @sample) unless @sample.accepted_in_lab? && @sample.Code.size == 5
 
@@ -62,24 +64,18 @@ class Regspec::SamplesController < ApplicationController
 
 	def process_not_accepted_sample(prms)
     @sample.measurements.update_all(Status: 1)
-    @sample.update_columns(prms.merge({SampleStatus: 2, SampleState: 2, soaking_degree_id: 1}))
+    @sample.update_columns(prms.to_h.merge(SampleStatus: 2, SampleState: 2, soaking_degree_id: 1))
   end
 
 	def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, :acceptance_date, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).merge(AcceptanceDate: params[:sample][:acceptance_date]).except(:acceptance_date).each_value do |value|
-      case value
-      when String
-        value.try(:strip!)
-      when ActionController::Parameters
-        value.each_value { |value| value.try(:strip!) }
-      end
-    end
+    params.require(:sample).permit(:id, :code, :sample_collection_date, :acceptance_date, :comment, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).merge(AcceptanceDate: params[:sample][:acceptance_date]).except(:acceptance_date, :comment)
   end
 
   def update_params
-    prm = params.require(:sample).permit(:sample_collection_date, :acceptance_date)
-    prm.merge!(AcceptanceDate: prm[:acceptance_date])
-    prm = prm.except(:acceptance_date)
+  	params[:sample][:sample_collection_date] = params[:sample][:acceptance_date].to_date if params[:sample][:sample_collection_date].blank?
+    prm = params.require(:sample).permit(:sample_collection_date, :acceptance_date, :comment)
+    prm.merge!(AcceptanceDate: prm[:acceptance_date], Comment: prm[:comment])
+    prm = prm.except(:acceptance_date, :comment)
     prm
   end
 
