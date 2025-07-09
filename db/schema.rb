@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_10_103913) do
+ActiveRecord::Schema[7.0].define(version: 2025_07_08_113441) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -762,6 +762,32 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_10_103913) do
     t.binary "xlsx_file", size: :medium
   end
 
+  create_table "measurement_summaries", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.string "name"
+    t.integer "institution_id", null: false
+    t.date "from_date"
+    t.date "to_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id"], name: "index_measurement_summaries_on_institution_id"
+  end
+
+  create_table "measurement_summary_items", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.bigint "measurement_summary_id", null: false
+    t.integer "measurement_id", null: false
+    t.integer "sample_id", null: false
+    t.integer "project_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "test_variant"
+    t.bigint "test_id"
+    t.index ["measurement_id"], name: "index_measurement_summary_items_on_measurement_id"
+    t.index ["measurement_summary_id"], name: "index_measurement_summary_items_on_measurement_summary_id"
+    t.index ["project_id"], name: "index_measurement_summary_items_on_project_id"
+    t.index ["sample_id"], name: "index_measurement_summary_items_on_sample_id"
+    t.index ["test_id"], name: "index_measurement_summary_items_on_test_id"
+  end
+
   create_table "notes", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "description"
     t.string "key"
@@ -1281,6 +1307,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_10_103913) do
   add_foreign_key "kits", "ReservedSampleCodes", column: "reserved_sample_code_id", primary_key: "Id"
   add_foreign_key "kits", "Samples", column: "sample_id", primary_key: "Id"
   add_foreign_key "kits", "shop_orders"
+  add_foreign_key "measurement_summaries", "institutions"
+  add_foreign_key "measurement_summary_items", "Measurements", column: "measurement_id", primary_key: "Id"
+  add_foreign_key "measurement_summary_items", "Projects", column: "project_id", primary_key: "Id"
+  add_foreign_key "measurement_summary_items", "Samples", column: "sample_id", primary_key: "Id"
+  add_foreign_key "measurement_summary_items", "measurement_summaries"
+  add_foreign_key "measurement_summary_items", "tests"
   add_foreign_key "online_files", "Measurements", column: "measurement_id", primary_key: "Id", name: "FK_online_files_Measurements_measurement_id"
   add_foreign_key "packages", "production_orders"
   add_foreign_key "packages", "products"
