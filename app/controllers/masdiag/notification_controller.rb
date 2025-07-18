@@ -5,6 +5,8 @@ class Masdiag::NotificationController < ApplicationController
   # TODO - trigger - it need to be tested
   def trigger
     begin
+      Cerascreen::Labordatenbank::GetResultsJob.perform_later()
+      
       errors = []
       ids = ApiAccount.pluck(:contractor_id)
       meas_ids = Measurement.includes(sample: :patient).where(Status: 5).where(Patients: {ContractorId: ids}).pluck(:Id)
@@ -13,6 +15,7 @@ class Masdiag::NotificationController < ApplicationController
       # @meases_done = Hash.new
 
       Measurement.where(Id: meas_ids.uniq).each do |meas|
+        next if meas.sample.patient.contractor&.api_account&.result_post_endpoint.blank?
         Notification::SendResultJob.perform_later(meas.Id)
       end
 

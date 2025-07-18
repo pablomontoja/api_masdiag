@@ -1,9 +1,58 @@
+# == Schema Information
+#
+# Table name: institutions
+#
+#  id                                    :integer          not null, primary key
+#  name                                  :string(255)
+#  address                               :text(65535)
+#  nip                                   :string(255)
+#  created_at                            :datetime         not null
+#  updated_at                            :datetime         not null
+#  allow_patient_email                   :boolean          default(FALSE), not null
+#  has_approve_messages_for_patients     :boolean          default(FALSE), not null
+#  has_payment_status_in_samples         :boolean          default(FALSE), not null
+#  logo_file                             :binary(16777215)
+#  krs                                   :string(255)
+#  regon                                 :string(255)
+#  has_disabled_invoices                 :boolean          default(FALSE), not null
+#  approve_contractor_after_registration :boolean          default(FALSE), not null
+#  email                                 :string(255)
+#  created_by_agent_id                   :integer
+#  wants_summary_of_performed_samples    :boolean
+#  footer_phone_and_email                :text(4294967295)
+#  patient_email_template_body           :text(65535)
+#  contractor_email_template_body        :text(65535)
+#  inivitation_jpg_image                 :binary(16777215)
+#  email_attachment_pdf                  :binary(16777215)
+#  custom_cbx_text_in_sample_form        :text(65535)
+#  smtp_settings_name                    :string(255)
+#  smtp_email                            :string(255)
+#  test_alert_treshold                   :integer
+#  shipping_address                      :text(65535)
+#  terms_accepted                        :boolean
+#  terms_accepted_at                     :datetime
+#  auto_test_charge                      :boolean
+#  electronic_invoice_acceptance         :boolean
+#  electronic_invoice_accepted_at        :datetime
+#  terms_version                         :string(255)
+#  street                                :string(255)
+#  postal_code                           :string(255)
+#  city                                  :string(255)
+#  company_for_shipments                 :string(255)
+#  shipment_street                       :string(255)
+#  shipment_postal_code                  :string(255)
+#  shipment_city                         :string(255)
+#  kind                                  :string(255)      default("Institution"), not null
+#  email_for_results                     :string(255)
+#  assigned_masdiag_bban                 :string(255)      default("09 2490 0005 0000 4530 4006 9262")
+#  days_for_payment                      :integer
+#
 FactoryBot.define do
   factory :institution, class: Institution do
     name { "Masdiag Sp. z o.o." }
     address { "ul. Żeromskiego 33, 01-882 Warszawa"}
     nip { "5222996468" }
-    region_of_activity { 0 }
+    # region_of_activity { 0 }
   end
 end
 

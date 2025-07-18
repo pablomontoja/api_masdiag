@@ -1,9 +1,54 @@
+# == Schema Information
+#
+# Table name: Samples
+#
+#  Id                            :integer          not null, primary key
+#  Code                          :string(50)       not null
+#  ProtocolName                  :text(4294967295)
+#  IsControlSample               :boolean          default(FALSE), not null
+#  IsWrongRegistration           :boolean          default(FALSE), not null
+#  IsSentBack                    :boolean          default(FALSE), not null
+#  SentBackDate                  :datetime
+#  Description                   :text(4294967295)
+#  RegistrationDate              :datetime
+#  IsValid                       :boolean          default(TRUE), not null
+#  PatientId                     :integer
+#  UserId                        :integer
+#  ProtocolIdOld                 :integer
+#  IsAuthWithoutResult           :boolean          default(FALSE), not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  payment_status                :integer
+#  AcceptanceDate                :datetime
+#  access_hash                   :string(255)
+#  sample_collection_date        :datetime
+#  UnsatisfactoryMaterialQuality :boolean          default(FALSE), not null
+#  soaking_degree_id             :integer
+#  WasWrongRegistration          :boolean          not null
+#  MaterialType                  :integer          not null
+#  SampleStatus                  :integer          not null
+#  SampleState                   :integer          not null
+#  Comment                       :text(4294967295)
+#  CancellationDate              :datetime
+#  ArchivingDate                 :datetime
+#  WrongRegistrationStatus       :integer          not null
+#  CancelledById                 :integer
+#  UtilizationDate               :datetime
+#  institution_custom_cbx        :boolean
+#  Lot                           :text(255)
+#  Level                         :text(255)
+#  selected_tests                :text(65535)
+#  clinical_info                 :text(65535)
+#
 class Sample < ApplicationRecord
   before_validation -> { self.Code.upcase! }
+
+  enum :MaterialType, MaterialTypes::MODEL_HASH
 
   self.table_name = "Samples"
   self.primary_key = "Id"
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
+  belongs_to :soaking_degree, optional: true
   has_many :measurements, class_name: 'Measurement', foreign_key: 'SampleId', dependent: :destroy, inverse_of: :sample
   accepts_nested_attributes_for :patient
   has_many :test_transactions
@@ -52,6 +97,10 @@ class Sample < ApplicationRecord
 
   def cancelled?
     [4,5].include?(soaking_degree_id) || SampleStatus == 4
+  end
+
+  def accepted_in_lab?
+    !self.AcceptanceDate.nil?
   end
 
   #######################

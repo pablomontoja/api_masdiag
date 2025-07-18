@@ -2,7 +2,7 @@
 # staging
 ###################
 ActiveRecord::Base.transaction do
-	inst = Institution.create!(name: "Goldcup (Ahum)", address: "-", nip: "---??---", created_at: "2025-02-18 10:21:24", updated_at: "2025-02-18 10:21:24", allow_patient_email: false, has_approve_messages_for_patients: false, has_payment_status_in_samples: false, logo_file: nil, krs: nil, regon: nil, discount_id: nil, has_disabled_invoices: true, approve_contractor_after_registration: false, email: nil, created_by_agent_id: nil, region_of_activity: 0, wants_summary_of_performed_samples: false, footer_phone_and_email: nil, patient_email_template_body: nil, contractor_email_template_body: nil, inivitation_jpg_image: nil, email_attachment_pdf: nil, custom_cbx_text_in_sample_form: nil, smtp_settings_name: nil, smtp_email: nil, test_alert_treshold: nil, shipping_address: "-", terms_accepted: nil, terms_accepted_at: nil, auto_test_charge: false, electronic_invoice_acceptance: nil, electronic_invoice_accepted_at: nil, terms_version: nil, street: "-", postal_code: "-", city: "-", company_for_shipments: nil, shipment_street: "-", shipment_postal_code: "-", shipment_city: "-", kind: "ForeignInstitution", email_for_results: nil)
+	inst = Institution.create!(name: "Goldcup (Ahum)", address: "-", nip: "---??---", created_at: "2025-02-18 10:21:24", updated_at: "2025-02-18 10:21:24", allow_patient_email: false, has_approve_messages_for_patients: false, has_payment_status_in_samples: false, logo_file: nil, krs: nil, regon: nil, discount_id: nil, has_disabled_invoices: true, approve_contractor_after_registration: false, email: nil, created_by_agent_id: nil, wants_summary_of_performed_samples: false, footer_phone_and_email: nil, patient_email_template_body: nil, contractor_email_template_body: nil, inivitation_jpg_image: nil, email_attachment_pdf: nil, custom_cbx_text_in_sample_form: nil, smtp_settings_name: nil, smtp_email: nil, test_alert_treshold: nil, shipping_address: "-", terms_accepted: nil, terms_accepted_at: nil, auto_test_charge: false, electronic_invoice_acceptance: nil, electronic_invoice_accepted_at: nil, terms_version: nil, street: "-", postal_code: "-", city: "-", company_for_shipments: nil, shipment_street: "-", shipment_postal_code: "-", shipment_city: "-", kind: "ForeignInstitution", email_for_results: nil)
 
 	contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "goldcup.ahum@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
 
@@ -15,7 +15,7 @@ ActiveRecord::Base.transaction do
 	user = User.find_by(email: "pawel.swider@masdiag.pl")
 
 
-	po = ProductionOrder.new(lot: "006.Goldcup (Ahum)", packages_expiry_date: Date.parse("2025-04-01"), packages_count: 10, product_id: 1, stock_room_id: 1)
+	po = ProductionOrder.new(lot: "006.Goldcup (Ahum)", packages_expiry_date: Date.parse("2035-04-01"), packages_count: 10, product_id: 1, stock_room_id: 1)
 	ProductionOrdersJob.perform_now(po.attributes, user)
 
   omegaquant_codes = %w[SEGU386L SEJP83BU SECG2I6D SEIGWXJU SELZAHE6 SEC9I5KB SE83ECJJ SEFN234B SEMIDKL1 SEWBLDJB]
@@ -51,12 +51,12 @@ ActiveRecord::Base.transaction do
 	user = User.first
 	Measurement.includes(:sample).where(sample: {Code: codes}).each do |meas|
 	  meas.online_file&.destroy
-	  # of = OnlineFile.new(measurement_id: meas.Id, file_size: file.size, encrypted_file_size: file.size, filename: "#{meas.sample.Code}_#{meas.ProjectId}", content_type: "application/pdf")
-	  # of.file_contents = file.read
-	  # file.rewind
-	  # of.encrypted_file_contents = file.read
-	  # file.rewind
-	  # of.save
+	  of = OnlineFile.new(measurement_id: meas.Id, file_size: file.size, encrypted_file_size: file.size, filename: "#{meas.sample.Code}_#{meas.ProjectId}", content_type: "application/pdf")
+	  of.file_contents = file.read
+	  file.rewind
+	  of.encrypted_file_contents = file.read
+	  file.rewind
+	  of.save
 	  meas.update(Status: 5, MeasureDate: DateTime.now, AuthorizedAt: DateTime.now, CuttedAt: DateTime.now, InstrumentId: 1)
 	  meas.sample.update(AcceptanceDate: DateTime.now-2.days, soaking_degree_id: 1, SampleStatus: 2, SampleState: 2)
 

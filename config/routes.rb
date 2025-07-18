@@ -170,6 +170,17 @@ Rails.application.routes.draw do
   end
 
   
+  
+  #########################################################
+  ### REGSPEC
+  #########################################################
+  namespace :regspec, defaults: { format: :json } do
+    resources :institutions, only: %i{ create update }
+    resources :contractors, only: %i{ create update }
+    resources :samples, only: %i{ create update }
+    resources :patients, only: %i{ update }
+  end
+
   mount MissionControl::Jobs::Engine, at: "/jobs"
 
   # get '*path' => redirect('/')

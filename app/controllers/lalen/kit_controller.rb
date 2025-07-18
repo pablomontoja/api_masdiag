@@ -55,18 +55,16 @@ class Lalen::KitController < Fv1::KitController
     end
 
     @contractor_id = Current.api_account.contractor.Id
+    inst_id = get_lalen_institution(assignment_params[:code])
 
     ActiveRecord::Base.transaction do
-      @current_rsc.retrieve_institution_tests
-
       @current_rsc.reserved_tests.destroy_all
       assignment_params[:test_ids].each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
-      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id)
-
-      build_transactions()
+      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
     end
+
     head :no_content
   end
 
@@ -96,7 +94,8 @@ class Lalen::KitController < Fv1::KitController
                                 expiry_date: declare_params[:expiry_date], 
                                 InstitutionId: inst_id,
                                 MaterialType: material_type,
-                                material_handler: masdiag_material_handler[declare_params[:material_handler].to_sym]
+                                material_handler: masdiag_material_handler[declare_params[:material_handler].to_sym],
+                                reserved_by_contractor_id: get_lalen_contractor_id(inst_id)
                               )
       declare_params[:test_ids].each do |test|        
         rsc.reserved_tests.create!(project_id: test)
@@ -183,7 +182,7 @@ private
   # end
 
   def get_lalen_institution(barcode)
-    case barcode[0, 2]
+    case barcode[0, 2].upcase
     when "EU"
       89
     when "AU"
@@ -194,6 +193,26 @@ private
       85
       # raise StandardError.new("Recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
     end
+  end
+
+  def get_lalen_contractor_id(inst_id)
+    Contractor.where(institution_id: inst_id).find_by("first_name LIKE ?", "API%")&.Id
+  end
+
+  def validate_assignment(test_ids)
+    test_ids.uniq!
+    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
+
+    avail_test = V1::Common::AVAILABLE_TESTS
+    requested_test = avail_test.select{|a| test_ids.map(&:to_i).include?(a[:id])}
+    return OpenStruct.new(invalid: true, errors: ["One or more tests can not be assigned"]) if test_ids.map(&:to_i).reject(&:zero?).compact.size != requested_test.compact.size
+
+    requested_material = requested_test.map { |t| t[:material] }.uniq
+    requested_weight = requested_test.select{ |t| t[:material] == "DBS" }.sum { |t| t[:weight] }
+    errors = []
+    errors << "Assignment of tests for 2 different types of material is not possible" if (requested_material.count > 1)
+    errors << "Weight limit exceeded for DBS material" if requested_material.include?("DBS") && requested_weight > 6
+    return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
   end
   
 

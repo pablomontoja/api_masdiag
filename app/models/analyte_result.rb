@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: AnalyteResults
+#
+#  ResultId             :integer          not null, primary key
+#  AnalyteId            :integer          not null, primary key
+#  Value                :decimal(18, 2)   not null
+#  Unit                 :text(4294967295)
+#  Result_MeasurementId :integer
+#  MeasuredValue        :decimal(18, 5)   not null
+#
 class AnalyteResult < ApplicationRecord
 	self.table_name = "AnalyteResults"
 	self.primary_key = ["ResultId", "AnalyteId"]

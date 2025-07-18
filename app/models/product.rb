@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: products
+#
+#  id               :bigint           not null, primary key
+#  name             :string(255)
+#  ref              :string(255)
+#  type             :integer
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  capacity         :integer
+#  material_type    :integer          default("dbs"), not null
+#  material_handler :integer          default("dbs_t4"), not null
+#
 class Product < ApplicationRecord
 	has_many :packages
 	has_many :production_orders
