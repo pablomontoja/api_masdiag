@@ -43,8 +43,6 @@
 class Sample < ApplicationRecord
   before_validation -> { self.Code.upcase! }
 
-  enum :MaterialType, MaterialTypes::MODEL_HASH
-
   self.table_name = "Samples"
   self.primary_key = "Id"
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
@@ -54,7 +52,7 @@ class Sample < ApplicationRecord
   has_many :test_transactions
   has_many :notes, as: :subject
 
-  enum MaterialType: MaterialTypes::MODEL_HASH
+  enum :MaterialType, MaterialTypes::MODEL_HASH, instance_methods: false
 
   attr_accessor :approve
 

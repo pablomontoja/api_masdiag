@@ -1,0 +1,2 @@
+api: env RUBY_DEBUG_OPEN=true bin/rails server -p 3001
+solid_queue: rake solid_queue:start

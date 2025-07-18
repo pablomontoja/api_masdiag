@@ -1,6 +1,10 @@
 # TODO in README.md
 - authentication controller for mission_control gem
-
+- new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
+- new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
+- new layout for /rails/mailers/cancellation_notification_mailer/standard_cancellation_notification
+- new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
+- new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
 
 # Masdiag Mailer
 
@@ -69,6 +73,43 @@ Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 	nil
 end
 ```
+
+
+# PROBLEMS
+
+---
+
+## Specified key was too long; max key length is 767 bytes
+
+Open my.ini and add this lines(if they already exist just edit everything after =) right after [mysqld]:
+```
+innodb_file_format = Barracuda
+innodb_file_per_table = on
+innodb_default_row_format = dynamic
+innodb_large_prefix = 1
+innodb_file_format_max = Barracuda
+```
+
+OR
+
+Autenticate to mysql:
+```
+mysql -h localhost -u root
+```
+or use phpmyadmin.
+
+Once you're authenticated run this queries(one at a time):
+```
+SET GLOBAL innodb_file_format = Barracuda;
+SET GLOBAL innodb_file_per_table = on;
+SET GLOBAL innodb_default_row_format = dynamic;
+SET GLOBAL innodb_large_prefix = 1;
+SET GLOBAL innodb_file_format_max = Barracuda;
+```
+
+
+
+
 
 
 Things you may want to cover:

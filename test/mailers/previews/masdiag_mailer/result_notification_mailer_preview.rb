@@ -18,7 +18,7 @@ class ResultNotificationMailerPreview < ActionMailer::Preview
                             .where.not(sample: { Patients: { email: "" } })
                             .where.not(sample: { patient: { contractor: { institutions: { kind: "Hospital" } } } })
                             .where(Status: 5)
-                            .where(sample: { patient: { Contractors: { institution_id:  33, are_notifications_enabled: true } } })
+                            .where(sample: { patient: { Contractors: { institution_id:  33 } } })
                             .where(sample: { Patients: { send_results_on_mail: true } })
                             .order(Id: :desc).limit(100).pluck(:Id).sample
     online_file = OnlineFile.includes(measurement: { sample: { patient: { contractor: :institution } } }).find_by(measurement_id: meas_id)

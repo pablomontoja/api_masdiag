@@ -27,8 +27,8 @@ class ReservedSampleCode < ApplicationRecord
   self.table_name = "ReservedSampleCodes"
   self.primary_key = "Id"
 
-  enum :material_handler, MaterialHandlers::MODEL_HASH
-  enum :MaterialType, MaterialTypes::MODEL_HASH
+  enum :material_handler, MaterialHandlers::MODEL_HASH, instance_methods: false
+  enum :MaterialType, MaterialTypes::MODEL_HASH, instance_methods: false
 
   belongs_to :package, optional: true
   belongs_to :institution, class_name: "Institution", foreign_key: "InstitutionId", optional: true
