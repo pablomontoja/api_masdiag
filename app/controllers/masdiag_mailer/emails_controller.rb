@@ -65,7 +65,7 @@ module MasdiagMailer
     end
 
     # POST /mailer/after_sample_registration
-    #
+    # używany przez indclients2 do wysyłania powiadomień po rejestracji próbki
     def after_sample_registration
       begin
         if Measurement.where(SampleId: params[:sample_id], ProjectId: 25).any?

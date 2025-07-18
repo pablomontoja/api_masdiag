@@ -10,7 +10,7 @@ module MasdiagRecurring
         result_hash["FailedExecutionMonitoringJob"] = "SolidQueue::FailedExecution are present in database."
         
         SolidQueue::FailedExecution.all.each do |fe|
-          result_hash["#{fe.job.active_job_id}"] = "ERROR FOR: #{fe.job.class_name}, JOB ARGUMENTS: #{fe.job.arguments}, ERROR: #{fe.error}"
+          result_hash["#{fe.job.active_job_id}"] = "ERROR FOR: #{fe.job.class_name}, JOB ARGUMENTS: #{fe.job.arguments}"
         end
 
         MasdiagMailer::SendErrorNotificationsMailer.send_mail(result_hash).deliver_later

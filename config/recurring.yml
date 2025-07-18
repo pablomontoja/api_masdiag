@@ -7,7 +7,7 @@ default: &default
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
-    args: [ { batch_size: 500 }, 100 ]
+    args: [ { batch_size: 500 } ]
     schedule: every 5 minutes    
     
 

@@ -116,6 +116,12 @@ Rails.application.routes.draw do
     
     post "/notifications/trigger", to: 'notification#trigger'
     post "/notifications/sample_status_changed/:sample_id", to: 'notification#sample_status_changed'
+
+    # storage app
+    post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
+    post "stock_room/stock_out_by_shipment", to: "stock_rooms#stock_out_by_shipment"
+    post "stock_room/back_to_stock_by_shipment/:shipment_id", to: "stock_rooms#back_to_stock_by_shipment"
+    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock" 
   end
 
 
@@ -131,7 +137,6 @@ Rails.application.routes.draw do
     post "send_error_notifications", to: 'emails#send_error_notifications'
     post 'send_notification_after_delayed_reg', to: 'emails#send_notification_after_delayed_reg'
     post 'after_sample_registration', to: 'emails#after_sample_registration'
-    post 'aqipharm_registration', to: 'emails#aqipharm_registration'
 
     # shop_orders
     post 'after_new_order_save', to: 'emails#after_new_order_save'
@@ -139,12 +144,6 @@ Rails.application.routes.draw do
 
     # www.masdiag.pl contact form
     post 'masdiag_website_contact_form', to: 'emails#masdiag_website_contact_form'
-    
-    # storage app
-    post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
-    post "stock_room/stock_out_by_shipment", to: "stock_rooms#stock_out_by_shipment"
-    post "stock_room/back_to_stock_by_shipment/:shipment_id", to: "stock_rooms#back_to_stock_by_shipment"
-    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock" 
   end
 
 

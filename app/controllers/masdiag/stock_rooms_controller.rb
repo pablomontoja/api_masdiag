@@ -1,8 +1,10 @@
-module MasdiagMailer
+module Masdiag
 	class StockRoomsController < ApplicationController
 		include MasdiagCheck
 
 		# protect_from_forgery except: [:stock_out_by_packages, :stock_out_by_shipment, :back_to_stock_by_shipment]
+
+		# TODO order_panel must be reconfigured to use these endpoints
 
 		# The endpoint used by order_panel
 		# GET /api/stock_room/is_package_in_stock/:package_id
@@ -17,7 +19,7 @@ module MasdiagMailer
 					return
 				end
 
-	    rescue Exception => e
+	    rescue StandardError => e
 	      render json: { "error": e }, status: 500
 	    end
 		end
