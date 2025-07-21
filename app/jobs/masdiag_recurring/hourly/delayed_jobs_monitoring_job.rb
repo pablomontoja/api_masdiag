@@ -4,6 +4,10 @@ module MasdiagRecurring
     class DelayedJobsMonitoringJob < ApplicationJob
 
       def perform
+        puts "---------------------------------------------------------"
+        puts "MasdiagRecurring::Hourly::DelayedJobsMonitoringJob"
+        puts "---------------------------------------------------------"
+        
         Delayed::Backend::ActiveRecord::Job.table_name = "delayed_jobs"
         jobs = Delayed::Job.where("attempts > 3")
 
@@ -13,6 +17,8 @@ module MasdiagRecurring
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
           SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+        else
+          puts "no error found for rejestracja"
         end
 
 
@@ -26,6 +32,8 @@ module MasdiagRecurring
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
           SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+        else
+          puts "no error found for rejestracja2"
         end
 
 
@@ -39,6 +47,8 @@ module MasdiagRecurring
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
           SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+        else
+          puts "no error found for order_panel"
         end
 
 
@@ -52,10 +62,11 @@ module MasdiagRecurring
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
           SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+        else
+          puts "no error found for storage"
         end
-
-        Delayed::Backend::ActiveRecord::Job.table_name = "delayed_jobs"     
-
+   
+        puts "---------------------------------------------------------"
       end
     end
   

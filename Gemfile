@@ -76,3 +76,4 @@ gem "roo", "~> 2.10.0"
 gem 'async', "~> 2.21.1"
 gem 'prawn'
 gem 'prawn-table'
+gem 'delayed_job_active_record'
