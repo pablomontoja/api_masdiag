@@ -44,30 +44,8 @@ class Lalen::SampleController < ApplicationController
     end
   end
 
-  # TODO - activate_confirmation_test - rspec tests needed
-  def activate_confirmation_test
-    sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
-
-    v = validate_confirmation_test_request(sample)
-    if v.invalid
-      json_response({message: v.errors.join("; ")}, :unprocessable_entity)
-      return
-    end
-
-    sample.measurements.create!(ProjectId: 19, Status: 1)
-    head :no_content
-  end
-
 
   private
-
-  def validate_confirmation_test_request(sample)
-    errors = []
-    errors << "Quality of sample is not sufficient to add another test" if (sample.measurements.count > 0 && sample.soaking_degree_id != 1)
-    errors << "The sample does not have an authorised test for Borreliosis Screening" if (sample.measurements.where(Status: 5, ProjectId: 13).count == 0)
-    errors << "The sample already has a Borreliosis Confirmation test added" if (sample.measurements.where(ProjectId: 19).count > 0)
-    return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
-  end
 
   def set_rsc
     case request.params[:action]
