@@ -19,11 +19,17 @@ default: &default
     queue: background
     args: []
     schedule: "15 4 1 * *"
+  hospital_summary_job:
+    class: MasdiagRecurring::Monthly::HospitalSummaryJob
+    queue: background
+    args: []
+    schedule: "30 4 1 * *"
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
     args: [ { batch_size: 500 } ]
     schedule: every 5 minutes
+
 
 development:
  <<: *default
