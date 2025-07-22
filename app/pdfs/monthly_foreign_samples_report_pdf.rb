@@ -3,11 +3,11 @@ class MonthlyForeignSamplesReportPdf < Prawn::Document
   def initialize()
     @projects_data = []
     Project.where(Id: [2, 3, 12, 21, 22, 23]).all.each do |project|
-      @projects_data << {name: project.Name, data: ForeignSamplesMonthlyDataExtractor.call(project.Id).payload}
+      @projects_data << {name: project.Name, data: MasdiagRecurring::ForeignSamplesMonthlyDataExtractor.call(project.Id).payload}
     end
 
     Project.where(Id: 10).all.each do |project|
-      full_vitaeq10 = ForeignSamplesMonthlyDataExtractor.call(project.Id).payload
+      full_vitaeq10 = MasdiagRecurring::ForeignSamplesMonthlyDataExtractor.call(project.Id).payload
 
       vitaeq10 = full_vitaeq10.dup
       vitaeq10.authorized = vitaeq10.authorized.select{|c| c.fname.include?("vitaeq10")}

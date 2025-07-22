@@ -9,16 +9,21 @@ default: &default
     queue: background
     args: []
     schedule: every hour
-  hourly_failed_executions_checking:
+  decretion_report_job:
     class: MasdiagRecurring::Monthly::DecretionReportJob
     queue: background
     args: []
-    schedule: "30 4 1 * *"
+    schedule: "0 4 1 * *"
+  foreign_samples_report_job:
+    class: MasdiagRecurring::Monthly::ForeignSamplesReportJob
+    queue: background
+    args: []
+    schedule: "15 4 1 * *"
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
     args: [ { batch_size: 500 } ]
-    schedule: every 5 minutes    
+    schedule: every 5 minutes
 
 development:
  <<: *default
@@ -31,3 +36,8 @@ staging:
 
 production:
  <<: *default
+
+
+
+
+ 

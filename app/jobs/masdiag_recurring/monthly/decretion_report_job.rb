@@ -99,7 +99,7 @@ module MasdiagRecurring
         add_omega_table(@omega_samples)
 
         # File.write("tmp/monthly_mail.html", @message.join("\n"), mode: "w")
-        ReportsMailer.monthly_mail(@message).deliver_later
+        MasdiagRecurring::MonthlyDecretionReportMailer.monthly_mail(@message).deliver_later
       end
 
       def add_monthly_table(orders)

@@ -1,5 +1,5 @@
 module MasdiagRecurring
-  class DecretionReportMailer < ApplicationMailer
+  class MonthlyDecretionReportMailer < ApplicationMailer
     default :template_path => "mailers/#{self.name.underscore}"
 
     def monthly_mail(message)
