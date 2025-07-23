@@ -34,6 +34,11 @@ default: &default
     queue: background
     args: []
     schedule: "45 6 * * *"
+  daily_ceracreen_dao_declaration:
+    class: MasdiagRecurring::Daily::CerascreenDaoDeclarationJob
+    queue: background
+    args: []
+    schedule: "0 20 * * *"    
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
