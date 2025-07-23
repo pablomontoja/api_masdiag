@@ -8,7 +8,6 @@ class MasdiagMailerDeploymentFixes < ActiveRecord::Migration[7.1]
         i.update(contractor_email_template_body: body.gsub("online_file_url", "b2b_online_file_url"))
       end
     end
-
     
     
   end
