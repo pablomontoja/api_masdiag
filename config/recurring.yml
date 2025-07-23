@@ -54,6 +54,11 @@ default: &default
     queue: background
     args: []
     schedule: "30 5 * * *"
+  lalen_incoming_samples:
+    class: MasdiagRecurring::Daily::LalenIncomingSamplesJob
+    queue: background
+    args: []
+    schedule: "0 17 * * *"
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
