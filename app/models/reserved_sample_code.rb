@@ -64,6 +64,10 @@ class ReservedSampleCode < ApplicationRecord
     return tests.select{|t| proj_ids.include?(t[:id]) }.map{|t| t[:name]}
   end
 
+  def projects_eng_names
+    return self.projects.map { |p| p.eng_name  }
+  end
+
   def as_json(options = {})
     super options.merge(methods: :projects_names)
   end

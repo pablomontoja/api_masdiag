@@ -43,6 +43,11 @@ default: &default
     class: MasdiagRecurring::Daily::DelayedSamplesJob
     queue: background
     args: []
+    schedule: "0 5 * * *"
+  fftb_report_sender:
+    class: MasdiagRecurring::Daily::FftbReportSenderJob
+    queue: background
+    args: []
     schedule: "45 5 * * *"
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
