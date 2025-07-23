@@ -79,4 +79,6 @@ gem 'prawn-table'
 
 # needed only for MasdiagRecurring::Hourly::DelayedJobsMonitoringJob
 gem 'delayed_job_active_record'
+
 gem 'money-rails', '~> 1.12'
+gem 'business_time'

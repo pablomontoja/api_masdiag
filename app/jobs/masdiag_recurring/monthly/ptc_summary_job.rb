@@ -1,7 +1,7 @@
 module MasdiagRecurring
   module Monthly
 
-    class MonthlyPtcSummaryJob < ApplicationJob
+    class PtcSummaryJob < ApplicationJob
 
       def perform
         # settled_before = []

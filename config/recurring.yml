@@ -4,31 +4,36 @@ default: &default
     queue: background
     args: []
     schedule: every hour
-  delayed_jobs_monitoring:
+  hourly_delayed_jobs_monitoring:
     class: MasdiagRecurring::Hourly::DelayedJobsMonitoringJob
     queue: background
     args: []
     schedule: every hour
-  decretion_report_job:
+  monthly_decretion_report_job:
     class: MasdiagRecurring::Monthly::DecretionReportJob
     queue: background
     args: []
     schedule: "0 4 1 * *"
-  foreign_samples_report_job:
+  monthly_foreign_samples_report_job:
     class: MasdiagRecurring::Monthly::ForeignSamplesReportJob
     queue: background
     args: []
     schedule: "15 4 1 * *"
-  hospital_summary_job:
+  monthly_hospital_summary_job:
     class: MasdiagRecurring::Monthly::HospitalSummaryJob
     queue: background
     args: []
     schedule: "30 4 1 * *"
-  ptc_summary_job:
-    class: MasdiagRecurring::Monthly::MonthlyPtcSummaryJob
+  monthly_ptc_summary_job:
+    class: MasdiagRecurring::Monthly::PtcSummaryJob
     queue: background
     args: []
     schedule: "45 4 1 * *"
+  daily_ceracreen_performance_statistic:
+    class: MasdiagRecurring::Daily::CerascreenPerformanceStatisticJob
+    queue: background
+    args: []
+    schedule: "45 6 * * *"
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background
