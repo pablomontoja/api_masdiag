@@ -19,6 +19,8 @@
 #
 class ShopOrder < ApplicationRecord
 	serialize :package_ids, type: Array
+	serialize :kits, type: Array, default: []
+  serialize :coupons, type: Array, default: []
 
 	validates :number, uniqueness: true
 	validates :email, presence: true
@@ -33,6 +35,10 @@ class ShopOrder < ApplicationRecord
 	def costumer_fullname
 		"#{self.first_name} #{self.last_name}"
 	end
+
+  def is_jps10?
+    self.coupons.nil? ? false : self.coupons.any? {|c| c.code == "jps10"}
+  end
 
 private
 
