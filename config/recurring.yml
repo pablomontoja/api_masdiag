@@ -44,21 +44,26 @@ default: &default
     queue: background
     args: []
     schedule: "0 5 * * *"
-  fftb_report_sender:
+  daily_fftb_report_sender:
     class: MasdiagRecurring::Daily::FftbReportSenderJob
     queue: background
     args: []
     schedule: "45 5 * * *"
-  hospital_samples_zipper:
+  daily_hospital_samples_zipper:
     class: MasdiagRecurring::Daily::HospitalsSamplesZipperJob
     queue: background
     args: []
     schedule: "30 5 * * *"
-  lalen_incoming_samples:
+  daily_lalen_incoming_samples:
     class: MasdiagRecurring::Daily::LalenIncomingSamplesJob
     queue: background
     args: []
     schedule: "0 17 * * *"
+  daily_local_contractors_year_report:
+    class: MasdiagRecurring::Daily::LocalContractorsYearRaportJob
+    queue: background
+    args: []
+    schedule: "15 5 * * *"
   periodic_cleanup:
     class: MasdiagRecurring::Myjob
     queue: background

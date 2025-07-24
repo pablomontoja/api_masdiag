@@ -82,3 +82,5 @@ gem 'delayed_job_active_record'
 
 gem 'money-rails', '~> 1.12'
 gem 'business_time'
+gem 'caxlsx_rails'
+gem 'caxlsx'

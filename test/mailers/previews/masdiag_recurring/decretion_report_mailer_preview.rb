@@ -4,7 +4,7 @@ class DecretionReportMailerPreview < ActionMailer::Preview
 		@message = []
 		add_omega_samples()
 
-		MasdiagRecurring::DecretionReportMailer.monthly_mail(@message)
+		MasdiagRecurring::MonthlyDecretionReportMailer.monthly_mail(@message)
 	end
 
 private
