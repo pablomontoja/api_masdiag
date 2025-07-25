@@ -6,13 +6,16 @@
 - new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
 - new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
 
-# Masdiag Mailer
+# MasdiagMailer/MasdiagRecurring Notes
 
 List of tasks to do during deployment on production
 1. perhaps Dockerfile7.1 should be used for deploy in production 
 2. rails db:prepare    ---- it is needed for solid_queue migration if first task is not proceeded
 3. rails db:migrate:queue  ---- applying solid_queue DB changes
-4. enabling YJIT in production and verification
+4. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
+
+Comments:
+1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
 
 
 

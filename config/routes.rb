@@ -145,7 +145,7 @@ Rails.application.routes.draw do
   #########################################################
   ### PATIENT_PORTAL
   #########################################################
-  namespace :patient_portal, defaults: {format: :json} do
+  namespace :patient_portal, defaults: { format: :json } do
     resources :results, only: :index
     resources :samples, only: :index
   end
@@ -161,6 +161,15 @@ Rails.application.routes.draw do
     resources :samples, only: %i{ create update }
     resources :patients, only: %i{ update }
   end
+
+  #########################################################
+  ### DiagnostykaPrecyzyjna
+  #########################################################
+  namespace :diagnostyka_precyzyjna, defaults: { format: :json } do
+    post :shop_orders, to: 'shop_orders#import'
+  end
+
+
 
   mount MissionControl::Jobs::Engine, at: "/jobs"
 

@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/pablomontoja/php-serialize.git
+  revision: ceb49211e5f16f52937476e3524bac78f45b7a41
+  specs:
+    k-php-serialize (1.2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -323,6 +329,9 @@ GEM
     rspec-support (3.13.1)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
+    sanitize (7.0.0)
+      crass (~> 1.0.2)
+      nokogiri (>= 1.16.8)
     securerandom (0.4.1)
     sentry-rails (5.20.1)
       railties (>= 5.0)
@@ -384,6 +393,7 @@ DEPENDENCIES
   faraday
   faraday-net_http_persistent (~> 2.0)
   groupdate (~> 6.4)
+  k-php-serialize!
   lockbox
   mission_control-jobs
   money-rails (~> 1.12)
@@ -398,6 +408,7 @@ DEPENDENCIES
   roo (~> 2.10.0)
   rspec-json_expectations
   rspec-rails
+  sanitize
   sentry-rails
   sentry-ruby
   shoulda (~> 3.5)
