@@ -1,4 +1,5 @@
 # TODO in README.md
+- add short_name to institutions - for Magda Pajdowska
 - authentication controller for mission_control gem
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
