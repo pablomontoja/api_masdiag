@@ -32,7 +32,7 @@ module MasdiagRecurring
      
       attachments["masdiag-report-fftb-#{Date.today}.csv"] = io.read
 
-      mail(to: ["tests@foodforthebrain.org", "dariusz.kolodynski@masdiag.pl"], reply_to: "pawel.swider@masdiag.pl", subject: 'FFTB Samples Report')
+      mail(to: ["tests@foodforthebrain.org", "logistyka@masdiag.pl"], reply_to: "pawel.swider@masdiag.pl", subject: 'FFTB Samples Report')
     end
 
 
