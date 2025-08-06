@@ -25,10 +25,18 @@ I'm deliberately writing about this in one paragraph, because the information is
 
 # Transfer EU barcodes to AU
 ```ruby
+# in MASDIAG.COM database
+accs = ["Age Well 360",                                         
+ "Balgowlah Family Practice",                            
+ "Botanica Medica Wellness Centre",                      
+ "Cassandra Lawless",                                    
+ "Chi Longevity"]
+ids = HcpAccount.where(business_name: accs).pluck(:id)
+Kit.where(account_id: ids).pluck(:code).join(" ")
+
+# transfer all codes to AU in LabSample DB
 codes = %w[EUAC829920]
-
 ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 85)
-
 
 Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 	puts "------------------------------------------------------------------"
@@ -43,6 +51,39 @@ Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 	end
 	nil
 end
+
+
+
+#---------------------------------------------------------
+# transfer all codes to EU
+#---------------------------------------------------------
+# in MASDIAG.COM database
+accs = ["Arctic Health AB",
+"Beps Biopharm",
+"ICTAN-CSIC",
+"Nutilab",
+"Wellness Innovations BV"]
+ids = HcpAccount.where(business_name: accs).pluck(:id)
+Kit.where(account_id: ids).pluck(:code).join(" ")
+#---------------------------------------------------------
+# in LabSampleDB
+ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 89)
+
+Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
+	puts "------------------------------------------------------------------"
+	puts "#{sample.patient.FirstName} #{sample.patient.LastName}"
+	if sample.patient.FirstName == "FAKE"
+		puts "FAKE"
+		sample.update(PatientId: 384093)
+		next
+	else
+		sample.patient.update_columns(ContractorId: 786)
+		puts "REAL PATIENT"
+	end
+	nil
+end
+#---------------------------------------------------------
+
 ```
 
 
