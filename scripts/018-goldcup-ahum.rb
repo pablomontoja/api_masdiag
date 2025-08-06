@@ -51,12 +51,12 @@ ActiveRecord::Base.transaction do
 	user = User.first
 	Measurement.includes(:sample).where(sample: {Code: codes}).each do |meas|
 	  meas.online_file&.destroy
-	  # of = OnlineFile.new(measurement_id: meas.Id, file_size: file.size, encrypted_file_size: file.size, filename: "#{meas.sample.Code}_#{meas.ProjectId}", content_type: "application/pdf")
-	  # of.file_contents = file.read
-	  # file.rewind
-	  # of.encrypted_file_contents = file.read
-	  # file.rewind
-	  # of.save
+	  of = OnlineFile.new(measurement_id: meas.Id, file_size: file.size, encrypted_file_size: file.size, filename: "#{meas.sample.Code}_#{meas.ProjectId}", content_type: "application/pdf")
+	  of.file_contents = file.read
+	  file.rewind
+	  of.encrypted_file_contents = file.read
+	  file.rewind
+	  of.save
 	  meas.update(Status: 5, MeasureDate: DateTime.now, AuthorizedAt: DateTime.now, CuttedAt: DateTime.now, InstrumentId: 1)
 	  meas.sample.update(AcceptanceDate: DateTime.now-2.days, soaking_degree_id: 1, SampleStatus: 2, SampleState: 2)
 

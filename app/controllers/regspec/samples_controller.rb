@@ -4,7 +4,6 @@ class Regspec::SamplesController < ApplicationController
 	# POST   /regspec/samples 
 	def create
 		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date].to_date if params[:sample][:sample_collection_date].blank?
-		params[:sample][:Comment] = params[:sample][:comment]
 
 		@current_rsc = ReservedSampleCode.find_by(Code: sample_params[:code])
 
@@ -68,7 +67,7 @@ class Regspec::SamplesController < ApplicationController
   end
 
 	def sample_params
-    params.require(:sample).permit(:id, :code, :sample_collection_date, :acceptance_date, :comment, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).merge(AcceptanceDate: params[:sample][:acceptance_date]).except(:acceptance_date, :comment)
+    params.require(:sample).permit(:id, :code, :sample_collection_date, :acceptance_date, :comment, project_ids: [], patient_attributes: [:first_name, :last_name, :email, :pesel, :contractor_id, :birth_date, :gender, :id_document, :id_number]).merge(AcceptanceDate: params[:sample][:acceptance_date], Comment: params[:sample][:comment]).except(:acceptance_date, :comment)
   end
 
   def update_params
