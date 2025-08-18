@@ -46,6 +46,7 @@ Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 		sample.update(PatientId: 340608)
 		next
 	else
+		next if sample.patient.IsVirtual == true
 		sample.patient.update_columns(ContractorId: 754)
 		puts "REAL PATIENT"
 	end
@@ -64,6 +65,7 @@ accs = ["Arctic Health AB",
 "Nutilab",
 "Wellness Innovations BV"]
 ids = HcpAccount.where(business_name: accs).pluck(:id)
+codes = %w[EUAC829920]
 Kit.where(account_id: ids).pluck(:code).join(" ")
 #---------------------------------------------------------
 # in LabSampleDB
@@ -77,6 +79,7 @@ Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 		sample.update(PatientId: 384093)
 		next
 	else
+		next if sample.patient.IsVirtual == true
 		sample.patient.update_columns(ContractorId: 786)
 		puts "REAL PATIENT"
 	end

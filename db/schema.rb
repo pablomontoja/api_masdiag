@@ -10,22 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_07_31_134131) do
-  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2025_08_18_103513) do
+  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
     t.integer "Gender"
-    t.decimal "Min", precision: 18, scale: 2, null: false
-    t.decimal "Max", precision: 18, scale: 2, null: false
+    t.decimal "Min", precision: 20, scale: 4, null: false
+    t.decimal "Max", precision: 20, scale: 4, null: false
     t.integer "AnalyteId"
     t.integer "AgeFromMonth", null: false
     t.integer "AgeToMonth", null: false
     t.integer "AgeFromInMonths", null: false
     t.integer "AgeToInMonths", null: false
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
-    t.decimal "AcceptableMin", precision: 18, scale: 2
-    t.decimal "AcceptableMax", precision: 18, scale: 2
+    t.decimal "AcceptableMin", precision: 20, scale: 4
+    t.decimal "AcceptableMax", precision: 20, scale: 4
     t.integer "MaterialType", null: false
     t.index ["AnalyteId"], name: "IX_AnalyteId"
   end
@@ -33,7 +33,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_31_134131) do
   create_table "AnalyteResults", primary_key: ["ResultId", "AnalyteId"], charset: "utf8", force: :cascade do |t|
     t.integer "ResultId", null: false
     t.integer "AnalyteId", null: false
-    t.decimal "Value", precision: 18, scale: 2, null: false
+    t.decimal "Value", precision: 20, scale: 4, null: false
     t.text "Unit", size: :long
     t.integer "Result_MeasurementId"
     t.decimal "MeasuredValue", precision: 18, scale: 5, null: false
@@ -45,8 +45,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_31_134131) do
     t.text "Name", size: :long, null: false, collation: "utf8_general_ci"
     t.integer "ProjectId", null: false
     t.boolean "IsCalculatedFromOthers", null: false
-    t.decimal "CutoffMin", precision: 9, scale: 2
-    t.decimal "CutoffMax", precision: 9, scale: 2
+    t.decimal "CutoffMin", precision: 11, scale: 4
+    t.decimal "CutoffMax", precision: 11, scale: 4
     t.text "Unit", size: :long
     t.text "NameInReport", size: :long
     t.text "NameInAPI", size: :long
