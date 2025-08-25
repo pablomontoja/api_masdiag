@@ -73,7 +73,7 @@ class Lalen::KitController < Fv1::KitController
   # possible material_handlers: dbs_faps, dbs_nem, dbs_bht, dbs_tfn, blood_vial, urine_vial
   # response: NO_CONTENT, STATUS 204
   def declare
-    material_type = MaterialHandlers::MATERIAL_TYPE_BASED_ON_MODIFICATOR[declare_params[:material_handler].to_sym] || :dbs
+    material_type = declare_params[:material_type].blank? ? :dbs : declare_params[:material_type].to_sym
     masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, dbs_iaa: :dbs_i4, urine_vial: :urine_vial, blood_vial: :blood_vial }
 
     assignment = validate_assignment(declare_params[:test_ids])
@@ -115,7 +115,7 @@ class Lalen::KitController < Fv1::KitController
   # possible material_handlers: dbs_faps, dbs_nem, dbs_bht, dbs_tfn, blood_vial, urine_vial
   # response: NO_CONTENT, STATUS 204
   def declare_generic
-    material_type = MaterialHandlers::MATERIAL_TYPE_BASED_ON_MODIFICATOR[declare_generic_params[:material_handler].to_sym] || :dbs
+    material_type = declare_params[:material_type].blank? ? :dbs : declare_params[:material_type].to_sym
     masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, dbs_iaa: :dbs_i4, urine_vial: :urine_vial, blood_vial: :blood_vial }
 
     ActiveRecord::Base.transaction do
@@ -170,11 +170,11 @@ class Lalen::KitController < Fv1::KitController
 private
 
   def declare_params
-    params.permit(:expiry_date, :material_handler, :code, test_ids: [])
+    params.permit(:expiry_date, :material_handler, :material_type, :code, test_ids: [])
   end
 
   def declare_generic_params
-    params.permit(:expiry_date, :material_handler, :code)
+    params.permit(:expiry_date, :material_handler, :material_type, :code)
   end
   # def get_masdiag_project_id(api_test_name)
   #   avail_test = V1::Common::AVAILABLE_TESTS
@@ -190,8 +190,8 @@ private
     when "GB"
       83
     else
-      85
-      # raise StandardError.new("Recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
+      89
+      Sentry.capture_message("#{barcode} - recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
     end
   end
 
