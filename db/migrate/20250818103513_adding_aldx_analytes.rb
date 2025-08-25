@@ -188,7 +188,7 @@ class AddingAldxAnalytes < ActiveRecord::Migration[7.0]
     analyte = Analyte.create!(
       Name: "LPC 26:0 / LPC 24:0",                                                  
       ProjectId: project.Id,                                                 
-      IsCalculatedFromOthers: false,                                 
+      IsCalculatedFromOthers: true,                                 
       CutoffMin: nil,                                                
       CutoffMax: nil,                                              
       Unit: "",                                                
@@ -242,7 +242,7 @@ class AddingAldxAnalytes < ActiveRecord::Migration[7.0]
     analyte = Analyte.create!(
       Name: "LPC 26:0 / LPC 22:0",                                                  
       ProjectId: project.Id,                                                 
-      IsCalculatedFromOthers: false,                                 
+      IsCalculatedFromOthers: true,                                 
       CutoffMin: nil,                                                
       CutoffMax: nil,                                              
       Unit: "",                                                
@@ -296,7 +296,7 @@ class AddingAldxAnalytes < ActiveRecord::Migration[7.0]
     analyte = Analyte.create!(
       Name: "LPC 24:0 / LPC 22:0",                                                  
       ProjectId: project.Id,                                                 
-      IsCalculatedFromOthers: false,                                 
+      IsCalculatedFromOthers: true,                                 
       CutoffMin: nil,                                                
       CutoffMax: nil,                                              
       Unit: "",                                                
