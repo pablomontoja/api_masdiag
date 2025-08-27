@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_19_123033) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_27_094149) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -26,7 +26,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_19_123033) do
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
     t.decimal "AcceptableMin", precision: 20, scale: 4
     t.decimal "AcceptableMax", precision: 20, scale: 4
-    t.integer "MaterialType", null: false
     t.index ["AnalyteId"], name: "IX_AnalyteId"
   end
 
@@ -55,6 +54,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_19_123033) do
     t.boolean "is_required", null: false
     t.text "NameInStandLab", size: :tiny
     t.boolean "ExcludedFromStatistic", null: false
+    t.integer "material_type", null: false
     t.index ["ProjectId"], name: "IX_ProjectId"
   end
 
@@ -1226,7 +1226,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_19_123033) do
     t.string "name"
     t.string "acronym"
     t.string "name_in_invoice"
-    t.integer "project_id", null: false
+    t.integer "project_id"
     t.integer "default_price_cents", default: 0, null: false
     t.string "default_price_currency", default: "PLN", null: false
     t.integer "material_type"
