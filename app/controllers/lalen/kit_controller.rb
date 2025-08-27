@@ -189,9 +189,9 @@ private
       85
     when "GB"
       83
-    else
-      89
+    else      
       Sentry.capture_message("#{barcode} - recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
+      89
     end
   end
 
