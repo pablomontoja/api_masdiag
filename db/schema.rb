@@ -10,30 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_07_08_113441) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_01_103141) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
     t.integer "Gender"
-    t.decimal "Min", precision: 18, scale: 2, null: false
-    t.decimal "Max", precision: 18, scale: 2, null: false
+    t.decimal "Min", precision: 20, scale: 4, null: false
+    t.decimal "Max", precision: 20, scale: 4, null: false
     t.integer "AnalyteId"
     t.integer "AgeFromMonth", null: false
     t.integer "AgeToMonth", null: false
     t.integer "AgeFromInMonths", null: false
     t.integer "AgeToInMonths", null: false
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
-    t.decimal "AcceptableMin", precision: 18, scale: 2
-    t.decimal "AcceptableMax", precision: 18, scale: 2
-    t.integer "MaterialType", null: false
+    t.decimal "AcceptableMin", precision: 20, scale: 4
+    t.decimal "AcceptableMax", precision: 20, scale: 4
     t.index ["AnalyteId"], name: "IX_AnalyteId"
   end
 
   create_table "AnalyteResults", primary_key: ["ResultId", "AnalyteId"], charset: "utf8", force: :cascade do |t|
     t.integer "ResultId", null: false
     t.integer "AnalyteId", null: false
-    t.decimal "Value", precision: 18, scale: 2, null: false
+    t.decimal "Value", precision: 20, scale: 4, null: false
     t.text "Unit", size: :long
     t.integer "Result_MeasurementId"
     t.decimal "MeasuredValue", precision: 18, scale: 5, null: false
@@ -45,8 +44,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_08_113441) do
     t.text "Name", size: :long, null: false, collation: "utf8_general_ci"
     t.integer "ProjectId", null: false
     t.boolean "IsCalculatedFromOthers", null: false
-    t.decimal "CutoffMin", precision: 9, scale: 2
-    t.decimal "CutoffMax", precision: 9, scale: 2
+    t.decimal "CutoffMin", precision: 11, scale: 4
+    t.decimal "CutoffMax", precision: 11, scale: 4
     t.text "Unit", size: :long
     t.text "NameInReport", size: :long
     t.text "NameInAPI", size: :long
@@ -55,6 +54,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_08_113441) do
     t.boolean "is_required", null: false
     t.text "NameInStandLab", size: :tiny
     t.boolean "ExcludedFromStatistic", null: false
+    t.integer "material_type", null: false
     t.index ["ProjectId"], name: "IX_ProjectId"
   end
 
@@ -1226,7 +1226,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_07_08_113441) do
     t.string "name"
     t.string "acronym"
     t.string "name_in_invoice"
-    t.integer "project_id", null: false
+    t.integer "project_id"
     t.integer "default_price_cents", default: 0, null: false
     t.string "default_price_currency", default: "PLN", null: false
     t.integer "material_type"
