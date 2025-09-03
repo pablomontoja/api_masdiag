@@ -23,12 +23,36 @@ MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
 I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
 
 
+
+# Checking not included in measurement summaries
+```ruby
+Measurement.includes(sample: { patient: { contractor: :institution }}).where(sample: { patient: { contractor: { institutions: { kind: ["Hospital", "ForeignInstitution"] }}}}).where(Status: 5, AuthorizedAt: Date.parse("2025-07-01")..Date.parse("2025-09-01")).where.not(
+  Id: MeasurementSummaryItem.where(created_at: Date.parse("2025-06-01")..nil).select(:measurement_id)
+).pluck("sample.Code")
+
+
+
+Measurement.includes(sample: { patient: { contractor: :institution }}).where(sample: { patient: { contractor: { institutions: { kind: ["ForeignInstitution"] }}}}).where(Status: 4, MeasureDate: Date.parse("2025-07-01")..Date.parse("2025-09-01")).where.not(
+  Id: MeasurementSummaryItem.where(created_at: Date.parse("2025-06-01")..nil).select(:measurement_id)
+).pluck("sample.Code")
+```
+
+
+
 # Transfer EU barcodes to AU
 ```ruby
+# in MASDIAG.COM database
+accs = ["Age Well 360",                                         
+ "Balgowlah Family Practice",                            
+ "Botanica Medica Wellness Centre",                      
+ "Cassandra Lawless",                                    
+ "Chi Longevity"]
+ids = HcpAccount.where(business_name: accs).pluck(:id)
+Kit.where(account_id: ids).pluck(:code).join(" ")
+
+# transfer all codes to AU in LabSample DB
 codes = %w[EUAC829920]
-
 ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 85)
-
 
 Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 	puts "------------------------------------------------------------------"
@@ -38,11 +62,47 @@ Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 		sample.update(PatientId: 340608)
 		next
 	else
+		next if sample.patient.IsVirtual == true
 		sample.patient.update_columns(ContractorId: 754)
 		puts "REAL PATIENT"
 	end
 	nil
 end
+
+
+
+#---------------------------------------------------------
+# transfer all codes to EU
+#---------------------------------------------------------
+# in MASDIAG.COM database
+accs = ["Arctic Health AB",
+"Beps Biopharm",
+"ICTAN-CSIC",
+"Nutilab",
+"Wellness Innovations BV"]
+ids = HcpAccount.where(business_name: accs).pluck(:id)
+codes = %w[EUAC829920]
+Kit.where(account_id: ids).pluck(:code).join(" ")
+#---------------------------------------------------------
+# in LabSampleDB
+ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 89)
+
+Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
+	puts "------------------------------------------------------------------"
+	puts "#{sample.patient.FirstName} #{sample.patient.LastName}"
+	if sample.patient.FirstName == "FAKE"
+		puts "FAKE"
+		sample.update(PatientId: 384093)
+		next
+	else
+		next if sample.patient.IsVirtual == true
+		sample.patient.update_columns(ContractorId: 786)
+		puts "REAL PATIENT"
+	end
+	nil
+end
+#---------------------------------------------------------
+
 ```
 
 
