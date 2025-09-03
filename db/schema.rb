@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_27_094149) do
-  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2025_09_01_103141) do
+  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
@@ -1074,7 +1074,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_27_094149) do
   create_table "solid_queue_jobs", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "queue_name", null: false
     t.string "class_name", null: false
-    t.text "arguments", size: :long
+    t.text "arguments"
     t.integer "priority", default: 0, null: false
     t.string "active_job_id"
     t.datetime "scheduled_at"

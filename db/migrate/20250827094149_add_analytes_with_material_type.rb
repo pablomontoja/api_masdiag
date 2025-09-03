@@ -7,8 +7,6 @@ class AddAnalytesWithMaterialType < ActiveRecord::Migration[7.0]
 
       migrate_material_types
 
-      remove_column :AnalyteRanges, :MaterialType
-
       aa_pmr_updates
     end
   end
