@@ -22,7 +22,7 @@ class Analyte < ApplicationRecord
 	self.primary_key = "Id"
 
 	belongs_to :project, class_name: "Project", foreign_key: "ProjectId"
-	has_many :analyte_ranges, class_name: "AnalyteRange", foreign_key: "AnalyteId"
+	has_many :analyte_ranges, class_name: "AnalyteRange", foreign_key: "AnalyteId", dependent: :destroy
 
   # def readonly?
   #   true
