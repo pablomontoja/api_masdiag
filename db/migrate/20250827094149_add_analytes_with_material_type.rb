@@ -2,10 +2,13 @@ class AddAnalytesWithMaterialType < ActiveRecord::Migration[7.0]
 
   def change
     ActiveRecord::Base.transaction do
-      add_column :Analytes, :material_type, :integer, null: false
+      # add_column :Analytes, :material_type, :integer, null: false
       Analyte.reset_column_information
 
       migrate_material_types
+
+      remove_column :AnalyteRanges, :MaterialType
+      AnalyteRange.reset_column_information
 
       aa_pmr_updates
     end
