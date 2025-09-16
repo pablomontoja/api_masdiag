@@ -59,7 +59,7 @@ class Lalen::KitController < Fv1::KitController
 
     ActiveRecord::Base.transaction do
       @current_rsc.reserved_tests.destroy_all
-      assignment_params[:test_ids].each do |test|        
+      assignment_params[:test_ids].uniq.each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
@@ -97,7 +97,7 @@ class Lalen::KitController < Fv1::KitController
                                 material_handler: masdiag_material_handler[declare_params[:material_handler].to_sym],
                                 reserved_by_contractor_id: get_lalen_contractor_id(inst_id)
                               )
-      declare_params[:test_ids].each do |test|        
+      declare_params[:test_ids].uniq.each do |test|        
         rsc.reserved_tests.create!(project_id: test)
       end
     end
@@ -184,6 +184,8 @@ private
   def get_lalen_institution(barcode)
     case barcode[0, 2].upcase
     when "EU"
+      89
+    when "AM"
       89
     when "AU"
       85

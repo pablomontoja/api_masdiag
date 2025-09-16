@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_01_103141) do
-  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2025_09_04_123104) do
+  create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
@@ -19,8 +19,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_01_103141) do
     t.decimal "Min", precision: 20, scale: 4, null: false
     t.decimal "Max", precision: 20, scale: 4, null: false
     t.integer "AnalyteId"
-    t.integer "AgeFromMonth", null: false
-    t.integer "AgeToMonth", null: false
     t.integer "AgeFromInMonths", null: false
     t.integer "AgeToInMonths", null: false
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
@@ -1074,7 +1072,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_01_103141) do
   create_table "solid_queue_jobs", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "queue_name", null: false
     t.string "class_name", null: false
-    t.text "arguments"
+    t.text "arguments", size: :long
     t.integer "priority", default: 0, null: false
     t.string "active_job_id"
     t.datetime "scheduled_at"
