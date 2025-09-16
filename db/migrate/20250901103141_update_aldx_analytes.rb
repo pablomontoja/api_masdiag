@@ -1,6 +1,6 @@
 class UpdateAldxAnalytes < ActiveRecord::Migration[7.0]
   def change
-    remove_column :AnalyteRanges, :MaterialType
+    # remove_column :AnalyteRanges, :MaterialType
     
     Analyte.find(423).update(NameInReport: "C26:0-LPC*")
     Analyte.find(424).update(NameInReport: "C24:0-LPC**")

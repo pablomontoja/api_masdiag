@@ -50,8 +50,16 @@ accs = ["Age Well 360",
 ids = HcpAccount.where(business_name: accs).pluck(:id)
 Kit.where(account_id: ids).pluck(:code).join(" ")
 
-# transfer all codes to AU in LabSample DB
-codes = %w[EUAC829920]
+# place all printed in cli codes in sample.txt file and transfer all codes to AU in LabSample DB
+codes = []
+
+File.open('sample.txt', 'r') do |file|
+  file.each_line do |line|
+    codes.concat(line.strip.split)
+  end
+end
+
+# codes = %w[EUAC829920]
 ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 85)
 
 Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
@@ -59,7 +67,7 @@ Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
 	puts "#{sample.patient.FirstName} #{sample.patient.LastName}"
 	if sample.patient.FirstName == "FAKE"
 		puts "FAKE"
-		sample.update(PatientId: 340608)
+		sample.update_columns(PatientId: 340608)
 		next
 	else
 		next if sample.patient.IsVirtual == true
