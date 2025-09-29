@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_04_123104) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
