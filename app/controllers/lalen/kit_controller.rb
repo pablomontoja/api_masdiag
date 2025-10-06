@@ -203,7 +203,7 @@ private
 
   def validate_assignment(test_ids)
     test_ids.uniq!
-    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
+    # return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
 
     avail_test = V1::Common::AVAILABLE_TESTS
     requested_test = avail_test.select{|a| test_ids.map(&:to_i).include?(a[:id])}
