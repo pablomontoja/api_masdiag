@@ -1,6 +1,44 @@
 class Lalen::KitController < Fv1::KitController
   include LalenCheck
 
+  # POST /kits/qns with json: { "description": "reason", "code": "ABCDEFGH" }
+  def qns
+    @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: qns_params[:code])
+    if @current_rsc.nil?
+      json_response({ message: "A such barcode was not found for your institution" }, :unprocessable_entity)
+      return
+    end
+
+    @sample = Sample.find_by(Code: qns_params[:code])
+
+    if @sample&.AcceptanceDate.present? && @sample.SampleStatus != 4
+      json_response({ message: "This sample cannot be mark as QNS" }, :unprocessable_entity)
+      return
+    end
+
+    success = false
+
+    if @sample.nil?
+      ActiveRecord::Base.transaction do
+        Note.create!(key: "cancelled-handler", subject: @current_rsc, description: qns_params[:description]) if @current_rsc
+        success = true
+      end
+    else
+      ActiveRecord::Base.transaction do
+        @sample.update!(soaking_degree_id: 4, Comment: qns_params[:description], SampleStatus: 4, CancelledById: User.first.Id, CancellationDate: DateTime.now)
+        @sample.measurements.each(&:destroy!)
+        Note.create!(key: "cancelled-handler", subject: @current_rsc, description: qns_params[:description]) if @current_rsc
+        success = true
+      end
+    end
+    
+    if success
+      head :no_content
+    else
+      json_response({ message: "There were problems with marking the sample as QNS" }, :unprocessable_entity)
+    end
+  end
+
   def check_code
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: code_params)
 
@@ -171,6 +209,10 @@ private
 
   def declare_params
     params.permit(:expiry_date, :material_handler, :material_type, :code, test_ids: [])
+  end
+
+  def qns_params
+    params.permit(:description, :code)
   end
 
   def declare_generic_params

@@ -51,7 +51,7 @@ class Sample < ApplicationRecord
   belongs_to :soaking_degree, optional: true
   has_many :measurements, class_name: 'Measurement', foreign_key: 'SampleId', dependent: :destroy, inverse_of: :sample
   accepts_nested_attributes_for :patient
-  has_many :test_transactions
+  has_many :test_transactions # in labpanel here is has_one used
   has_many :notes, as: :subject
 
   attr_accessor :approve
