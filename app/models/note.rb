@@ -29,6 +29,7 @@ private
 				kit-lock
 				tandem-ms-sample
 				lab-user-note
+				cancelled-handler
 			)
 	end
 
