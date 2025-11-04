@@ -71,6 +71,8 @@ class V1::KitController < ApplicationController
   end
 
   def validate_assignment(test_ids)
+    allowed_weight = 2
+    allowed_weight = 4 if Current.api_account.institution.id == 83 # Food for the brain
     test_ids.uniq!
     return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
 
@@ -82,7 +84,7 @@ class V1::KitController < ApplicationController
     requested_weight = requested_test.select{|t| t[:material] == "DBS"}.sum {|t| t[:weight]}
     errors = []
     errors << "Assignment of tests for 2 different types of material is not possible" if (requested_material.count > 1)
-    errors << "Weight limit exceeded for DBS material" if requested_material.include?("DBS") && requested_weight > 2
+    errors << "Weight limit exceeded for DBS material" if requested_material.include?("DBS") && requested_weight > allowed_weight
     return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
   end
 

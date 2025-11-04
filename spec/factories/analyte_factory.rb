@@ -29,5 +29,6 @@ FactoryBot.define do
     NameInAPI { "analyte_1" }
     is_required { true }
     ExcludedFromStatistic { true }
+    material_type { :dbs }
   end
 end
