@@ -1,6 +1,6 @@
 # TODO in README.md
 - add short_name to institutions - for Magda Pajdowska
-- authentication controller for mission_control gem
+- authentication controller for mission_control gem, currently config.mission_control.jobs.http_basic_auth_enabled is false
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
 - new layout for /rails/mailers/cancellation_notification_mailer/standard_cancellation_notification
