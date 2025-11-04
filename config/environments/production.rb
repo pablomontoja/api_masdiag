@@ -82,15 +82,14 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: 'smtp.office365.com',
-    port: '587',
-    authentication: :login,
-    user_name: Rails.application.credentials.mailer[:login],
-    password: Rails.application.credentials.mailer[:password],
-    domain: 'masdiag.pl',
-    enable_starttls_auto: true
+  ActionMailer::Base.delivery_method = :microsoft_graph
+  ActionMailer::Base.microsoft_graph_settings = {
+    user_id: Rails.application.credentials.mailer[:user_id],
+    tenant: Rails.application.credentials.mailer[:tenant],
+    client_id: Rails.application.credentials.mailer[:client_id],
+    client_secret: Rails.application.credentials.mailer[:client_secret],
+    azure_ad_endpoint: "https://login.microsoftonline.com",
+    graph_endpoint: "https://graph.microsoft.com"
   }
 
   # Enable DNS rebinding protection and other `Host` header attacks.

@@ -22,6 +22,7 @@ development:
     username: <%= Rails.application.credentials.db.username %>
     password: <%= Rails.application.credentials.db.password %>
     host: <%= Rails.application.credentials.db.host %>
+    port: 3307
   queue:
     <<: *default
     database: solid_queue_db
