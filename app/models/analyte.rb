@@ -27,6 +27,8 @@ class Analyte < ApplicationRecord
 
 	validates :NameInAPI, uniqueness: { scope: [:ProjectId, :material_type] } 
 
+	enum :material_type, MaterialTypes::MODEL_HASH
+
   # def readonly?
   #   true
   # end
