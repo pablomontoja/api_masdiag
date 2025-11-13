@@ -1,6 +1,44 @@
 class Lalen::KitController < Fv1::KitController
   include LalenCheck
 
+  # POST /kits/qns with json: { "description": "reason", "code": "ABCDEFGH" }
+  def qns
+    @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: qns_params[:code])
+    if @current_rsc.nil?
+      json_response({ message: "A such barcode was not found for your institution" }, :unprocessable_entity)
+      return
+    end
+
+    @sample = Sample.find_by(Code: qns_params[:code])
+
+    if @sample&.AcceptanceDate.present? && @sample.SampleStatus != 4
+      json_response({ message: "This sample cannot be mark as QNS" }, :unprocessable_entity)
+      return
+    end
+
+    success = false
+
+    if @sample.nil?
+      ActiveRecord::Base.transaction do
+        Note.create!(key: "cancelled-handler", subject: @current_rsc, description: qns_params[:description]) if @current_rsc
+        success = true
+      end
+    else
+      ActiveRecord::Base.transaction do
+        @sample.update!(soaking_degree_id: 4, Comment: qns_params[:description], SampleStatus: 4, CancelledById: User.first.Id, CancellationDate: DateTime.now)
+        @sample.measurements.each(&:destroy!)
+        Note.create!(key: "cancelled-handler", subject: @current_rsc, description: qns_params[:description]) if @current_rsc
+        success = true
+      end
+    end
+    
+    if success
+      head :no_content
+    else
+      json_response({ message: "There were problems with marking the sample as QNS" }, :unprocessable_entity)
+    end
+  end
+
   def check_code
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: code_params)
 
@@ -59,7 +97,7 @@ class Lalen::KitController < Fv1::KitController
 
     ActiveRecord::Base.transaction do
       @current_rsc.reserved_tests.destroy_all
-      assignment_params[:test_ids].each do |test|        
+      assignment_params[:test_ids].uniq.each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
@@ -73,7 +111,7 @@ class Lalen::KitController < Fv1::KitController
   # possible material_handlers: dbs_faps, dbs_nem, dbs_bht, dbs_tfn, blood_vial, urine_vial
   # response: NO_CONTENT, STATUS 204
   def declare
-    material_type = MaterialHandlers::MATERIAL_TYPE_BASED_ON_MODIFICATOR[declare_params[:material_handler].to_sym] || :dbs
+    material_type = declare_params[:material_type].blank? ? :dbs : declare_params[:material_type].to_sym
     masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, dbs_iaa: :dbs_i4, urine_vial: :urine_vial, blood_vial: :blood_vial }
 
     assignment = validate_assignment(declare_params[:test_ids])
@@ -97,7 +135,7 @@ class Lalen::KitController < Fv1::KitController
                                 material_handler: masdiag_material_handler[declare_params[:material_handler].to_sym],
                                 reserved_by_contractor_id: get_lalen_contractor_id(inst_id)
                               )
-      declare_params[:test_ids].each do |test|        
+      declare_params[:test_ids].uniq.each do |test|        
         rsc.reserved_tests.create!(project_id: test)
       end
     end
@@ -115,7 +153,7 @@ class Lalen::KitController < Fv1::KitController
   # possible material_handlers: dbs_faps, dbs_nem, dbs_bht, dbs_tfn, blood_vial, urine_vial
   # response: NO_CONTENT, STATUS 204
   def declare_generic
-    material_type = MaterialHandlers::MATERIAL_TYPE_BASED_ON_MODIFICATOR[declare_generic_params[:material_handler].to_sym] || :dbs
+    material_type = declare_params[:material_type].blank? ? :dbs : declare_params[:material_type].to_sym
     masdiag_material_handler = { dbs_faps: :dbs_f4, dbs_nem: :dbs_n4, dbs_bht: :dbs_b4, dbs_tfn: :dbs_t4, dbs_iaa: :dbs_i4, urine_vial: :urine_vial, blood_vial: :blood_vial }
 
     ActiveRecord::Base.transaction do
@@ -170,11 +208,15 @@ class Lalen::KitController < Fv1::KitController
 private
 
   def declare_params
-    params.permit(:expiry_date, :material_handler, :code, test_ids: [])
+    params.permit(:expiry_date, :material_handler, :material_type, :code, test_ids: [])
+  end
+
+  def qns_params
+    params.permit(:description, :code)
   end
 
   def declare_generic_params
-    params.permit(:expiry_date, :material_handler, :code)
+    params.permit(:expiry_date, :material_handler, :material_type, :code)
   end
   # def get_masdiag_project_id(api_test_name)
   #   avail_test = V1::Common::AVAILABLE_TESTS
@@ -185,13 +227,15 @@ private
     case barcode[0, 2].upcase
     when "EU"
       89
+    when "AM"
+      89
     when "AU"
       85
     when "GB"
       83
-    else
-      85
-      # raise StandardError.new("Recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
+    else      
+      Sentry.capture_message("#{barcode} - recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
+      89
     end
   end
 
@@ -201,7 +245,7 @@ private
 
   def validate_assignment(test_ids)
     test_ids.uniq!
-    return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
+    # return OpenStruct.new(invalid: true, errors: ["test_ids array can not be empty"]) if test_ids.map(&:to_i).reject(&:zero?).compact.empty?
 
     avail_test = V1::Common::AVAILABLE_TESTS
     requested_test = avail_test.select{|a| test_ids.map(&:to_i).include?(a[:id])}

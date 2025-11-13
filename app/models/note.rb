@@ -27,8 +27,13 @@ private
 				included-in-monthly-ptc-report
 				cerascreen-dao-declaration-email
 				kit-lock
-				lalen-eu-result-exit-in-xlsx
+				tandem-ms-sample
+				lab-user-note
+				cancelled-handler
 			)
 	end
 
 end
+
+# REMOVED KEYS
+# 	lalen-eu-result-exit-in-xlsx

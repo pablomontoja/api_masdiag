@@ -4,7 +4,7 @@
 #
 #  ResultId             :integer          not null, primary key
 #  AnalyteId            :integer          not null, primary key
-#  Value                :decimal(18, 2)   not null
+#  Value                :decimal(20, 4)   not null
 #  Unit                 :text(4294967295)
 #  Result_MeasurementId :integer
 #  MeasuredValue        :decimal(18, 5)   not null

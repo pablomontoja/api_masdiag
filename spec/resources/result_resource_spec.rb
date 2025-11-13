@@ -48,7 +48,8 @@ RSpec.describe ResultResource do
       CutoffMax: 100.0,
       IsCalculatedFromOthers: false,
       is_required: true,
-      ExcludedFromStatistic: true
+      ExcludedFromStatistic: true,
+      material_type: :dbs
     )
 
     result = Result.create!(
