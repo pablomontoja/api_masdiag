@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
+ActiveRecord::Schema[7.0].define(version: 2025_11_19_133227) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -299,7 +299,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
   end
 
   create_table "ReservedSampleCodes", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
-    t.text "Code", size: :long
+    t.string "Code", limit: 50
     t.datetime "CreatedAt", precision: nil, null: false
     t.integer "CreatedById"
     t.integer "InstitutionId"
@@ -318,6 +318,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
     t.datetime "assignment_date", precision: nil
     t.integer "MaterialType", default: 0, null: false
     t.integer "material_handler", default: 0, null: false
+    t.index ["Code"], name: "index_ReservedSampleCodes_on_Code", unique: true
     t.index ["CreatedById"], name: "IX_CreatedById"
     t.index ["InstitutionId"], name: "IX_InstitutionId"
     t.index ["package_id"], name: "index_ReservedSampleCodes_on_package_id"
@@ -370,10 +371,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
     t.text "Level", size: :tiny
     t.text "selected_tests"
     t.text "clinical_info"
+    t.integer "reserved_sample_code_id"
     t.index ["CancelledById"], name: "IX_CancelledById"
     t.index ["Code"], name: "IX_Code"
     t.index ["PatientId"], name: "IX_PatientId"
     t.index ["UserId"], name: "IX_UserId"
+    t.index ["reserved_sample_code_id"], name: "index_Samples_on_reserved_sample_code_id"
     t.index ["soaking_degree_id"], name: "IX_soaking_degree_id"
   end
 
@@ -675,6 +678,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
     t.string "email_for_results"
     t.string "assigned_masdiag_bban", default: "09 2490 0005 0000 4530 4006 9262"
     t.integer "days_for_payment"
+    t.string "email_for_notifications"
+    t.string "short_name"
     t.index ["created_by_agent_id"], name: "fk_rails_4adfc629f3"
   end
 
@@ -902,8 +907,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
     t.integer "shipment_id"
     t.text "comment"
     t.datetime "scan_time", precision: nil
+    t.bigint "shop_order_id"
     t.index ["product_id"], name: "fk_rails_414e4ba737"
     t.index ["production_order_id"], name: "fk_rails_7381ce65c8"
+    t.index ["shop_order_id"], name: "index_packages_on_shop_order_id"
     t.index ["stock_room_id"], name: "fk_rails_e067235a3b"
   end
 
@@ -1287,6 +1294,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
   add_foreign_key "Results", "Users", column: "ImportUserId", primary_key: "Id", name: "FK_Results_Users_ImportUserId", on_update: :cascade, on_delete: :cascade
   add_foreign_key "Samples", "Patients", column: "PatientId", primary_key: "Id"
   add_foreign_key "Samples", "Patients", column: "PatientId", primary_key: "Id", name: "FK_Samples_Patients_PatientId"
+  add_foreign_key "Samples", "ReservedSampleCodes", column: "reserved_sample_code_id", primary_key: "Id", name: "fk_samples_reserved_sample_codes"
   add_foreign_key "Samples", "Users", column: "CancelledById", primary_key: "Id", name: "FK_Samples_Users_CancelledById"
   add_foreign_key "Samples", "Users", column: "UserId", primary_key: "Id", name: "FK_Samples_Users_UserId", on_update: :cascade, on_delete: :cascade
   add_foreign_key "Samples", "soaking_degrees", name: "FK_Samples_soaking_degrees_soaking_degree_id"
@@ -1316,6 +1324,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_22_093410) do
   add_foreign_key "online_files", "Measurements", column: "measurement_id", primary_key: "Id", name: "FK_online_files_Measurements_measurement_id"
   add_foreign_key "packages", "production_orders"
   add_foreign_key "packages", "products"
+  add_foreign_key "packages", "shop_orders"
   add_foreign_key "packages", "stock_rooms"
   add_foreign_key "production_orders", "products"
   add_foreign_key "production_orders", "stock_rooms"
