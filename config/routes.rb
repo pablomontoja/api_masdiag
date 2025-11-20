@@ -97,6 +97,7 @@ Rails.application.routes.draw do
     # post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
     post "/trigger/send_result/:code", to: 'trigger#send_result'
     post "/kits/qns", to: 'kit#qns'
+    get "/kits/is_uniq/:code", to: 'kit#is_uniq'
     post "/kits/declare", to: 'kit#declare'
     post "/kits/declare/generic", to: 'kit#declare_generic'
     delete "/kits/remove/declared/:code", to: 'kit#destroy_declared'

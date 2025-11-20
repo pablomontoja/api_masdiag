@@ -1,6 +1,15 @@
 class Lalen::KitController < Fv1::KitController
   include LalenCheck
 
+  def is_uniq
+    rsc = ReservedSampleCode.find_by(Code: is_uniq_params[:code])
+    if rsc.nil?
+      json_response({ result: true })
+    else
+      json_response({ result: false })
+    end    
+  end
+
   # POST /kits/qns with json: { "description": "reason", "code": "ABCDEFGH" }
   def qns
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: qns_params[:code])
@@ -33,7 +42,7 @@ class Lalen::KitController < Fv1::KitController
     end
     
     if success
-      head :no_content
+      head :created
     else
       json_response({ message: "There were problems with marking the sample as QNS" }, :unprocessable_entity)
     end
@@ -215,9 +224,14 @@ private
     params.permit(:description, :code)
   end
 
+  def is_uniq_params
+    params.permit(:code)
+  end
+
   def declare_generic_params
     params.permit(:expiry_date, :material_handler, :material_type, :code)
   end
+
   # def get_masdiag_project_id(api_test_name)
   #   avail_test = V1::Common::AVAILABLE_TESTS
   #   avail_test.find{ |t| t[:name] == api_test_name }&.dig(:id)
