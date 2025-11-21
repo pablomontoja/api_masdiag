@@ -18,6 +18,9 @@
 #  total_cost_with_coupons :decimal(7, 2)
 #
 class ShopOrder < ApplicationRecord
+	has_many :packages, dependent: :nullify
+	has_many :reserved_sample_codes, through: :packages
+
 	serialize :package_ids, type: Array
 	serialize :kits, type: Array, default: []
   serialize :coupons, type: Array, default: []
@@ -29,7 +32,8 @@ class ShopOrder < ApplicationRecord
 	before_destroy :clean_packages
 
 	def rscs
-		ReservedSampleCode.where(package_id: self.package_ids).all
+		# ReservedSampleCode.where(package_id: self.package_ids).all
+		self.reserved_sample_codes
 	end
 
 	def costumer_fullname
