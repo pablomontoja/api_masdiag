@@ -19,7 +19,7 @@ module DiagnostykaPrecyzyjna
           @errors << ["Zamówienie sklepu DP - nr #{@shop_order.number}", "Nie przekazano adresu email lub jest on zablokowany!", params]
           return handle_error(@errors)
         end
-        
+
         ActiveRecord::Base.transaction do
           prepare_ordered_kits()
           raise ActiveRecord::Rollback if @errors.count > 0
@@ -29,7 +29,7 @@ module DiagnostykaPrecyzyjna
           Sentry.capture_message(@errors.flatten.join("; "))
           return handle_error(@errors.flatten)
         else
-          return handle_result(self)
+          return handle_result(@shop_order)
         end
 
       rescue Exception => ex
@@ -59,24 +59,10 @@ module DiagnostykaPrecyzyjna
       end
       @shop_order.coupons = coupons
 
-      # shop_order_products = @params["products"]
       kits_json = @params["products"]
 
-      # kits_json = []
-
-
-      # shop_order_products.each do |shop_kit|
-      #   if shop_kit["Product Name (main)"].include?("Konsultacja")
-      #     appoint = AppointmentBuilderService.call(@shop_order, shop_kit)
-      #     AppointmentCreationJob.perform_now(appoint)
-      #   else
-      #     kits_json << shop_kit
-      #   end
-      # end
-
-
       kits = []
-      kits_json.each do |shop_kit|     
+      kits_json.each do |shop_kit|
         next if shop_kit["Product Name (main)"].include?("Badanie mikroflory jelitowej")
 
         mixed_kits = []
@@ -94,11 +80,13 @@ module DiagnostykaPrecyzyjna
         # inst_id = 100 if  k.products.any?{ |prod| prod.name == "Badanie Federacja Nordic Walking" }
         nordic_walking_check = (k.project_ids.to_set == [2, 12].to_set) && k.products.any?{ |prod| prod.name == "Badanie Federacja Nordic Walking" }
 
-        k.quantity.times do        
+        k.quantity.times do
           rsc = prepare_rsc(k.project_ids, inst_id) unless nordic_walking_check
           rsc = prepare_rsc(k.project_ids, 100) if nordic_walking_check
-          @shop_order.package_ids << rsc.package.id
-          stock_room_out(rsc)
+          if rsc
+            @shop_order.package_ids = @shop_order.package_ids + [rsc.package.id]
+            stock_room_out(rsc)
+          end
         end
       end
 
@@ -109,7 +97,7 @@ module DiagnostykaPrecyzyjna
     end
 
     def prepare_rsc(project_ids, inst_id)
-      relation = ReservedSampleCode.includes(package: :stock_room_item).includes(package: :product)
+      relation = ReservedSampleCode.includes(package: :stock_room_item).includes(package: :product).where.not(package: {products: {id: 29}})
       relation = ReservedSampleCode.includes(package: :stock_room_item).includes(package: :product).where(package: {products: {id: 29}}) if (project_ids & [31]).any?
 
       rsc = relation.where(package: {stock_room_items: {storagable_type: "Package", remaining_quantity: 1, date_out: nil}})
@@ -142,8 +130,8 @@ module DiagnostykaPrecyzyjna
     # { dbs_t4: 0, dbs_t5: 1, dbs_b4: 2, dbs_b5: 3, dbs_f4: 4, urine_vial: 5 }
     def material_handler(project_ids)
       handler = 0
-      handler = 4 if (project_ids & [21]).any? # kwasy OMEGA
-      handler = 5 if (project_ids & [15, 16, 17, 31]).any? # mocze
+      handler = 4 if (project_ids & [21, 34]).any? # kwasy OMEGA
+      handler = 5 if (project_ids & [15, 16, 17, 29, 31, 32]).any? # mocze
       handler
     end
 
@@ -151,16 +139,6 @@ module DiagnostykaPrecyzyjna
       rsc.package.update!(comment: "Pudełko zakupione w sklepie Diagnostyka Precyzyjna (zamówienie sklepu - #{@shop_order.number}, email zamawiającego - #{@shop_order.email})")
       rsc.package.stock_room_item.update!(remaining_quantity: 0, date_out: Time.current)
     end
-
-    # def clean_after_error(rsc)
-    #   return if rsc.nil?
-
-    #   rsc.update!(IsRetailSale: false, InstitutionId: nil)
-    #   rsc.reserved_tests.destroy_all
-    #   rsc.package.update!(comment: nil)
-    #   rsc.package.stock_room_item.update!(remaining_quantity: 1, date_out: nil)
-    # end
-
 
 
   end

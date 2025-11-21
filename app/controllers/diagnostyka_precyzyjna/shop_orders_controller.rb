@@ -5,8 +5,9 @@ class DiagnostykaPrecyzyjna::ShopOrdersController < ActionController::API
   # /diagnostyka_precyzyjna/shop_orders
   def import
     @errors = []
+    @shop_order = nil 
+
     begin
-      # orders = []
       params["_json"].each do |order|
         rso = DiagnostykaPrecyzyjna::RegShopOrder.call(order)
 
@@ -14,7 +15,7 @@ class DiagnostykaPrecyzyjna::ShopOrdersController < ActionController::API
           @errors << rso.error unless rso.error.blank?
           next
         else
-          @shop_order = rso.payload.shop_order
+          @shop_order = rso.payload
 
           if @shop_order.save!
             if !@shop_order.package_ids.blank?
@@ -45,6 +46,7 @@ class DiagnostykaPrecyzyjna::ShopOrdersController < ActionController::API
       @errors << [Time.current.to_s, "Exception - #{ex}", "@shop_order - #{@shop_order.to_json}", caller_locations.join("<br>")]
       render json: { "error": ex.message }, status: 500
     end
+
   end
 
 end
