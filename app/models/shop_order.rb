@@ -30,6 +30,7 @@ class ShopOrder < ApplicationRecord
 	validate :check_package_ids
 
 	before_destroy :clean_packages
+	after_commit :link_packages, on: :create
 
 	def rscs
 		# ReservedSampleCode.where(package_id: self.package_ids).all
@@ -49,6 +50,19 @@ private
 	def check_package_ids
 		errors.add(:base, 'package_ids cannot be blank Array') if self.package_ids.blank?
 	end
+	
+	def link_packages
+    return if self.package_ids.blank? || self.package_ids == "-"
+
+    self.package_ids.each do |package_id|
+      package = Package.find_by(id: package_id)
+      if package
+        package.update_column(:shop_order_id, self.id)
+      else
+        Sentry.capture_message("Warning: Package with id #{package_id} not found for ShopOrder ##{self.id}")
+      end
+    end
+  end
 
 	def clean_packages
 		self.rscs.each do |rsc|
