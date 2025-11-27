@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_19_133227) do
+ActiveRecord::Schema[7.0].define(version: 2025_11_27_111933) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -1040,7 +1040,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_19_133227) do
     t.string "phone"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.text "package_ids"
+    t.text "snapshot_package_ids"
     t.text "kits"
     t.text "coupons"
     t.decimal "total_cost", precision: 7, scale: 2
