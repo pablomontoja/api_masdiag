@@ -72,3 +72,4 @@ gem "sentry-ruby"
 gem "sentry-rails"
 gem "roo", "~> 2.10.0"
 gem 'async', "~> 2.21.1"
+gem 'money-rails', '~> 1.12'

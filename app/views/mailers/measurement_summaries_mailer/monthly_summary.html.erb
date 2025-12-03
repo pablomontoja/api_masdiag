@@ -1,0 +1,46 @@
+<div style="max-width: 1200px; margin: 0 auto; padding: 4px; margin-top: 16px; margin-bottom: 16px;">
+  <div style="margin-top: 32px;">
+    <div style="margin: -8px 0; padding: 8px 0; overflow-x: auto;">
+      <div style="font-size: 26px; font-weight: 700; line-height: 1.25; margin: 0 auto; padding: 4px; margin-bottom: 16px;">
+        <%= @ago.months.ago.strftime("%B %Y") %>
+      </div>
+      
+      <div style="display: inline-block; min-width: 100%; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); overflow: hidden; border-radius: 8px; border-bottom: 1px solid #e5e7eb;">
+        
+      <% @measurement_summaries.each do |measurement_summary| %>
+
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead>
+            <tr>
+              <th colspan="7" style="padding: 12px 24px; border-bottom: 1px solid #4b5563; background-color: #581c87; text-align: left; font-size: 18px; line-height: 1.25; font-weight: 500; color: #ffffff; text-transform: uppercase; letter-spacing: normal;">
+                <%= measurement_summary.institution.name %>
+              </th>
+            </tr>
+            <tr>
+              <th style="padding: 12px 24px; border-bottom: 1px solid #d1d5db; background-color: #f9fafb; text-align: left; font-size: 12px; font-weight: 500; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Projekt</th>
+              <th style="padding: 12px 24px; border-bottom: 1px solid #d1d5db; background-color: #f9fafb; text-align: left; font-size: 12px; font-weight: 500; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Test</th>
+              <th style="padding: 12px 24px; border-bottom: 1px solid #d1d5db; background-color: #f9fafb; text-align: left; font-size: 12px; font-weight: 500; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Wariant</th>
+              <th style="padding: 12px 24px; border-bottom: 1px solid #d1d5db; background-color: #f9fafb; text-align: left; font-size: 12px; font-weight: 500; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Ilość</th>
+            </tr>
+          </thead>
+
+          <tbody style="background-color: #ffffff;">
+            <% measurement_summary.grouped_items.each do |item| %> 
+              <tr>
+                <td style="padding: 12px 24px; border-bottom: 1px solid #e5e7eb;"><b><%= item.project_name %></b></td>
+                <td style="padding: 12px 24px; border-bottom: 1px solid #e5e7eb;"><b><%= item.test_name %></b></td>
+                <td style="padding: 12px 24px; border-bottom: 1px solid #e5e7eb;"><%= item.test_variant %></td>
+                <td style="padding: 12px 24px; border-bottom: 1px solid #e5e7eb;"><%= item.volume %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <hr>
+
+      <% end %>
+
+      </div>
+    </div>
+  </div>
+</div>
