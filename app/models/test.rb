@@ -17,7 +17,7 @@ class Test < ApplicationRecord
   monetize :default_price_cents,
             numericality: { greater_than_or_equal_to: 0 }
 
-  belongs_to :project
+  belongs_to :project, optional: true
   has_many :tests_prices
   has_many :institutions, through: :tests_prices
 
