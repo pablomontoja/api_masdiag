@@ -47,6 +47,7 @@ class Sample < ApplicationRecord
   self.primary_key = "Id"
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
   belongs_to :soaking_degree, optional: true
+  belongs_to :reserved_sample_code, optional: true
   has_many :measurements, class_name: 'Measurement', foreign_key: 'SampleId', dependent: :destroy, inverse_of: :sample
   accepts_nested_attributes_for :patient
   has_many :test_transactions # in labpanel here is has_one used
@@ -58,6 +59,7 @@ class Sample < ApplicationRecord
 
   # callbacks
   before_save :set_defaults
+  after_commit :set_rsc, on: :create
 
   # walidacja
   validates :Code, presence: true, uniqueness: true
@@ -81,7 +83,7 @@ class Sample < ApplicationRecord
   validates :WrongRegistrationStatus, presence: true
 
   def rsc
-    ReservedSampleCode.find_by(Code: self.Code)
+    self.reserved_sample_code || ReservedSampleCode.find_by(Code: self.Code)
   end
 
   def hasResult?
@@ -101,9 +103,9 @@ class Sample < ApplicationRecord
     !self.AcceptanceDate.nil?
   end
 
-  #######################
-  private
-  #######################
+#######################
+private
+#######################
 
   def today_date
     Date.today
@@ -113,5 +115,10 @@ class Sample < ApplicationRecord
     self.payment_status = 1
     self.access_hash = SecureRandom.urlsafe_base64
     self.RegistrationDate = DateTime.now if self.new_record?
+  end
+
+  def set_rsc
+    r = ReservedSampleCode.find_by(Code: self.Code)
+    self.update_column(:reserved_sample_code_id, r.Id) unless r.nil?
   end
 end

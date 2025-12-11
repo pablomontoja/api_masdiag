@@ -17,6 +17,7 @@
 #
 class Package < ApplicationRecord
 	belongs_to :product
+	belongs_to :shop_order, optional: true
 	has_many :reserved_sample_codes, class_name: "ReservedSampleCode", dependent: :nullify
 	has_one :stock_room_item, as: :storagable, dependent: :destroy
 	# belongs_to :production_order, optional: true
