@@ -1,7 +1,6 @@
 module MasdiagMailer
   class IndMailer < ApplicationMailer
     include Rails.application.routes.url_helpers
-    # self.delivery_job = SendMailNotificationDeliveryJob
   	default :template_path => "mailers/#{self.name.underscore}"
 
   	def after_new_order_save(shop_order_id)
