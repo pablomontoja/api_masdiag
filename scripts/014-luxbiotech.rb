@@ -7,9 +7,7 @@
 
 # contractor = Contractor.create!(first_name: "API", last_name: "MASDIAG", email: "luxbiotech@masdiag.pl", institution_id: inst.id, is_super_contractor: false, invalid_first_or_last_name: true, patient_is_orderer: true, can_add_samples: true, confirmed_at: Time.zone.now, are_notifications_enabled: false)
 
-# ApiAccount.create!(username: "luxbiotech", password: "nujZQz7XF32ftB6W", password_confirmation: "nujZQz7XF32ftB6W", contractor_id: contractor.Id, language: "en")
-# staging: nujZQz7XF32ftB6W
-# production: Kaw27HREyfsP5WAv
+# ApiAccount.create!(username: "luxbiotech", password: "xxxxxxxxxxxxxxxxxxxxx", password_confirmation: "xxxxxxxxxxxxxxxxxxxxx", contractor_id: contractor.Id, language: "en")
 
 
 
@@ -79,7 +77,7 @@ accepted_code.each do |ac|
 end
 
 Measurement.includes(:sample).where(sample: {Code: accepted_code}).each do |meas|
-  meas.update(Status: 1, MeasureDate: DateTime.now, AuthorizedAt: DateTime.now, CuttedAt: DateTime.now, InstrumentId: 1)
+  meas.update(Status: 1, MeasureDate: DateTime.now, CuttedAt: DateTime.now, InstrumentId: 1)
   meas.sample.update(AcceptanceDate: DateTime.now-2.days, soaking_degree_id: [1,2,3].sample, SampleStatus: 2, SampleState: 2)
 end
 
@@ -136,4 +134,10 @@ pp "accepted but without results yet - #{accepted_code.join(", ")}"
 pp "accepted with results: - #{codes.join(", ")}"
 pp "expired_codes: #{expired_code.join(", ")}"
 pp "cancelled_codes: #{cancelled_code.join(", ")}"
+
+"free_codes - EURH65T1, EUDLH5GK, EUNS8HC4, EU9G7IBK, EUJA649G, EU9VYI6H, EUITX3R6, EUNM79R7"
+"accepted but without results yet - EUYTXB3G, EU39CEWF"
+"accepted with results: - EUJ5U48G, EUQITH7Y, EU8XACGF, EURIKQAR, EUBPQKJG, EUSXCMY2"
+"expired_codes: EUIGWMTM, EUJM2TEV"
+"cancelled_codes: EUF7UZ33, EUR69HAT"
 
