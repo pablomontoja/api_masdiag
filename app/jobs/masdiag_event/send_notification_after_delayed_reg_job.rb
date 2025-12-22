@@ -7,7 +7,7 @@ module MasdiagEvent
     require 'json'
 
     def perform(sample_id)
-    	meases = Measurement.joins(:sample, :project).where(SampleId: sample_id)
+    	meases = Measurement.where.not(Status: 5).joins(:sample, :project).where(SampleId: sample_id)
     	grouped_by_email = meases.group_by{ |m| m.project.responsible_person_email }
       grouped_by_email.each do |k, v|
         MasdiagEvent::SendNotificationAfterDelayedRegMailer.send_mail(k, v.map{|m| m.Id}).deliver_later
