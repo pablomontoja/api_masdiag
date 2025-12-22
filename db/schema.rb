@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_27_111933) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -19,8 +19,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_27_111933) do
     t.decimal "Min", precision: 20, scale: 4, null: false
     t.decimal "Max", precision: 20, scale: 4, null: false
     t.integer "AnalyteId"
-    t.integer "AgeFromMonth", null: false
-    t.integer "AgeToMonth", null: false
     t.integer "AgeFromInMonths", null: false
     t.integer "AgeToInMonths", null: false
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
@@ -256,7 +254,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_27_111933) do
     t.index ["project_id"], name: "index_project_translations_on_project_id"
   end
 
-  create_table "Projects", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
+  create_table "Projects", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
     t.text "Name", size: :long, null: false
     t.text "Description", size: :long
     t.boolean "WithCutter", null: false
