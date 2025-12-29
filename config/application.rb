@@ -41,8 +41,12 @@ module ApiMasdiag
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w(tasks))
 
-    # config.autoload_paths << Rails.root.join('lib')
+    config.autoload_paths << Rails.root.join('lib')
+    config.action_mailer.preview_paths << Rails.root.join("test/mailers/previews")
+    config.reload_classes_only_on_change = true
+
     # config.eager_load_paths << Rails.root.join('lib')
+    pp config.action_mailer.preview_paths
 
     config.last_use_of_send_all_mail = Time.now
     config.solid_queue.use_skip_locked = false

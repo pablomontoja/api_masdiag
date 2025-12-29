@@ -32,7 +32,7 @@ class ShopOrder < ApplicationRecord
 
 	before_destroy :clean_packages
 	after_commit :link_packages, on: :create
-	before_create :update_snapshot_package_ids
+	after_commit :update_snapshot_package_ids, on: :create
 
 	def rscs
 		# ReservedSampleCode.where(package_id: self.package_ids).all
@@ -50,7 +50,7 @@ class ShopOrder < ApplicationRecord
 private
 
 	def update_snapshot_package_ids
-    self.snapshot_package_ids = packages.pluck(:id)
+    self.update(snapshot_package_ids: packages.pluck(:id))
   end
 
 	# def check_package_ids

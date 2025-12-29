@@ -1,5 +1,4 @@
 # TODO in README.md
-- add short_name to institutions - for Magda Pajdowska
 - authentication controller for mission_control gem, currently config.mission_control.jobs.http_basic_auth_enabled is false
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
@@ -7,13 +6,16 @@
 - new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
 - new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
 
+
+
 # MasdiagMailer/MasdiagRecurring Notes
 
 List of tasks to do during deployment on production
 1. perhaps Dockerfile7.1 should be used for deploy in production 
 2. rails db:prepare    ---- it is needed for solid_queue migration if first task is not proceeded
-3. rails db:migrate:queue  ---- applying solid_queue DB changes
-4. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
+3. if "Specified key was too long max key length is 767 bytes" problem occurs go to Masdiag Obsidian and find solution
+4. rails db:migrate:queue  ---- applying solid_queue DB changes
+5. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
 
 Comments:
 1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
@@ -44,6 +46,7 @@ To some extent, the data provided in this step can be anonymised. We do not need
 4. The next step is to communicate that the sample has arrived at the laboratory, to communicate that the sample has been cancelled and to communicate the result.
 MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
 I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
+
 
 # Enabling ruby YJIT
 ```bash

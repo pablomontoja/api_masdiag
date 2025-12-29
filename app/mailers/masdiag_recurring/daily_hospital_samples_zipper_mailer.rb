@@ -22,6 +22,8 @@ module MasdiagRecurring
           of.file_contents
         )
       end
+
+      return if @online_files.reject(&:blank?).blank?
       
       write_pdfs()
 

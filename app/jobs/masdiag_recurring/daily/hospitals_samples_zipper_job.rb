@@ -11,8 +11,9 @@ module MasdiagRecurring
         last_day_authorized = []
 
         # CENTRUM ZDROWIA BIOMED - institution_id: 115
+        # HolisticaMed Aleksandra Ściebur - institution_id: 87
         # metanefryny.bielanski@gmail.com - ContractorId: 623
-        contractor_ids = Contractor.includes(:institution).where(institutions: { kind: "Hospital" }).where.not(institution_id: 115).where.not(Id: 623).pluck(:Id)
+        contractor_ids = Contractor.includes(:institution).where(institutions: { kind: "Hospital" }).where.not(institution_id: [87, 115]).where.not(Id: 623).pluck(:Id)
 
         last_day_authorized << Measurement.includes(sample: {patient: :contractor})
                                           .where(Status: 5, AuthorizedAt: date_start..date_end)

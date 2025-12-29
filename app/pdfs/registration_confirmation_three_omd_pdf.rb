@@ -66,7 +66,7 @@ class RegistrationConfirmationThreeOmdPdf < Prawn::Document
 
   def header_section  
     t1_r1_c1 = make_cell(content: "POTWIERDZENIE REJESTRACJI PRÓBKI", width: 381, align: :left, valign: :top, font_style: :bold, size: 16, background_color: @masdiag_blue, text_color: "FFFFFF", padding: [4,0,0,48], leading: -3)
-    t1_r1_c2 = { image: "#{Rails.root}/app/assets/images/logo_masdiag.png", scale: 0.095, width: 214, padding: [0,0,0,20], vposition: :center} 
+    t1_r1_c2 = { image: "#{Rails.root}/app/assets/images/logo_masdiag.png", scale: 0.5, width: 214, padding: [0,0,0,20], vposition: :center} 
    
     table(
       [
