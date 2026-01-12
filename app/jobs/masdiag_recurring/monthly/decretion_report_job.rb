@@ -14,6 +14,7 @@ module MasdiagRecurring
       LEKAM202410 = ReservedSampleCode.includes(:package).where(packages: { serial_number: ((12964..13023).to_a + (14145..14344).to_a) }).pluck(:Code)
       LEKAM202503 = ReservedSampleCode.includes(:package).where(packages: { serial_number: ((14945..15044).to_a + (15474..15573).to_a) }).pluck(:Code)
       LEKAM202507 = ReservedSampleCode.includes(:package).where(packages: { serial_number: ((16074..16173).to_a + (16575..16674).to_a) }).pluck(:Code)
+      LEKAM202601 = ReservedSampleCode.includes(:package).where(packages: { serial_number: (18364..18483).to_a }).pluck(:Code)
 
       def perform
         @general_orders = []
@@ -88,6 +89,10 @@ module MasdiagRecurring
         ####################################
         # Zamówienie LEKAM 2025.07
         add_monthly_order("LEKAM 2025.07 faktura 27/7/2025", LEKAM202507)
+
+        ####################################
+        # Zamówienie LEKAM 2025.07
+        add_monthly_order("LEKAM 2026.01 faktura 12/1/2026", LEKAM202601)
 
         ####################################
 
