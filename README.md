@@ -38,6 +38,111 @@ Measurement.includes(sample: { patient: { contractor: :institution }}).where(sam
 ```
 
 
+# Undamage plate
+```ruby
+plate_id = 21394
+
+plate = Plate.find(plate_id)
+
+plate.measurements.each do |m|
+	meas = m.sample.measurements.includes(:sample).where(Samples: { IsControlSample: false }).find_by(ProjectId: plate.ProjectId, Status: 1)
+	meas.destroy unless meas.nil?
+	m.update(Status: 2)
+end
+
+plate.update(IsValid: false)
+
+```
+
+
+# Export results by Institution and Project
+```ruby
+require "csv"
+INST_ID = 128 # ORKLA
+PROJECTID = 34
+
+def extract_result_row(res)
+	res.analyte_results.sort_by{|ar| ar.AnalyteId}.map { |ar| ar.Value  }
+end
+
+def sex(gender)
+	return "M" if gender == 0
+	return "K" if gender == 1
+end
+
+codes = ReservedSampleCode.where(InstitutionId: INST_ID).pluck(:Code)
+
+r_ids = Result.includes(:measurement).includes(measurement: :sample).where(measurement: {Samples: {IsControlSample: false, Code: codes}}).where(Measurements: { ProjectId: PROJECTID, Status: [4, 5] }).order(MeasurementId: :desc).limit(10000).pluck(:MeasurementId)
+
+
+CSV.open("tmp/aa-result-export-2.csv", "wb") do |csv|
+	header = []
+	header << "Kod"
+	header << "Imię"
+	header << "Nazwisko"
+	header << "PESEL"
+	header << "Płeć"
+	header << "Data wydania"
+	header << "Data urodzenia"
+	header << "Data pobrania"
+	header << "Wyjście z magazynu"
+
+	header = header + Result.includes(:analyte_results).where(MeasurementId: r_ids).first.analyte_results.sort_by{|ar| ar.AnalyteId}.map { |ar| ar.analyte.Name  }
+
+	pp header
+
+	csv << header
+
+	Result.includes(:analyte_results).includes(measurement: {sample: :patient}).where(MeasurementId: r_ids).find_in_batches(batch_size: 1000) do |group|	  
+	  group.each do |res|
+	  	pat = res.measurement.sample.patient 
+	  	csv << [res.measurement.sample.Code, pat.FirstName, pat.LastName, pat.Pesel, sex(pat.Gender), res.measurement.AuthorizedAt&.strftime("%F"), pat.BirthDate&.strftime("%F"), res.measurement.sample.sample_collection_date&.strftime("%F"), res.measurement.sample.rsc&.package&.stock_room_item&.date_out&.strftime("%F")] + extract_result_row(res)
+	  end
+	end
+
+end
+
+
+
+```
+
+# QNS sample after acceptance in Lab
+```ruby
+codes = %w[AUREWFTG AUU7TIHQ AUCD5TE7 AUB45H9C AUIW2BC9 AUJNFBL4 AUIXWNTX]
+reason = %q(
+Hi Lalen
+
+We have received 5 DBS cards from you for measuring glutathione levels. Unfortunately, these cards have expired. We have tested these samples, but the glutathione levels were found to be low. We must cancel these samples and mark them as QNS. Please send new cards to the customer. Below is a list of these samples with their production and expiry dates.
+
+AUUYSNGE - EXP 11-01-2025 - MANUFACTURED 10-2024
+AUREWFTG - EXP 20-12-2025 - MANUFACTURED 12-2024
+AUU7TIHQ - EXP 20-12-2025 - MANUFACTURED 12-2024
+AUCD5TE7 - EXP 20-12-2025 - MANUFACTURED 12-2024
+AUB45H9C - EXP 20-12-2025 - MANUFACTURED 12-2024
+
+We have also received three DBS cards from you for vitamins A, E and Q10. These have also expired. We are unable to issue results for them.
+The codes for these samples are listed below.
+
+AUIW2BC9, AUJNFBL4, AUIXWNTX
+
+Best regards,
+
+Renata
+
+Renata Halak
+Diagnostic laboratory manager
+)
+
+user = User.find_by(email: "pawelswider@gmail.com")
+
+Measurement.includes(:sample).where(Samples: { Code: codes }).destroy_all
+Sample.where(Code: codes).each do |sample|
+	sample.update(Comment: reason, SampleStatus: 4, CancelledById: user.Id, CancellationDate: DateTime.now)
+	#Notification::LalenSampleResultSender.perform_later(sample)
+end
+
+```
+
 
 # Transfer EU barcodes to AU
 ```ruby

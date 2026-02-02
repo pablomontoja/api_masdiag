@@ -35,7 +35,7 @@ class Measurement < ApplicationRecord
 	has_one :online_file, dependent: :destroy
 	has_one :plate_measurement, class_name: "PlateMeasurement", foreign_key: "MeasurementId", dependent: :destroy
 	# has_one :plate, through: :plate_measurement
-	has_one :result, class_name: "Result", foreign_key: "MeasurementId"
+	has_one :result, class_name: "Result", foreign_key: "MeasurementId", dependent: :destroy
   
   def set_time_stamps
     self.CreatedAt = DateTime.now if self.new_record?
