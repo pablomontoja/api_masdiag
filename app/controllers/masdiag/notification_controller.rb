@@ -42,6 +42,7 @@ class Masdiag::NotificationController < ApplicationController
       sample = Sample.find(params[:sample_id])
 
       Lock::CheckJob.perform_later(sample&.rsc)
+      MasdiagEvent::CheckRscAssignementJob.perform_later(sample&.Id)
 
       # allowed_contractor_ids = [637, 638, 659, 671, 699] # epiexpert, nume, physikit, trime, FFTB, luxbiotech=745
       inst_id = sample.rsc&.InstitutionId
