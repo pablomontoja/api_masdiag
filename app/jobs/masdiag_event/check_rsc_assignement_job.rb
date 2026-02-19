@@ -13,7 +13,7 @@ module MasdiagEvent
       return if sample.nil?
       return if sample.rsc.nil?
 
-      if sample.rsc.reserved_tests.size.zero?
+      if sample.rsc.reserved_tests.size.zero? && sample.measurements.size.zero?
         MasdiagEvent::RscNotAssignedMailer.send_mail(sample.rsc).deliver_later
       end
     end
