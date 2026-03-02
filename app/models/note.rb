@@ -30,6 +30,7 @@ private
 				tandem-ms-sample
 				lab-user-note
 				cancelled-handler
+				omegaquant-result-exit-in-csv
 			)
 	end
 
