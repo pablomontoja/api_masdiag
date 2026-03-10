@@ -8,6 +8,12 @@ To run validation script please use the following command:
 rails runner LSI_validation.rb
 ```
 
+### PROMPTS
+`git log --pretty=format:"%h - %an, %cd : %s" b2079cbfecd32fc1b1702f040bc399d43e5eca46..6ef70b987fd7c4847ba6166988edd3508d6994e3
+List all commits from dd68a0a9afb614e9bf484af6d848121379752c1d to d18c53fadbc8f40e1209f1cf72e9524bed3944d1.
+Check all above git commits and gather info about changes across all commits between the specified range.
+Finally create a table with a git hash (including the commit date in the same column beow the hash), a description of the changes, the category of changes (minor correction, security correction, backend change, frontend change, hotfixes, and so on), and the impact of the changes on patient safety (in the context of EN 62304)? Please use markdown format and translate content to Polish language. Order by by commit date, ascending.`
+
 
 
 # Typical workflow for API samples

@@ -29,8 +29,11 @@ private
 				kit-lock
 				tandem-ms-sample
 				lab-user-note
+				alloisoleucine-sample
 				cancelled-handler
+				extended-metabolic-screening
 				omegaquant-result-exit-in-csv
+				stability-period-exceede
 			)
 	end
 

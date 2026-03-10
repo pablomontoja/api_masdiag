@@ -10,20 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_05_000002) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
     t.integer "Gender"
-    t.decimal "Min", precision: 20, scale: 4, null: false
-    t.decimal "Max", precision: 20, scale: 4, null: false
+    t.decimal "Min", precision: 18, scale: 2, null: false
+    t.decimal "Max", precision: 18, scale: 2, null: false
     t.integer "AnalyteId"
     t.integer "AgeFromInMonths", null: false
     t.integer "AgeToInMonths", null: false
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
-    t.decimal "AcceptableMin", precision: 20, scale: 4
-    t.decimal "AcceptableMax", precision: 20, scale: 4
+    t.decimal "AcceptableMin", precision: 18, scale: 2
+    t.decimal "AcceptableMax", precision: 18, scale: 2
     t.index ["AnalyteId"], name: "IX_AnalyteId"
   end
 
@@ -105,9 +105,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.string "confirmation_token"
     t.string "unconfirmed_email"
     t.integer "creator_id"
+    t.string "locale", default: "pl", null: false
     t.index ["agent_id"], name: "index_Contractors_on_agent_id"
     t.index ["email"], name: "index_Contractors_on_email", unique: true
     t.index ["institution_id"], name: "index_Contractors_on_institution_id"
+    t.index ["locale"], name: "index_Contractors_on_locale"
     t.index ["reset_password_token"], name: "index_Contractors_on_reset_password_token", unique: true
   end
 
@@ -254,7 +256,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.index ["project_id"], name: "index_project_translations_on_project_id"
   end
 
-  create_table "Projects", primary_key: "Id", id: :integer, charset: "utf8", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
+  create_table "Projects", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long, null: false
     t.text "Description", size: :long
     t.boolean "WithCutter", null: false
@@ -370,10 +372,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.text "selected_tests"
     t.text "clinical_info"
     t.integer "reserved_sample_code_id"
+    t.datetime "dispatch_date"
+    t.integer "post_examination_procedure", default: 0, null: false
+    t.integer "infectious_risk", default: 0, null: false
+    t.integer "execution_mode", default: 0, null: false
     t.index ["CancelledById"], name: "IX_CancelledById"
     t.index ["Code"], name: "IX_Code"
     t.index ["PatientId"], name: "IX_PatientId"
     t.index ["UserId"], name: "IX_UserId"
+    t.index ["dispatch_date"], name: "index_Samples_on_dispatch_date"
+    t.index ["post_examination_procedure"], name: "index_Samples_on_post_examination_procedure"
     t.index ["reserved_sample_code_id"], name: "index_Samples_on_reserved_sample_code_id"
     t.index ["soaking_degree_id"], name: "IX_soaking_degree_id"
   end
@@ -692,7 +700,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.string "pkwiu"
     t.decimal "unit_price", precision: 9, scale: 2
     t.decimal "netto_value", precision: 9, scale: 2
-    t.decimal "vat", precision: 4, scale: 2
+    t.integer "vat"
     t.decimal "vat_value", precision: 8, scale: 2
     t.decimal "brutto_value", precision: 9, scale: 2
     t.datetime "created_at", precision: nil, null: false
@@ -1003,6 +1011,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.index ["sample_id"], name: "IX_sample_id"
   end
 
+  create_table "sessions", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.integer "contractor_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.string "token", null: false
+    t.datetime "last_active_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contractor_id"], name: "index_sessions_on_contractor_id"
+    t.index ["token"], name: "index_sessions_on_token", unique: true
+  end
+
   create_table "shipments", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.string "name"
     t.bigint "shipmentable_id", null: false
@@ -1237,6 +1257,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.integer "material_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "vat_rate", default: 0
     t.index ["project_id"], name: "fk_rails_2ed91c6953"
   end
 
@@ -1245,6 +1266,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
     t.integer "institution_id", null: false
     t.integer "price_cents", default: 0, null: false
     t.string "price_currency", default: "PLN", null: false
+    t.integer "vat_rate", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["institution_id"], name: "fk_rails_f9edb21757"
@@ -1333,6 +1355,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_17_105031) do
   add_foreign_key "result_sending_events", "Measurements", column: "measurement_id", primary_key: "Id", name: "FK_result_sending_events_Measurements_measurement_id"
   add_foreign_key "result_sending_events", "Samples", column: "sample_id", primary_key: "Id", name: "FK_result_sending_events_Samples_sample_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "result_sending_events", "fileables", column: "id", name: "FK_result_sending_events_fileables_id"
+  add_foreign_key "sessions", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
