@@ -90,7 +90,7 @@ class Lalen::KitController < Fv1::KitController
 
     @sample = Sample.find_by(Code: assignment_params[:code])
 
-    if @sample.present? && @sample&.IsWrongRegistration == false
+    if @sample.present?
       json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_entity)
       return
     end

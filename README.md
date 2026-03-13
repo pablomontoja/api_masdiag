@@ -43,6 +43,12 @@ Measurement.includes(sample: { patient: { contractor: :institution }}).where(sam
 ).pluck("sample.Code")
 ```
 
+# Run migrations from rails console
+```ruby
+require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')
+ToxicologyQuantProject.new.change
+```
+
 
 # Undamage plate
 ```ruby
