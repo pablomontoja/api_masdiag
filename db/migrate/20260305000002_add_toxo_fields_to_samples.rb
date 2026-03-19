@@ -9,7 +9,11 @@ class AddToxoFieldsToSamples < ActiveRecord::Migration[7.0]
     add_column :Samples, :infectious_risk,            :integer, default: 0, null: false
     add_column :Samples, :execution_mode,             :integer, default: 0, null: false
 
-    add_index :Samples, :post_examination_procedure
-    add_index :Samples, :dispatch_date
+    # add_index :Samples, :post_examination_procedure
+    # add_index :Samples, :dispatch_date
+
+    remove_column(:Samples, :UnsatisfactoryMaterialQuality, if_exists: true)
+    remove_column(:Samples, :ProtocolIdOld, if_exists: true)
+    remove_column(:Samples, :institution_custom_cbx, if_exists: true)
   end
 end

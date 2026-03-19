@@ -89,6 +89,30 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
         eng_name: "Quantitative analysis of γ-hydroxybutyric acid (GHB)",
         is_active: true
       )
+
+      Project.create!(                                                       
+        Name: "Analiza toksykologiczna na zlecenie",                                     
+        Description: "Analiza toksykologiczna na zlecenie",                   
+        WithCutter: false,                                             
+        PlateDimensionX: 8,                                            
+        PlateDimensionY: 12,                                           
+        Prefix: nil,                                                   
+        created_at: Time.now,    
+        updated_at: Time.now,    
+        is_blocked_online: false,                                      
+        survey_description: ".",                                       
+        PdfNameOfAnalysis: "Analiza toksykologiczna na zlecenie",                        
+        PdfDescription: "Badanie określające stężenie ............ wykonane metodą .........",
+        product_name_in_invoice: "Badanie określające stężenie ................. wykonane metodą .................. zgodnie z umową",
+        pkwiu_in_invoice: "86.90.15",
+        brutto_price: 0.5e2,
+        FinalProtocoleHeader: nil,
+        responsible_person_email: "toxo@masdiag.pl",
+        has_selectable_analytes: false,
+        InjectionVolume: 0.22e2,
+        eng_name: "Custom Toxicological Analysis",
+        is_active: true
+      )
     end
  
 
