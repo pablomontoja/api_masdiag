@@ -64,6 +64,7 @@ end
 
 gem 'faraday'
 gem 'faraday-net_http_persistent', '~> 2.0'
+gem 'pundit'
 gem "lockbox"
 gem 'composite_primary_keys', '=14.0.6'
 gem "solid_queue"

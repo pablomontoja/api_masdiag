@@ -49,6 +49,25 @@ class Contractor < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
+  def can_add_samples?
+    can_add_samples == true
+  end
+
+  def is_super_contractor?
+    is_super_contractor == true
+  end
+
+  # Returns or creates the dedicated toxo patient for this contractor.
+  def patient
+    Patient.find_or_initialize_by(ContractorId: Id, FirstName: "PACJENT", LastName: "TOXO").tap do |p|
+      if p.new_record?
+        p.Gender = 0
+        p.BirthDate = 20.years.ago
+        p.save!
+      end
+    end
+  end
+
   # def readonly?
   #   Rails.env.test? ? false : true
   # end
