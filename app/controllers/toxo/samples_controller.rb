@@ -4,7 +4,7 @@ class Toxo::SamplesController < Toxo::BaseController
   # GET /toxo/samples
   def index
     @samples = policy_scope(Toxo::Sample.joins(:measurements)
-                                        .where(measurements: { ProjectId: Toxo::TOXO_PROJECT_IDS })
+                                        .where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS })
                                         .distinct
                                         .includes(:measurements, :patient))
     render json: serialize_samples(@samples)
@@ -32,7 +32,7 @@ class Toxo::SamplesController < Toxo::BaseController
 
   def set_sample
     @sample = Toxo::Sample.joins(:measurements)
-                          .where(measurements: { ProjectId: Toxo::TOXO_PROJECT_IDS })
+                          .where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS })
                           .find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Not found" }, status: :not_found

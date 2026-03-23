@@ -3,7 +3,7 @@ class Toxo::Samples::RegistrationsController < Toxo::SamplesController
   def new
     authorize Toxo::Sample
     render json: {
-      projects: Toxo::TOXO_PROJECT_IDS.map { |id| { id: id, name: Toxo::PROJECT_NAMES[id] } }
+      projects: Toxo::Constants::TOXO_PROJECT_IDS.map { |id| { id: id, name: Toxo::PROJECT_NAMES[id] } }
     }
   end
 
