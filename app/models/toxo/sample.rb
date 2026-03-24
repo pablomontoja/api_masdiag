@@ -23,7 +23,7 @@ class Toxo::Sample < ApplicationRecord
   validates_inclusion_of :WasWrongRegistration, in: [true, false]
 
   scope :toxo, -> {
-    joins(:measurements).where(measurements: { ProjectId: Toxo::TOXO_PROJECT_IDS }).distinct
+    joins(:measurements).where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS }).distinct
   }
 
   def deletable?

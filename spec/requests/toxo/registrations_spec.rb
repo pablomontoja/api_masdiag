@@ -30,7 +30,7 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
 
       expect(response).to have_http_status(:ok)
       project_ids = json["projects"].map { |p| p["id"] }
-      expect(project_ids).to match_array(Toxo::TOXO_PROJECT_IDS)
+      expect(project_ids).to match_array(Toxo::Constants::TOXO_PROJECT_IDS)
     end
 
     it "returns 403 when contractor cannot add samples" do

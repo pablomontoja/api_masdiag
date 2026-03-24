@@ -25,7 +25,7 @@ class Toxo::SamplePolicy < ApplicationPolicy
                                .where("LENGTH(ReservedSampleCodes.Code) = 7")
 
       wrong_ids = scope.joins(:measurements)
-                       .where(measurements: { ProjectId: Toxo::TOXO_PROJECT_IDS })
+                       .where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS })
                        .where(IsWrongRegistration: true)
                        .where(
                          "EXISTS (SELECT 1 FROM ReservedSampleCodes rsc WHERE rsc.Code = Samples.Code AND rsc.InstitutionId = ?)",
