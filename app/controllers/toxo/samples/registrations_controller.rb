@@ -52,7 +52,7 @@ class Toxo::Samples::RegistrationsController < Toxo::SamplesController
     if @sample.errors.empty?
       render json: serialize_sample(@sample), status: :created
     else
-      render json: { errors: @sample.errors.as_json }, status: :unprocessable_entity
+      render json: { errors: @sample.errors.as_json, error_full_messages: @sample.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

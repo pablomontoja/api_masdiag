@@ -110,20 +110,20 @@ private
     institution_id = self.patient&.contractor&.institution_id
     return if institution_id.nil?
     unless ReservedSampleCode.exists?(Code: self.Code, InstitutionId: institution_id)
-      errors.add(:Code, "not_in_pool")
+      errors.add(:Code, :not_in_pool)
     end
   end
 
   def code_must_not_be_already_registered
     # byebug
     if Sample.where(Code: self.Code).where.not(Id: self.Id).exists?
-      errors.add(:Code, "already_registered")
+      errors.add(:Code, :already_registered)
     end
   end
 
   def project_ids_presence
     # byebug
-    errors.add(:project_ids, "no_tests_selected") if self.project_ids.empty?
+    errors.add(:project_ids, :no_tests_selected) if self.project_ids.empty?
   end
 
   def set_rsc
