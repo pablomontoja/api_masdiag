@@ -7,6 +7,9 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
   let(:bearer)       { { "Authorization" => "Bearer #{session.token}" } }
 
   let!(:toxo_patient) { create(:toxo_patient, contractor: contractor) }
+  let!(:toxo_project_igg) { create(:toxo_project_igg) }
+  let!(:toxo_project_igm) { create(:toxo_project_igm) }
+  let!(:rsc) { ReservedSampleCode.create!(Code: "TX001A", InstitutionId: institution.id, IsRetailSale: true, CreatedAt: Time.now, expiry_date: 1.year.since) }
 
   # ───── authentication ────────────────────────────────────────────────────────
 

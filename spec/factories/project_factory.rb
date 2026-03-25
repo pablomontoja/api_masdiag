@@ -60,6 +60,30 @@ FactoryBot.define do
     eng_name { "Amino acids" }
     # initialize_with { Project.find_or_create_by(Id: 3, Name: "Aminokwasy", WithCutter: true, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: true, InjectionVolume: 0, eng_name: "Amino acids") }
   end
+
+  factory :toxo_project_igg, class: Project do
+    Id { 39 }
+    Name { "Toxo IgG" }
+    WithCutter { false }
+    PlateDimensionX { 8 }
+    PlateDimensionY { 12 }
+    is_blocked_online { false }
+    InjectionVolume { 0 }
+    eng_name { "Toxo IgG" }
+    initialize_with { Project.find_or_create_by(Id: 39) { |p| p.assign_attributes(Name: "Toxo IgG", WithCutter: false, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: false, InjectionVolume: 0, eng_name: "Toxo IgG") } }
+  end
+
+  factory :toxo_project_igm, class: Project do
+    Id { 40 }
+    Name { "Toxo IgM" }
+    WithCutter { false }
+    PlateDimensionX { 8 }
+    PlateDimensionY { 12 }
+    is_blocked_online { false }
+    InjectionVolume { 0 }
+    eng_name { "Toxo IgM" }
+    initialize_with { Project.find_or_create_by(Id: 40) { |p| p.assign_attributes(Name: "Toxo IgM", WithCutter: false, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: false, InjectionVolume: 0, eng_name: "Toxo IgM") } }
+  end
 end
 
 

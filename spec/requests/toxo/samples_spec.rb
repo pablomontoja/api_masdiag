@@ -9,8 +9,9 @@ RSpec.describe "Toxo::SamplesController", type: :request do
   let!(:toxo_patient) { create(:toxo_patient, contractor: contractor) }
 
   def create_registered_sample(code: "TX001A", patient: toxo_patient)
+    project = create(:toxo_project_igg)
     sample = create(:toxo_sample, Code: code, patient: patient)
-    sample.measurements.create!(ProjectId: 39, Status: 1, MaterialType: 0)
+    Measurement.create!(SampleId: sample.Id, ProjectId: project.Id, Status: 1, MaterialType: 0, IsRepeat: false)
     sample
   end
 
@@ -77,7 +78,7 @@ RSpec.describe "Toxo::SamplesController", type: :request do
 
     it "returns 403 when sample is already accepted in lab" do
       sample = create_registered_sample
-      sample.update!(AcceptanceDate: Time.current)
+      sample.update_column(:AcceptanceDate, Time.current)
 
       delete "/toxo/samples/#{sample.Id}", headers: bearer
 

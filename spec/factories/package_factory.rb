@@ -14,6 +14,7 @@
 #  shipment_id            :integer
 #  comment                :text(65535)
 #  scan_time              :datetime
+#  shop_order_id          :bigint
 #
 FactoryBot.define do
   factory :package, class: Package do
