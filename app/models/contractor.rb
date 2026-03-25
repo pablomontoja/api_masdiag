@@ -59,7 +59,7 @@ class Contractor < ApplicationRecord
 
   # Returns or creates the dedicated toxo patient for this contractor.
   def patient
-    Patient.find_or_initialize_by(ContractorId: Id, FirstName: "PACJENT", LastName: "TOXO").tap do |p|
+    Patient.find_or_initialize_by(ContractorId: self.Id, FirstName: "PACJENT", LastName: "TOXO").tap do |p|
       if p.new_record?
         p.Gender = 0
         p.BirthDate = 20.years.ago
