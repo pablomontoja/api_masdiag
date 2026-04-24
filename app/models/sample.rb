@@ -73,7 +73,8 @@ class Sample < ApplicationRecord
     fv1_sample.validates :Code, length: { minimum: 5, maximum: 20 }
   end
 
-  validates :sample_collection_date, presence: true, comparison: { less_than_or_equal_to: :today_date }
+  validates :sample_collection_date, presence: true
+  validate :sample_collection_date_range
   validates :RegistrationDate, presence: true
   validates_inclusion_of :IsWrongRegistration, in: [true, false]
   validates_inclusion_of :WasWrongRegistration, in: [true, false]
@@ -96,7 +97,7 @@ class Sample < ApplicationRecord
   end
 
   def cancelled?
-    [4,5].include?(soaking_degree_id) || SampleStatus == 4
+    [4,5].include?(soaking_degree_id) || self.SampleStatus == 4
   end
 
   def accepted_in_lab?
@@ -109,6 +110,19 @@ class Sample < ApplicationRecord
 
   def today_date
     Date.today
+  end
+
+  def sample_collection_date_range
+    return unless sample_collection_date.present?
+
+    reference_date = accepted_in_lab? ? self.AcceptanceDate.to_date : Date.today
+    earliest = reference_date - 6.weeks
+
+    if sample_collection_date > reference_date
+      errors.add(:sample_collection_date, :less_than_or_equal_to, count: reference_date)
+    elsif sample_collection_date < earliest
+      errors.add(:sample_collection_date, :greater_than_or_equal_to, count: earliest)
+    end
   end
 
   def set_defaults
