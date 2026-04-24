@@ -346,7 +346,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.boolean "IsValid", default: true, null: false
     t.integer "PatientId"
     t.integer "UserId"
-    t.integer "ProtocolIdOld"
     t.boolean "IsAuthWithoutResult", default: false, null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -354,7 +353,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.datetime "AcceptanceDate", precision: nil
     t.string "access_hash"
     t.datetime "sample_collection_date", precision: nil
-    t.boolean "UnsatisfactoryMaterialQuality", default: false, null: false
     t.integer "soaking_degree_id"
     t.boolean "WasWrongRegistration", null: false
     t.integer "MaterialType", null: false
@@ -366,7 +364,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.integer "WrongRegistrationStatus", null: false
     t.integer "CancelledById"
     t.datetime "UtilizationDate", precision: nil
-    t.boolean "institution_custom_cbx"
     t.text "Lot", size: :tiny
     t.text "Level", size: :tiny
     t.text "selected_tests"
@@ -380,8 +377,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.index ["Code"], name: "IX_Code"
     t.index ["PatientId"], name: "IX_PatientId"
     t.index ["UserId"], name: "IX_UserId"
-    t.index ["dispatch_date"], name: "index_Samples_on_dispatch_date"
-    t.index ["post_examination_procedure"], name: "index_Samples_on_post_examination_procedure"
     t.index ["reserved_sample_code_id"], name: "index_Samples_on_reserved_sample_code_id"
     t.index ["soaking_degree_id"], name: "IX_soaking_degree_id"
   end
@@ -700,7 +695,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.string "pkwiu"
     t.decimal "unit_price", precision: 9, scale: 2
     t.decimal "netto_value", precision: 9, scale: 2
-    t.integer "vat"
+    t.decimal "vat", precision: 4, scale: 2
     t.decimal "vat_value", precision: 8, scale: 2
     t.decimal "brutto_value", precision: 9, scale: 2
     t.datetime "created_at", precision: nil, null: false
@@ -1011,7 +1006,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.index ["sample_id"], name: "IX_sample_id"
   end
 
-  create_table "sessions", charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "sessions", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "contractor_id", null: false
     t.string "ip_address"
     t.string "user_agent"
@@ -1257,7 +1252,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.integer "material_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "vat_rate", default: 0
     t.index ["project_id"], name: "fk_rails_2ed91c6953"
   end
 
@@ -1266,7 +1260,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.integer "institution_id", null: false
     t.integer "price_cents", default: 0, null: false
     t.string "price_currency", default: "PLN", null: false
-    t.integer "vat_rate", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["institution_id"], name: "fk_rails_f9edb21757"
