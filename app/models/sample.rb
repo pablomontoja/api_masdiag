@@ -51,6 +51,7 @@ class Sample < ApplicationRecord
   self.primary_key = "Id"
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
   belongs_to :soaking_degree, optional: true
+  belongs_to :reserved_sample_code, optional: true
   has_many :measurements, class_name: 'Measurement', foreign_key: 'SampleId', dependent: :destroy, inverse_of: :sample
   accepts_nested_attributes_for :patient
   has_many :test_transactions # in labpanel here is has_one used

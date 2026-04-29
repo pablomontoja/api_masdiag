@@ -24,13 +24,9 @@ class Toxo::SamplePolicy < ApplicationPolicy
       rscs = ReservedSampleCode.where(InstitutionId: user.institution_id)
                                .where("LENGTH(ReservedSampleCodes.Code) = 7")
 
-      wrong_ids = scope.joins(:measurements)
-                       .where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS })
+      wrong_ids = scope.joins(:reserved_sample_code)
+                       .where(reserved_sample_code_id: rscs.select(:Id))
                        .where(IsWrongRegistration: true)
-                       .where(
-                         "EXISTS (SELECT 1 FROM ReservedSampleCodes rsc WHERE rsc.Code = Samples.Code AND rsc.InstitutionId = ?)",
-                         user.institution_id
-                       )
                        .select(:Id)
 
       all_ids = base_ids.pluck(:Id) | wrong_ids.pluck(:Id)

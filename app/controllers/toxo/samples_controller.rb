@@ -3,10 +3,7 @@ class Toxo::SamplesController < Toxo::BaseController
 
   # GET /toxo/samples
   def index
-    @samples = policy_scope(Toxo::Sample.joins(:measurements)
-                                        .where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS })
-                                        .distinct
-                                        .includes(:measurements, :patient))
+    @samples = policy_scope(Toxo::Sample.all)
     render json: serialize_samples(@samples)
   end
 
@@ -47,6 +44,7 @@ class Toxo::SamplesController < Toxo::BaseController
       infectious_risk:            sample.infectious_risk_before_type_cast,
       execution_mode:             sample.execution_mode_before_type_cast,
       dispatch_date:              sample.dispatch_date,
+      sample_collection_date:     sample.sample_collection_date,
       Lot:                        sample.Lot,
       Level:                      sample.Level,
       Comment:                    sample.Comment,
@@ -57,7 +55,7 @@ class Toxo::SamplesController < Toxo::BaseController
       SampleStatus:               sample.SampleStatus,
       SampleState:                sample.SampleState,
       measurements:               sample.measurements.map { |m|
-        { Id: m.Id, ProjectId: m.ProjectId, Status: m.Status, MaterialType: m.MaterialType }
+        { Id: m.Id, ProjectId: m.ProjectId, Status: m.Status, MaterialType: m.MaterialType, IsRepeat: m.IsRepeat }
       }
     }
   end

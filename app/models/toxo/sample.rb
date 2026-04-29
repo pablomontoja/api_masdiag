@@ -54,9 +54,11 @@ class Toxo::Sample < ApplicationRecord
   enum :execution_mode, { standard: 0, expedited: 1 }
 
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
+  belongs_to :reserved_sample_code, optional: true
   has_many :measurements, class_name: "Measurement", foreign_key: "SampleId", dependent: :destroy, inverse_of: :sample
 
   before_validation -> { self.Code&.upcase! }
+  before_validation -> { self.RegistrationDate = Time.current.to_date }
   before_validation :set_defaults
   after_commit :set_rsc
 
@@ -65,6 +67,7 @@ class Toxo::Sample < ApplicationRecord
   validates :SampleState, presence: true
   validates :SampleStatus, presence: true
   validates :MaterialType, presence: true
+  validates :sample_collection_date, presence: true
   validates :WrongRegistrationStatus, presence: true
   validates_inclusion_of :IsWrongRegistration, in: [true, false]
   validates_inclusion_of :WasWrongRegistration, in: [true, false]
@@ -86,6 +89,10 @@ class Toxo::Sample < ApplicationRecord
 
   def accepted_in_lab?
     !self.AcceptanceDate.nil?
+  end
+
+  def rsc
+    self.reserved_sample_code
   end
 
   private

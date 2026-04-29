@@ -47,6 +47,31 @@ class Toxo::Samples::RegistrationsController < Toxo::SamplesController
           MaterialType: @sample.read_attribute(:MaterialType)
         )
       end
+
+      # project_ids.uniq.each do |project_id|
+      #   if [39, 41].include?(project_id)
+      #     [1, 2].each do |idx|
+      #       is_repeat = idx == 2
+      #       Measurement.create!(
+      #         LabCode: "#{@sample.Code}_#{idx}",
+      #         SampleId:     @sample.Id,
+      #         ProjectId:    project_id,
+      #         Status:       measurement_status,
+      #         IsRepeat:     is_repeat,
+      #         MaterialType: @sample.read_attribute(:MaterialType)
+      #       )
+      #     end
+      #   else
+      #     Measurement.create!(
+      #       SampleId:     @sample.Id,
+      #       ProjectId:    project_id,
+      #       Status:       measurement_status,
+      #       IsRepeat:     false,
+      #       MaterialType: @sample.read_attribute(:MaterialType)
+      #     )
+      #   end
+      # end
+
     end
 
     if @sample.errors.empty?
@@ -60,7 +85,7 @@ class Toxo::Samples::RegistrationsController < Toxo::SamplesController
 
   def sample_params
     p = params.permit(
-      :Code, :dispatch_date, :MaterialType,
+      :Code, :dispatch_date, :sample_collection_date, :MaterialType,
       :Lot, :Level, :Comment,
       :post_examination_procedure, :infectious_risk, :execution_mode, project_ids: []
     )
