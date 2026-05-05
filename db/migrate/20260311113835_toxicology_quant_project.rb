@@ -124,7 +124,7 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
     ActiveRecord::Base.transaction do
       %i[whole_blood urine aqueous_humor blood_plasma blood_serum drainage].each do |mat|      
         # GHB 1
-        Analyte.create!(
+        analyte = Analyte.create!(
           Name: "GHB 1",
           ProjectId: 41,
           IsCalculatedFromOthers: true,
@@ -141,8 +141,38 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
           material_type: mat.to_sym
         )
 
+        men_analyte_range = AnalyteRange.create!(
+          Name: "Mężczyzna",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 0,
+          Min: 0,
+          Max: 0.1,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 0.1
+        )
+
+        women_analyte_range = AnalyteRange.create!(
+          Name: "Kobieta",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 1,
+          Min: 0,
+          Max: 0.1,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 0.1
+        )
+
         # GHB 2
-        Analyte.create!(
+        analyte = Analyte.create!(
           Name: "GHB 2",
           ProjectId: 41,
           IsCalculatedFromOthers: true,
@@ -157,6 +187,42 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
           NameInStandLab: nil,
           ExcludedFromStatistic: true,
           material_type: mat.to_sym
+        )
+
+        men_analyte_range = AnalyteRange.create!(
+          Name: "Mężczyzna",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 0,
+          Min: 0,
+          Max: 0.1,
+          AnalyteId: analyte.Id,
+          AgeFromMonth: 0,
+          AgeToMonth: 0,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 0.1,
+          MaterialType: 0
+        )
+
+        women_analyte_range = AnalyteRange.create!(
+          Name: "Kobieta",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 1,
+          Min: 0,
+          Max: 0.1,
+          AnalyteId: analyte.Id,
+          AgeFromMonth: 0,
+          AgeToMonth: 0,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 0.1,
+          MaterialType: 0
         )
       end
     end
