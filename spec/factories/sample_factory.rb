@@ -74,7 +74,7 @@ end
 FactoryBot.define do
   factory :not_registered_sample_in_lab, class: Sample do
     Code { "JV4XJ" }
-    sample_collection_date { Date.today }
+    sample_collection_date { 3.days.ago.to_date }
     RegistrationDate { Date.today }
     AcceptanceDate { 2.days.ago }
     IsWrongRegistration { true }
@@ -95,7 +95,7 @@ FactoryBot.define do
     sample do
       {
         "code": "JV4XJ",
-        "sample_collection_date": "2022-04-10",
+        "sample_collection_date": Date.today.to_s,
         "patient_attributes": {
           "email": "email@domain.com",
           "first_name": "Paweł",
@@ -115,7 +115,7 @@ FactoryBot.define do
     sample do
       {
         "code": "JV4XJ",
-        "sample_collection_date": "2022-04-10",
+        "sample_collection_date": Date.today.to_s,
         "patient_attributes": {
           "email": "email@domain.com",
           "first_name": "Paweł",
@@ -139,7 +139,7 @@ FactoryBot.define do
     sample do
       {
         "code": "JV4XJ",
-        "sample_collection_date": "2022-04-10",
+        "sample_collection_date": Date.today.to_s,
         "patient_attributes": {
           "email": nil,
           "first_name": "Paweł",

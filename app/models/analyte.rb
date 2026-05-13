@@ -19,8 +19,11 @@
 #  material_type                 :integer          not null
 #
 class Analyte < ApplicationRecord
+	extend Mobility
 	self.table_name = "Analytes"
 	self.primary_key = "Id"
+
+	translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }
 
 	belongs_to :project, class_name: "Project", foreign_key: "ProjectId"
 	has_many :analyte_ranges, class_name: "AnalyteRange", foreign_key: "AnalyteId", dependent: :destroy

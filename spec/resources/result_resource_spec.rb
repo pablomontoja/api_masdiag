@@ -122,7 +122,7 @@ RSpec.describe ResultResource do
     context 'when sample has measurements' do
       let(:soaking_degree) { SoakingDegree.find_or_create_by(id: 1, sn: 1, name: "dobrze") }
       let(:unsuitable_soaking) { SoakingDegree.find_or_create_by(id: 4, sn: 4, name: "nie nadaje się") }
-      let(:sample) { create(:sample, patient: patient, SampleStatus: 2, SampleState: 2, AcceptanceDate: 2.days.ago, Code: rsc.Code, soaking_degree_id: soaking_degree.id) }
+      let(:sample) { create(:sample, patient: patient, SampleStatus: 2, SampleState: 2, AcceptanceDate: 2.days.ago, sample_collection_date: 3.days.ago.to_date, Code: rsc.Code, soaking_degree_id: soaking_degree.id) }
       let!(:measurement) { create(:measurement, sample: sample, project: project, Status: 5, AuthorizedAt: 1.day.ago) }
 
       before do
