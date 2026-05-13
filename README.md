@@ -29,6 +29,18 @@ MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
 I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
 
 
+---
+
+# Test DB preparation
+
+```bash
+rails db:schema:dump
+rails tmp:clear
+RAILS_ENV=test rails db:drop db:create db:schema:load
+```
+
+---
+
 
 # Checking not included in measurement summaries
 ```ruby
