@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
+ActiveRecord::Schema[7.0].define(version: 2026_05_13_144942) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -235,6 +235,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.boolean "IsPartOfMultiplex", null: false
     t.integer "MultiplexId"
     t.integer "Suffix", null: false
+    t.binary "qc_report_file", size: :long
     t.index ["CreatedById"], name: "IX_CreatedById"
     t.index ["ModifiedById"], name: "IX_ModifiedById"
     t.index ["MultiplexId"], name: "IX_MultiplexId"
@@ -792,6 +793,31 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_11_113835) do
     t.index ["project_id"], name: "index_measurement_summary_items_on_project_id"
     t.index ["sample_id"], name: "index_measurement_summary_items_on_sample_id"
     t.index ["test_id"], name: "index_measurement_summary_items_on_test_id"
+  end
+
+  create_table "mobility_string_translations", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.string "locale", null: false
+    t.string "key", null: false
+    t.string "value"
+    t.string "translatable_type"
+    t.bigint "translatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["translatable_id", "translatable_type", "key"], name: "index_mobility_string_translations_on_translatable_attribute"
+    t.index ["translatable_id", "translatable_type", "locale", "key"], name: "index_mobility_string_translations_on_keys", unique: true
+    t.index ["translatable_type", "key", "value", "locale"], name: "index_mobility_string_translations_on_query_keys"
+  end
+
+  create_table "mobility_text_translations", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.string "locale", null: false
+    t.string "key", null: false
+    t.text "value"
+    t.string "translatable_type"
+    t.bigint "translatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["translatable_id", "translatable_type", "key"], name: "index_mobility_text_translations_on_translatable_attribute"
+    t.index ["translatable_id", "translatable_type", "locale", "key"], name: "index_mobility_text_translations_on_keys", unique: true
   end
 
   create_table "notes", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|

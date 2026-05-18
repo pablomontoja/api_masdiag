@@ -34,14 +34,6 @@ I'm deliberately writing about this in one paragraph, because the information is
 # Test DB preparation
 
 ```bash
-# UNCOMMENT for a moment "if Rails.env.production?" in config/application.rb file, see below: 
-#    config.after_initialize do
-#      Delayed::Backend::ActiveRecord::Job.table_name = 'rejestracja2_delayed_jobs' # if Rails.env.production?
-#      OverdueInvoiceUserNotification.schedule! # if Rails.env.production?
-#      RejectedSamplesReport.schedule! # if Rails.env.production?
-#    end
-
-spring stop
 rails db:schema:dump
 rails tmp:clear
 RAILS_ENV=test rails db:drop db:create db:schema:load
