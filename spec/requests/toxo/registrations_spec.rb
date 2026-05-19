@@ -51,6 +51,7 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
         Code:                       "TX001A",
         MaterialType:               0,
         dispatch_date:              Date.today.to_s,
+        sample_collection_date:     Date.today.to_s,
         post_examination_procedure: 0,
         infectious_risk:            0,
         execution_mode:             0,

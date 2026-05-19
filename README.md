@@ -1,4 +1,17 @@
-# LSI validation
+# API MASDIAG
+
+## TOXO migration
+1. rails db:migrate
+2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
+3. use `rails c` and `require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')` and `ToxicologyQuantProject.new.change`
+4. add `20260311113835` to schema_migrations table
+5. uncomment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
+6. rails db:migrate
+
+
+
+
+## LSI validation
 
 As part of the validation of the LSI Masdiag software in accordance with IEC 62304, it is necessary to prepare a software configuration report with each software release.
 A script has been created that prepares the data needed to prepare the report.

@@ -1,5 +1,9 @@
 class AddTranslationsToAnalytes < ActiveRecord::Migration[7.0]
   def change
+    inactive_project_ids = [1, 5, 6, 7, 8, 9, 11, 13, 14, 16, 17, 19]
+    Project.where(Id: inactive_project_ids).update_all(is_active: false)
+    Project.where.not(Id: inactive_project_ids).update_all(is_active: true)
+
     I18n.locale = :en
 
     # Vit D
@@ -61,7 +65,7 @@ class AddTranslationsToAnalytes < ActiveRecord::Migration[7.0]
 
     # Homocysteine
     MaterialTypes::MODEL_HASH.keys.each do |m|
-      Analyte.find_by(ProjectId: 12, Name: "HCY_BuOH", material_type: m).update(NameInReport: "Homocysteine")
+      Analyte.find_by(ProjectId: 12, Name: "HCY_BuOH", material_type: m)&.update(NameInReport: "Homocysteine")
     end
 
     # Metanephrines
@@ -224,7 +228,7 @@ class AddTranslationsToAnalytes < ActiveRecord::Migration[7.0]
      {"Id"=>809, "Name"=>"Kodeina (COD) 2", "NameInReport"=>"Kodeina (COD) 2", "NameInAPI"=>"codeine_2"},
      {"Id"=>851, "Name"=>"6-monoacetylomorfina (6-AM) 1", "NameInReport"=>"6-monoacetylomorfina (6-AM) 1", "NameInAPI"=>"6-acetylmorphine_1"},
      {"Id"=>857, "Name"=>"6-monoacetylomorfina (6-AM) 2", "NameInReport"=>"6-monoacetylomorfina (6-AM) 2", "NameInAPI"=>"6-acetylmorphine_2"},
-     {"Id"=>947, "Name"=>"Fentanyl (FENT) 1 ", "NameInReport"=>"Fentanyl (FENT) 1", "NameInAPI"=>"fentanyl_1"},
+     {"Id"=>947, "Name"=>"Fentanyl (FENT) 1", "NameInReport"=>"Fentanyl (FENT) 1", "NameInAPI"=>"fentanyl_1"},
      {"Id"=>953, "Name"=>"Fentanyl (FENT) 2", "NameInReport"=>"Fentanyl (FENT) 2", "NameInAPI"=>"fentanyl_2"},
      {"Id"=>863, "Name"=>"Tramadol (TRAM) 1", "NameInReport"=>"Tramadol (TRAM) 1", "NameInAPI"=>"tramadol_1"},
      {"Id"=>869, "Name"=>"Tramadol (TRAM) 2", "NameInReport"=>"Tramadol (TRAM) 2", "NameInAPI"=>"tramadol_2"},
@@ -285,8 +289,8 @@ class AddTranslationsToAnalytes < ActiveRecord::Migration[7.0]
     [:whole_blood, :urine, :aqueous_humor, :blood_plasma, :blood_serum, :drainage].each do |m|
       joined.each do |h|
         analyte = Analyte.find_by(ProjectId: 39, material_type: m, NameInAPI: h["NameInAPI"])
-        analyte.update(Name: h["Name"])
-        analyte.write_attribute(:NameInReport, h["NameInReport"])
+        analyte.update(Name: h["Name"], NameInReport: h["NameInReport"])
+        # analyte.write_attribute(:NameInReport, h["NameInReport"])
       end
     end
 

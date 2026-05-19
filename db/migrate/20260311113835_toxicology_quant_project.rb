@@ -197,14 +197,11 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
           Min: 0,
           Max: 0.1,
           AnalyteId: analyte.Id,
-          AgeFromMonth: 0,
-          AgeToMonth: 0,
           AgeFromInMonths: 0,
           AgeToInMonths: 1800,
           Multiplier: 1,
           AcceptableMin: 0,
-          AcceptableMax: 0.1,
-          MaterialType: 0
+          AcceptableMax: 0.1
         )
 
         women_analyte_range = AnalyteRange.create!(
@@ -215,14 +212,11 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
           Min: 0,
           Max: 0.1,
           AnalyteId: analyte.Id,
-          AgeFromMonth: 0,
-          AgeToMonth: 0,
           AgeFromInMonths: 0,
           AgeToInMonths: 1800,
           Multiplier: 1,
           AcceptableMin: 0,
-          AcceptableMax: 0.1,
-          MaterialType: 0
+          AcceptableMax: 0.1
         )
       end
     end

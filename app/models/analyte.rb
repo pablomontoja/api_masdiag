@@ -28,12 +28,16 @@ class Analyte < ApplicationRecord
 	belongs_to :project, class_name: "Project", foreign_key: "ProjectId"
 	has_many :analyte_ranges, class_name: "AnalyteRange", foreign_key: "AnalyteId", dependent: :destroy
 
-	validates :NameInAPI, uniqueness: { scope: [:ProjectId, :material_type] } 
+	validates :NameInAPI, uniqueness: { scope: [:ProjectId, :material_type] }
 
 	enum :material_type, MaterialTypes::MODEL_HASH
 
-  # def readonly?
-  #   true
-  # end
+	def NameInReport=(value, locale: nil, **options)
+		if (locale&.to_sym || Mobility.locale) == :pl
+			write_attribute(:NameInReport, value)
+		else
+			super(value, locale: locale, **options)
+		end
+	end
 
 end
