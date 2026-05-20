@@ -3,13 +3,13 @@ module Toxo
     TOXO_PROJECT_IDS = [39, 40, 41, 42].freeze
 
     PROJECT_NAMES = {
-      39 => "Toxo IgG",
-      40 => "Toxo IgM",
+      39 => "Toxo Quant",
+      40 => "Toxo Qual",
       41 => "Toxo GHB",
-      42 => "Toxo Avidit"
+      42 => "Toxo NonStandard"
     }.freeze
 
-    # project_ids logic: IgM (40) always pulls in IgG (39)
+    # project_ids logic: Qual (40) always pulls in Quant (39)
     def self.expand_project_ids(ids)
       ids = ids.map(&:to_i)
       ids |= [39] if ids.include?(40)

@@ -55,7 +55,7 @@ class Toxo::SamplesController < Toxo::BaseController
       SampleStatus:               sample.SampleStatus,
       SampleState:                sample.SampleState,
       measurements:               sample.measurements.map { |m|
-        { Id: m.Id, ProjectId: m.ProjectId, Status: m.Status, MaterialType: m.MaterialType, IsRepeat: m.IsRepeat }
+        { Id: m.Id, ProjectId: m.ProjectId, Status: m.Status, SampleMaterialType: m.sample.MaterialType, IsRepeat: m.IsRepeat }
       }
     }
   end
