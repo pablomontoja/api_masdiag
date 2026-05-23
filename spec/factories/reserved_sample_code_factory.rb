@@ -3,7 +3,7 @@
 # Table name: ReservedSampleCodes
 #
 #  Id                        :integer          not null, primary key
-#  Code                      :text(4294967295)
+#  Code                      :string(50)
 #  CreatedAt                 :datetime         not null
 #  CreatedById               :integer
 #  InstitutionId             :integer

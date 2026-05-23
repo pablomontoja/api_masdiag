@@ -90,7 +90,7 @@ class Lalen::KitController < Fv1::KitController
 
     @sample = Sample.find_by(Code: assignment_params[:code])
 
-    if @sample.present? && @sample&.IsWrongRegistration == false
+    if @sample.present?
       json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_entity)
       return
     end
@@ -109,7 +109,7 @@ class Lalen::KitController < Fv1::KitController
       assignment_params[:test_ids].uniq.each do |test|        
         @current_rsc.reserved_tests.create!(project_id: test)
       end
-      @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
+      @current_rsc.update!(IsRetailSale: true, InstitutionId: inst_id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
     end
 
     head :no_content
@@ -248,8 +248,8 @@ private
     when "GB"
       83
     else      
-      Sentry.capture_message("#{barcode} - recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
-      89
+      # Sentry.capture_message("#{barcode} - recognition of the Lalen institution on the basis of the barcode was unsuccessful.")
+      85
     end
   end
 

@@ -64,6 +64,7 @@ end
 
 gem 'faraday'
 gem 'faraday-net_http_persistent', '~> 2.0'
+gem 'pundit'
 gem "lockbox"
 gem 'composite_primary_keys', '=14.0.6'
 gem "solid_queue"
@@ -73,3 +74,5 @@ gem "sentry-rails"
 gem "roo", "~> 2.10.0"
 gem 'async', "~> 2.21.1"
 gem 'money-rails', '~> 1.12'
+gem "rails-i18n"
+gem 'mobility', '~> 1.3.2'

@@ -1,4 +1,17 @@
-# LSI validation
+# API MASDIAG
+
+## TOXO migration
+1. rails db:migrate
+2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
+3. use `rails c` and `require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')` and `ToxicologyQuantProject.new.change`
+4. add `20260311113835` to schema_migrations table
+5. uncomment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
+6. rails db:migrate
+
+
+
+
+## LSI validation
 
 As part of the validation of the LSI Masdiag software in accordance with IEC 62304, it is necessary to prepare a software configuration report with each software release.
 A script has been created that prepares the data needed to prepare the report.
@@ -7,6 +20,12 @@ To run validation script please use the following command:
 ```bash
 rails runner LSI_validation.rb
 ```
+
+### PROMPTS
+`git log --pretty=format:"%h - %an, %cd : %s" b2079cbfecd32fc1b1702f040bc399d43e5eca46..6ef70b987fd7c4847ba6166988edd3508d6994e3
+List all commits from dd68a0a9afb614e9bf484af6d848121379752c1d to d18c53fadbc8f40e1209f1cf72e9524bed3944d1.
+Check all above git commits and gather info about changes across all commits between the specified range.
+Finally create a table with a git hash (including the commit date in the same column beow the hash), a description of the changes, the category of changes (minor correction, security correction, backend change, frontend change, hotfixes, and so on), and the impact of the changes on patient safety (in the context of EN 62304)? Please use markdown format and translate content to Polish language. Order by by commit date, ascending.`
 
 
 
@@ -23,6 +42,18 @@ MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
 I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
 
 
+---
+
+# Test DB preparation
+
+```bash
+rails db:schema:dump
+rails tmp:clear
+RAILS_ENV=test rails db:drop db:create db:schema:load
+```
+
+---
+
 
 # Checking not included in measurement summaries
 ```ruby
@@ -35,6 +66,12 @@ Measurement.includes(sample: { patient: { contractor: :institution }}).where(sam
 Measurement.includes(sample: { patient: { contractor: :institution }}).where(sample: { patient: { contractor: { institutions: { kind: ["ForeignInstitution"] }}}}).where(Status: 4, MeasureDate: Date.parse("2025-07-01")..Date.parse("2025-09-01")).where.not(
   Id: MeasurementSummaryItem.where(created_at: Date.parse("2025-06-01")..nil).select(:measurement_id)
 ).pluck("sample.Code")
+```
+
+# Run migrations from rails console
+```ruby
+require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')
+ToxicologyQuantProject.new.change
 ```
 
 
