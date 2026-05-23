@@ -21,7 +21,7 @@ class ApplicationMailer < ActionMailer::Base
 private
 
   def wait_three_seconds
-    sleep(3) if Rails.env.production?
+    sleep(10) if Rails.env.production?
   end
 
 end

@@ -11,7 +11,7 @@ class Notification::SampleChangedJob < ApplicationJob
     if inst_id.nil?
       puts "-------------------------------------------------------------"
       puts "Masdiag::NotificationController#sample_status_changed aborted"
-      puts "sample #{sample.Code} doesn't have ReservedSampleCode."
+      puts "sample #{@sample&.Code} doesn't have ReservedSampleCode."
       puts "-------------------------------------------------------------"
       return
     end

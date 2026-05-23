@@ -11,7 +11,7 @@
 #  phone                   :string(255)
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
-#  package_ids             :text(65535)
+#  snapshot_package_ids    :text(65535)
 #  kits                    :text(65535)
 #  coupons                 :text(65535)
 #  total_cost              :decimal(7, 2)

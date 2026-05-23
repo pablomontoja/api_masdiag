@@ -42,5 +42,8 @@ module ApiMasdiag
     config.solid_queue.use_skip_locked = false
     config.last_use_of_send_all_mail = Time.now
     config.solid_queue.use_skip_locked = false
+
+    config.i18n.available_locales = [:pl, :en]
+    config.i18n.default_locale = :en
   end
 end

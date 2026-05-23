@@ -14,6 +14,7 @@
 #  shipment_id            :integer
 #  comment                :text(65535)
 #  scan_time              :datetime
+#  shop_order_id          :bigint
 #
 class Package < ApplicationRecord
 	belongs_to :product
