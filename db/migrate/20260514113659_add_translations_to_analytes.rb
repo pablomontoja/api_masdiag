@@ -296,5 +296,159 @@ class AddTranslationsToAnalytes < ActiveRecord::Migration[7.0]
     end
 
 
+    # LYSO
+    ActiveRecord::Base.transaction do
+      project = Project.find(35)
+
+      [:dbs, :blood_serum, :blood_plasma].each do |m|
+        analyte = Analyte.create!(
+          Name: "LSM",
+          ProjectId: project.Id,
+          IsCalculatedFromOthers: true,
+          CutoffMin: 0,
+          CutoffMax: 100000,
+          Unit: "nmol/L",
+          NameInReport: "Lizosfingomielina",
+          NameInAPI: "lysosphingomyelin",
+          analysis_method_name_in_batch: nil,
+          AnalysisMethodPolarity: nil,
+          is_required: true,
+          NameInStandLab: nil,
+          ExcludedFromStatistic: true,
+          material_type: m
+        )
+
+        # dorośli
+        men_analyte_range = AnalyteRange.create!(
+          Name: "Mężczyzna",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 0,
+          Min: 0,
+          Max: 6.24,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 6.24
+        )
+
+        women_analyte_range = AnalyteRange.create!(
+          Name: "Kobieta",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 1,
+          Min: 0,
+          Max: 6.24,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 6.24
+        )
+
+        # LSM 509
+        analyte = Analyte.create!(
+          Name: "LSM 509",
+          ProjectId: project.Id,
+          IsCalculatedFromOthers: true,
+          CutoffMin: 0,
+          CutoffMax: 100000,
+          Unit: "nmol/L",
+          NameInReport: "Lizosfingomielina 509",
+          NameInAPI: "lysosphingomyelin-509",
+          analysis_method_name_in_batch: nil,
+          AnalysisMethodPolarity: nil,
+          is_required: true,
+          NameInStandLab: nil,
+          ExcludedFromStatistic: true,
+          material_type: m
+        )
+
+        # dorośli
+        men_analyte_range = AnalyteRange.create!(
+          Name: "Mężczyzna",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 0,
+          Min: 0,
+          Max: 46.3,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 46.3
+        )
+
+        women_analyte_range = AnalyteRange.create!(
+          Name: "Kobieta",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 1,
+          Min: 0,
+          Max: 46.3,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 0,
+          AcceptableMax: 46.3
+        )
+
+      # LSM 509 / LSM
+        analyte = Analyte.create!(
+          Name: "LSM 509 / LSM",
+          ProjectId: project.Id,
+          IsCalculatedFromOthers: true,
+          CutoffMin: 0,
+          CutoffMax: 100000,
+          Unit: "",
+          NameInReport: "LSM 509 / LSM",
+          NameInAPI: "LSM-509/LSM",
+          analysis_method_name_in_batch: nil,
+          AnalysisMethodPolarity: nil,
+          is_required: true,
+          NameInStandLab: nil,
+          ExcludedFromStatistic: true,
+          material_type: m
+        )
+
+        # dorośli
+        men_analyte_range = AnalyteRange.create!(
+          Name: "Mężczyzna",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 0,
+          Min: 2.68,
+          Max: 23.4,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 2.68,
+          AcceptableMax: 23.4
+        )
+
+        women_analyte_range = AnalyteRange.create!(
+          Name: "Kobieta",
+          AgeFrom: 0,
+          AgeTo: 150,
+          Gender: 1,
+          Min: 2.68,
+          Max: 23.4,
+          AnalyteId: analyte.Id,
+          AgeFromInMonths: 0,
+          AgeToInMonths: 1800,
+          Multiplier: 1,
+          AcceptableMin: 2.68,
+          AcceptableMax: 23.4
+        )
+      end
+    end
+
+
   end
 end
