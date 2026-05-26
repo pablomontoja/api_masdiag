@@ -135,3 +135,8 @@ No fixtures — use factories exclusively.
 - `V1::Common` (`app/lib/v1/common.rb`) holds shared constants: test codes, identity document types, Lalen institution IDs
 - Composite primary keys used on some models — be careful with ActiveRecord finders
 - `app/lib/` is autoloaded (configured in `application.rb`)
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
