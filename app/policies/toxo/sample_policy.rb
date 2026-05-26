@@ -18,7 +18,7 @@ class Toxo::SamplePolicy < ApplicationPolicy
           FirstName:    "PACJENT",
           LastName:     "TOXO"
         )
-        scope.where(PatientId: toxo_patient&.Id).select(:Id)
+        toxo_patient.nil? ? [] : scope.where(PatientId: toxo_patient.Id).select(:Id)
       end
 
       rscs = ReservedSampleCode.where(InstitutionId: user.institution_id)
