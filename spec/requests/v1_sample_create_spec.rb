@@ -131,7 +131,7 @@ RSpec.describe 'V1::SampleController#create', type: :request do
       let!(:product) { create(:product) }
       let!(:project) { create(:project) }
       let!(:package) { create(:package, product: product) }
-      let!(:inst) { create(:institution) }
+      let!(:inst) { create(:institution, id: V1::Common::LALEN_INSTITUTION_IDS.first) }
       let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
       let!(:contractor) { create(:contractor, institution_id: inst.id) }
       let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }

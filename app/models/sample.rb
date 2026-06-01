@@ -115,6 +115,7 @@ class Sample < ApplicationRecord
 
   def sample_collection_date_range
     return unless sample_collection_date.present?
+    return unless V1::Common::LALEN_INSTITUTION_IDS.include?(rsc&.InstitutionId)
 
     reference_date = accepted_in_lab? ? self.AcceptanceDate.to_date : Date.today
     earliest = reference_date - 6.weeks

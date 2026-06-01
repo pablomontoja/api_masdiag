@@ -97,18 +97,16 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
         rsc.update(IsRetailSale: true, InstitutionId: inst.id)
       end
 
-      it 'returns 422 when sample_collection_date is in the future' do
+      it 'accepts sample_collection_date in the future (no date range validation for non-Lalen)' do
         smp_params[:sample][:sample_collection_date] = 1.day.from_now.to_date.to_s
         post '/nume/sample', params: smp_params, headers: http_auth_header
-        expect(response).to have_http_status(422)
-        expect(json.dig("message")).to include("Sample collection date must be less than or equal to")
+        expect(response).to have_http_status(201)
       end
 
-      it 'returns 422 when sample_collection_date is older than 6 weeks' do
+      it 'accepts sample_collection_date older than 6 weeks (no date range validation for non-Lalen)' do
         smp_params[:sample][:sample_collection_date] = 7.weeks.ago.to_date.to_s
         post '/nume/sample', params: smp_params, headers: http_auth_header
-        expect(response).to have_http_status(422)
-        expect(json.dig("message")).to include("Sample collection date must be greater than or equal to")
+        expect(response).to have_http_status(201)
       end
 
       it 'accepts sample_collection_date equal to today' do
