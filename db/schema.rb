@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_05_14_113659) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -574,6 +574,35 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_14_113659) do
   end
 
   create_table "fileables", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+  end
+
+  create_table "hl7_imports", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.integer "measurement_id"
+    t.string "s3_key", null: false
+    t.string "s3_bucket"
+    t.string "s3_etag"
+    t.integer "file_size"
+    t.string "control_id"
+    t.string "message_type"
+    t.datetime "message_datetime"
+    t.string "sending_application"
+    t.string "sending_facility"
+    t.string "external_order_id"
+    t.string "hl7_test_code"
+    t.string "kit_code_extracted"
+    t.integer "status", default: 0, null: false
+    t.datetime "processed_at"
+    t.text "error_message"
+    t.text "processing_stats"
+    t.integer "retry_count", default: 0
+    t.datetime "last_retry_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_hl7_imports_on_created_at"
+    t.index ["kit_code_extracted"], name: "index_hl7_imports_on_kit_code_extracted"
+    t.index ["measurement_id"], name: "index_hl7_imports_on_measurement_id", unique: true
+    t.index ["s3_key"], name: "index_hl7_imports_on_s3_key", unique: true
+    t.index ["status"], name: "index_hl7_imports_on_status"
   end
 
   create_table "institution_order_components", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
@@ -1345,6 +1374,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_14_113659) do
   add_foreign_key "answers", "survey_questions"
   add_foreign_key "api_accounts", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "db_files", "fileables", name: "FK_db_files_fileables_fileable_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "hl7_imports", "Measurements", column: "measurement_id", primary_key: "Id"
   add_foreign_key "institutions", "agents", column: "created_by_agent_id"
   add_foreign_key "invoice_components", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "invoice_components", "institutions"
