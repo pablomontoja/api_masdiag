@@ -2,14 +2,14 @@ class Toxo::BaseController < ActionController::API
   include Pundit::Authorization
 
   before_action :authenticate_by_token!
-  before_action :set_locale
+  around_action :set_locale
 
   rescue_from Pundit::NotAuthorizedError, with: :render_forbidden
 
   private
 
-  def set_locale
-    I18n.locale = current_contractor.locale.to_sym
+  def set_locale(&action)
+    I18n.with_locale(current_contractor.locale.to_sym, &action)
   end
 
   def authenticate_by_token!
