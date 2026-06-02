@@ -48,6 +48,7 @@ The API is versioned by namespace, each serving a different client type:
 | `masdiag_mailer/` | Email notification endpoints |
 | `patient_portal/` | Patient-facing endpoints (results, samples) |
 | `regspec/` | REGSPEC system (institutions, contractors, patients) |
+| `webhook/` | Machine-to-machine webhooks (Bearer token auth, no ApiAccount) |
 
 ### Authentication
 
@@ -139,5 +140,5 @@ No fixtures — use factories exclusively.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/001-hl7-minio-import/plan.md`.
+at `specs/002-webhook-pdf-pipeline/plan.md`.
 <!-- SPECKIT END -->

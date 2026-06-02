@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_02_184748) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -576,7 +576,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
   create_table "fileables", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
   end
 
-  create_table "hl7_imports", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+  create_table "hl7_imports", charset: "utf8mb4", force: :cascade do |t|
     t.integer "measurement_id"
     t.string "s3_key", null: false
     t.string "s3_bucket"
@@ -598,11 +598,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
     t.datetime "last_retry_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["created_at"], name: "index_hl7_imports_on_created_at"
-    t.index ["kit_code_extracted"], name: "index_hl7_imports_on_kit_code_extracted"
-    t.index ["measurement_id"], name: "index_hl7_imports_on_measurement_id", unique: true
-    t.index ["s3_key"], name: "index_hl7_imports_on_s3_key", unique: true
-    t.index ["status"], name: "index_hl7_imports_on_status"
   end
 
   create_table "institution_order_components", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
@@ -1061,6 +1056,25 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
     t.index ["sample_id"], name: "IX_sample_id"
   end
 
+  create_table "scanned_docs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "source_filename", null: false
+    t.string "page_checksum", limit: 64, null: false
+    t.string "document_key"
+    t.integer "status", default: 0, null: false
+    t.string "source", default: "scan_watcher", null: false
+    t.integer "sample_id"
+    t.datetime "captured_at"
+    t.datetime "received_at"
+    t.datetime "ocr_started_at"
+    t.datetime "transcribed_at"
+    t.text "processing_error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_checksum"], name: "index_scanned_docs_on_page_checksum", unique: true
+    t.index ["sample_id"], name: "index_scanned_docs_on_sample_id"
+    t.index ["status"], name: "index_scanned_docs_on_status"
+  end
+
   create_table "sessions", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.integer "contractor_id", null: false
     t.string "ip_address"
@@ -1374,7 +1388,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
   add_foreign_key "answers", "survey_questions"
   add_foreign_key "api_accounts", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "db_files", "fileables", name: "FK_db_files_fileables_fileable_id", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "hl7_imports", "Measurements", column: "measurement_id", primary_key: "Id"
   add_foreign_key "institutions", "agents", column: "created_by_agent_id"
   add_foreign_key "invoice_components", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "invoice_components", "institutions"
@@ -1404,6 +1417,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_01_164131) do
   add_foreign_key "result_sending_events", "Measurements", column: "measurement_id", primary_key: "Id", name: "FK_result_sending_events_Measurements_measurement_id"
   add_foreign_key "result_sending_events", "Samples", column: "sample_id", primary_key: "Id", name: "FK_result_sending_events_Samples_sample_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "result_sending_events", "fileables", column: "id", name: "FK_result_sending_events_fileables_id"
+  add_foreign_key "scanned_docs", "Samples", column: "sample_id", primary_key: "Id"
   add_foreign_key "sessions", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
