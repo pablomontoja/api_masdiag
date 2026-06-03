@@ -6,6 +6,10 @@ module Hl7
     # Find with: User.find(24) or check Cerascreen::Labordatenbank::ResultImporterJob
     SYSTEM_USER_ID = 24
 
+    # Instrument ID assigned to Measurements after successful HL7 import
+    # Find with: Instrument.find_by(name: "NutriPATH") or check instruments table
+    INSTRUMENT_ID = 15
+
     # Molar mass of creatinine in g/mol — used for unit conversions
     # mmol/L → mg/dl:  value_mg_dl  = mmol_per_L × CREATININE_MOLAR_MASS / 10
     # mmol/L → g/L:    value_g_per_L = mmol_per_L × CREATININE_MOLAR_MASS / 1000

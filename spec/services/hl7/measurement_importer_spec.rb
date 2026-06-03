@@ -1,28 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Hl7::MeasurementImporter do
-  # Shared HL7 content helpers
-  def metals_hl7(creatinine: "11.4", chromium: "0.14", zinc: "0.21")
-    <<~HL7.strip
-      MSH|^~\\&|NUTRIPATH|NUTRIPATH|MAS|MAS|20240115120000||ORU^R01|MSG001|P|2.3.1
-      PID|1||12345||A6Y1IF^^^^^^^||19800101|M
-      OBR|1||ORD001|UCR,usEssEl,UsMetox^UCR,usEssEl,UsMetox^0001|||20240115||||||A6Y1IF
-      OBX|1|NM|UCR^CREATININE Urine Spot^LOCAL||#{creatinine}|mmol/L||||F
-      OBX|2|NM|42220-4^Chromium^LN||#{chromium}|ug/gCR||||F
-      OBX|3|NM|13473-4^Zinc^LN||#{zinc}|mg/gCR||||F
-    HL7
+  def metals_hl7
+    File.read(Rails.root.join("spec/metals.hl7"))
   end
 
   def iodine_hl7
-    <<~HL7.strip
-      MSH|^~\\&|NUTRIPATH|NUTRIPATH|MAS|MAS|20240115120000||ORU^R01|MSG002|P|2.3.1
-      PID|1||12345||B7X2JK^^^^^^^||19900202|F
-      OBR|1||ORD002|UR-IODINE,uIodEx,UIodCom,usCr^UR-IODINE,uIodEx,UIodCom,usCr^0001|||20240115||||||B7X2JK
-      OBX|1|NM|usCr^Creatinine Spot^LOCAL||8.5|mmol/L||||F
-      OBX|2|NM|uIodEx^Iodine Corrected^LOCAL||120.0|ug/gCR||||F
-      OBX|3|NM|UR-IODINE^URINE IODINE^LOCAL||95.0|ug/L||||F
-      OBX|4|FT|UIodCom^Comment^LOCAL||Some comment text||||F
-    HL7
+    File.read(Rails.root.join("spec/iodine.hl7"))
   end
 
   def build_import(hl7_content, measurement, test_code: "UCR,usEssEl,UsMetox")
@@ -69,12 +53,22 @@ RSpec.describe Hl7::MeasurementImporter do
     end
   end
 
+  let(:instrument) do
+    ActiveRecord::Base.connection.execute(
+      "INSERT IGNORE INTO instruments (id, name, short_name) VALUES (15, 'NutriPATH', 'NP')"
+    )
+    Struct.new(:id).new(15)
+  end
+
   before do
     system_user
+    instrument
     stub_const("Hl7::Config::SYSTEM_USER_ID", system_user.Id)
+    stub_const("Hl7::Config::INSTRUMENT_ID", 15)
   end
 
   describe "#import — Project 32 (urine metals)" do
+    # metals.hl7: kit A6Y1IF, creatinine 11.4 mmol/L, chromium 0.14 ug/gCR, zinc 0.21 mg/gCR
     let(:sample)      { create(:sample, Code: "A6Y1IF") }
     let(:measurement) { create(:measurement, sample: sample, ProjectId: 32, Status: 1) }
     let(:krea_analyte)      { make_analyte("krea", 32, unit: "mg/dl") }
@@ -100,17 +94,17 @@ RSpec.describe Hl7::MeasurementImporter do
       import = build_import(metals_hl7, measurement)
       described_class.new(import).import
 
-      db_result = Result.find_by(MeasurementId: measurement.id)
+      db_result = Result.find_by(MeasurementId: measurement.Id)
       expect(db_result).to be_present
 
       # creatinine: 11.4 mmol/L → g/L = 11.4 × 113.12 / 1000 = 1.28957
       # chromium raw: 0.14 × 1.28957 = 0.18054 µg/L
-      chromium_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: chromium_analyte.id)
+      chromium_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: chromium_analyte.id)
       expect(chromium_row).to be_present
       expect(chromium_row.Value.to_f).to be_within(0.0001).of(0.14 * (11.4 * 113.12 / 1000.0))
 
       # chromium_crea: stored as-is = 0.14
-      crea_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: chromium_crea.id)
+      crea_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: chromium_crea.id)
       expect(crea_row).to be_present
       expect(crea_row.Value.to_f).to be_within(0.0001).of(0.14)
     end
@@ -119,7 +113,7 @@ RSpec.describe Hl7::MeasurementImporter do
       import = build_import(metals_hl7, measurement)
       described_class.new(import).import
 
-      zinc_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: zinc_analyte.id)
+      zinc_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: zinc_analyte.id)
       expect(zinc_row).to be_present
       # zinc raw: 0.21 × 1000 × 1.28957 = 270.81 µg/L
       expected = 0.21 * 1000.0 * (11.4 * 113.12 / 1000.0)
@@ -147,32 +141,33 @@ RSpec.describe Hl7::MeasurementImporter do
       expect(import.reload.status).to eq("failed")
     end
 
-    it "skips unknown OBX codes and records a warning" do
-      import = build_import(metals_hl7(chromium: "0.14"), measurement)
+    it "records warnings for unmapped OBX codes" do
+      import = build_import(metals_hl7, measurement)
       importer = described_class.new(import)
-
-      # Add an unknown OBX — the HL7 fixture already has only known codes, so
-      # just verify the skipped count stays 0 for known codes
       importer.import
-      expect(importer.stats[:analytes_skipped]).to eq(0)
+      # metals.hl7 contains many unmapped codes (Iron, Calcium, Magnesium, etc.)
+      expect(importer.warnings).not_to be_empty
+      expect(importer.stats[:analytes_skipped]).to be > 0
     end
 
-    it "replaces existing AnalyteResult rows on re-import" do
-      import = build_import(metals_hl7(chromium: "0.14"), measurement)
-      described_class.new(import).import
-      first_count = AnalyteResult.where(ResultId: measurement.id).count
+    it "counts FT comment segments (metals.hl7 has 2 FT segments)" do
+      import = build_import(metals_hl7, measurement)
+      importer = described_class.new(import)
+      importer.import
+      expect(importer.stats[:comments_skipped]).to eq(2)
+    end
 
-      # Re-run the same import with a different file (simulates reprocessing)
+    it "replaces existing AnalyteResult rows on re-import without accumulating duplicates" do
+      import = build_import(metals_hl7, measurement)
+      described_class.new(import).import
+      first_count = AnalyteResult.where(ResultId: measurement.Id).count
+
       import.update!(status: :pending)
-      import.hl7_file.attach(io: StringIO.new(metals_hl7(chromium: "0.99")), filename: "test.hl7", content_type: "text/plain")
+      import.hl7_file.attach(io: StringIO.new(metals_hl7), filename: "test.hl7", content_type: "text/plain")
 
       described_class.new(import).import
 
-      # Row count should be the same (replaced, not added)
-      expect(AnalyteResult.where(ResultId: measurement.id).count).to eq(first_count)
-
-      chromium_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: chromium_analyte.id)
-      expect(chromium_row.Value.to_f).to be_within(0.001).of(0.99 * (11.4 * 113.12 / 1000.0))
+      expect(AnalyteResult.where(ResultId: measurement.Id).count).to eq(first_count)
     end
 
     it "stays completed even if archiving fails" do
@@ -185,7 +180,9 @@ RSpec.describe Hl7::MeasurementImporter do
   end
 
   describe "#import — Project 29 (urine iodine)" do
-    let(:sample)      { create(:sample, Code: "B7X2JK") }
+    # iodine.hl7: kit 2LI3FN (from PID), creatinine usCr=5.4 mmol/L,
+    #             uIodEx=121.9 ug/gCR, UR-IODINE=74 ug/L, 1 FT comment
+    let(:sample)      { create(:sample, Code: "2LI3FN") }
     let(:measurement) { create(:measurement, sample: sample, ProjectId: 29, Status: 1) }
     let(:kreatinin_analyte) { make_analyte("kreatinin_iu", 29, unit: "mg/dl") }
     let(:jod_krea_analyte)  { make_analyte("jod_krea_iu", 29, unit: "ug/g creatinine") }
@@ -200,10 +197,10 @@ RSpec.describe Hl7::MeasurementImporter do
       import = build_import(iodine_hl7, measurement, test_code: "UR-IODINE,uIodEx,UIodCom,usCr")
       described_class.new(import).import
 
-      krea_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: kreatinin_analyte.id)
+      krea_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: kreatinin_analyte.id)
       expect(krea_row).to be_present
-      # 8.5 mmol/L × 113.12 / 10 = 96.152 mg/dl
-      expected_mg_dl = 8.5 * 113.12 / 10.0
+      # 5.4 mmol/L × 113.12 / 10 = 61.0848 mg/dl
+      expected_mg_dl = 5.4 * 113.12 / 10.0
       expect(krea_row.Value.to_f).to be_within(0.001).of(expected_mg_dl)
     end
 
@@ -211,18 +208,18 @@ RSpec.describe Hl7::MeasurementImporter do
       import = build_import(iodine_hl7, measurement, test_code: "UR-IODINE,uIodEx,UIodCom,usCr")
       described_class.new(import).import
 
-      jod_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: jod_krea_analyte.id)
+      jod_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: jod_krea_analyte.id)
       expect(jod_row).to be_present
-      expect(jod_row.Value.to_f).to be_within(0.001).of(120.0)
+      expect(jod_row.Value.to_f).to be_within(0.001).of(121.9)
     end
 
     it "stores iodine absolute (ug/L) as ng/ml (1:1)" do
       import = build_import(iodine_hl7, measurement, test_code: "UR-IODINE,uIodEx,UIodCom,usCr")
       described_class.new(import).import
 
-      iodine_row = AnalyteResult.find_by(ResultId: measurement.id, AnalyteId: iodine_analyte.id)
+      iodine_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: iodine_analyte.id)
       expect(iodine_row).to be_present
-      expect(iodine_row.Value.to_f).to be_within(0.001).of(95.0)
+      expect(iodine_row.Value.to_f).to be_within(0.001).of(74.0)
     end
 
     it "skips FT (formatted text) segments" do

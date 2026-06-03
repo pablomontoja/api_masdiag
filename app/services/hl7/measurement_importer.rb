@@ -260,7 +260,7 @@ module Hl7
     end
 
     def update_measurement_status
-      @measurement.update!(Status: 4, MeasureDate: Time.current, InstrumentId: 15, AuthorizedById: nil, AuthorizedAt: nil)
+      @measurement.update!(Status: 4, MeasureDate: Time.current, InstrumentId: Hl7::Config::INSTRUMENT_ID, AuthorizedById: nil, AuthorizedAt: nil)
     end
 
     def archive_file_in_minio
