@@ -78,6 +78,8 @@ RSpec.describe Hl7::MinioScanner do
     end
 
     context "when no matching sample exists" do
+      before { create(:sample, Code: "A6Y1IF") }
+
       it "marks the import as awaiting_registration" do
         described_class.new.scan_and_import
         import = Hl7Import.last
