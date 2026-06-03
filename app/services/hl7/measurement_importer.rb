@@ -93,12 +93,6 @@ module Hl7
 
     def extract_message_metadata
       @hl7_import.update!(
-        # control_id:          @msh[10].to_s,
-        # message_type:        @msh[9].to_s,
-        # message_datetime:    parse_hl7_datetime(@msh[7].to_s),
-        # sending_application: @msh[3].to_s,
-        # sending_facility:    @msh[4].to_s,
-        # external_order_id:   @obr[3].to_s.split("^").first
         control_id: @msh[9].to_s,
         message_type: @msh[8].to_s,
         message_datetime: parse_hl7_datetime(@msh[6].to_s),
@@ -118,16 +112,18 @@ module Hl7
       unit = creatinine_obx[6].to_s
 
       return nil unless mmol_l
-      return nil unless unit.downcase == "mmol/l"
+      
+      unless unit.downcase == "mmol/l"
+        Sentry.capture_message("Sample #{@measurement.sample.Code} - creatinine unit other than mmol/L, unit presented in hl7 file: #{unit}")
+        return nil
+      end
 
-      # Store converted mg/dl value via standard analyte processing below;
-      # return raw mmol/L for metal back-conversion
       mmol_l
     end
 
     def requires_creatinine_conversion?
       # Project 32 metals require absolute µg/L which needs creatinine back-conversion
-      @project_id == 32 || @project_id == 29
+      @project_id == 32 #|| @project_id == 29
     end
 
     def process_obx_segments(creatinine_mmol_l)
@@ -207,10 +203,10 @@ module Hl7
         next warn_skipped(hl7_code, "unparseable value") unless hl7_value
 
         obx_unit = obx[6].to_s.strip.downcase  # "ug/gcr" or "mg/gcr"
+        unit_factor = obx_unit.include?("mg") ? 1000.0 : 1.0
 
         # Raw absolute: convert ug/gCR → µg/L (or mg/gCR → µg/L with ×1000 factor)
         if creatinine_g_per_l
-          unit_factor = obx_unit.include?("mg") ? 1000.0 : 1.0
           absolute_value = hl7_value * unit_factor * creatinine_g_per_l
 
           analyte = find_analyte(raw_db_name)
@@ -222,11 +218,12 @@ module Hl7
           end
         end
 
-        # _crea variant: store raw HL7 value directly (ug/gCR or mg/gCR as-is)
+        # _crea variant: store in µg/gCR (convert mg/gCR → µg/gCR when needed)
         if crea_db_name
+          crea_value = hl7_value * unit_factor
           analyte = find_analyte(crea_db_name)
           if analyte
-            rows << { AnalyteId: analyte.id, Value: hl7_value.round(4), MeasuredValue: hl7_value.round(5), Unit: analyte.Unit }
+            rows << { AnalyteId: analyte.id, Value: crea_value.round(4), MeasuredValue: crea_value.round(5), Unit: analyte.Unit }
             @stats[:analytes_created] += 1
           else
             warn_skipped("#{hl7_code}_crea", "analyte '#{crea_db_name}' not found in project #{@project_id}")

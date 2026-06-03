@@ -118,6 +118,11 @@ RSpec.describe Hl7::MeasurementImporter do
       # zinc raw: 0.21 × 1000 × 1.28957 = 270.81 µg/L
       expected = 0.21 * 1000.0 * (11.4 * 113.12 / 1000.0)
       expect(zinc_row.Value.to_f).to be_within(0.01).of(expected)
+
+      # zinc_crea: 0.21 mg/gCR → ×1000 → 210 µg/gCR (was broken: stored 0.21)
+      zinc_crea_row = AnalyteResult.find_by(ResultId: measurement.Id, AnalyteId: zinc_crea.id)
+      expect(zinc_crea_row).to be_present
+      expect(zinc_crea_row.Value.to_f).to be_within(0.01).of(210.0)
     end
 
     it "marks import as failed and returns false when creatinine is missing" do
