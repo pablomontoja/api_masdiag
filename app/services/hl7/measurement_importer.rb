@@ -41,7 +41,8 @@ module Hl7
 
         result = find_or_create_result
         save_analyte_results(result, analyte_rows)
-        update_measurement_status
+        update_measurement_status if analyte_rows.any?
+        @warnings << "No analyte_results founded in hl7 file" unless analyte_rows.any?
 
         @stats[:warnings] = @warnings if @warnings.any?
         @hl7_import.mark_completed!(@stats)
@@ -68,11 +69,14 @@ module Hl7
 
     def load_and_parse_hl7
       hl7_content = @hl7_import.hl7_file.download
-      normalized  = hl7_content.strip.tr("\n", "\r")
-      @parsed     = HL7::Message.new(normalized)
+      # normalized  = hl7_content.strip.tr("\n", "\r")
+      # @parsed     = HL7::Message.new(normalized)
+      @parsed = HL7::Message.parse(hl7_content)
       @msh        = @parsed[:MSH]
-      @obr        = @parsed[:OBR]
-      @obx_segments = @parsed.select { |s| s.is_a?(HL7::Message::Segment::OBX) }
+      # @obr        = @parsed[:OBR]
+      # @obx_segments = @parsed.select { |s| s.is_a?(HL7::Message::Segment::OBX) }
+      @obr = @parsed.select { |seg| seg[0] == 'OBR' }.first
+      @obx_segments = @parsed.select { |seg| seg[0] == 'OBX' }
     rescue StandardError => e
       @errors << "Failed to parse HL7: #{e.message}"
       @msh = nil
@@ -89,12 +93,18 @@ module Hl7
 
     def extract_message_metadata
       @hl7_import.update!(
-        control_id:          @msh[10].to_s,
-        message_type:        @msh[9].to_s,
-        message_datetime:    parse_hl7_datetime(@msh[7].to_s),
-        sending_application: @msh[3].to_s,
-        sending_facility:    @msh[4].to_s,
-        external_order_id:   @obr[3].to_s.split("^").first
+        # control_id:          @msh[10].to_s,
+        # message_type:        @msh[9].to_s,
+        # message_datetime:    parse_hl7_datetime(@msh[7].to_s),
+        # sending_application: @msh[3].to_s,
+        # sending_facility:    @msh[4].to_s,
+        # external_order_id:   @obr[3].to_s.split("^").first
+        control_id: @msh[9].to_s,
+        message_type: @msh[8].to_s,
+        message_datetime: parse_hl7_datetime(@msh[6].to_s),
+        sending_application: @msh[2].to_s,
+        sending_facility: @msh[3].to_s,
+        external_order_id: @obr[3].to_s&.split('^').first
       )
     end
 
@@ -105,7 +115,10 @@ module Hl7
       return nil unless creatinine_obx
 
       mmol_l = obx_numeric_value(creatinine_obx[5].to_s)
+      unit = creatinine_obx[6].to_s
+
       return nil unless mmol_l
+      return nil unless unit.downcase == "mmol/l"
 
       # Store converted mg/dl value via standard analyte processing below;
       # return raw mmol/L for metal back-conversion
@@ -114,7 +127,7 @@ module Hl7
 
     def requires_creatinine_conversion?
       # Project 32 metals require absolute µg/L which needs creatinine back-conversion
-      @project_id == 32
+      @project_id == 32 || @project_id == 29
     end
 
     def process_obx_segments(creatinine_mmol_l)
@@ -170,6 +183,7 @@ module Hl7
           next unless db_name
 
           value = obx_numeric_value(obx[5].to_s)
+          next warn_skipped(hl7_code, "unit other than ug/L used in hl7 file") unless obx[6].to_s.downcase == "ug/l"
           next warn_skipped(hl7_code, "unparseable value") unless value
 
           analyte = find_analyte(db_name)
@@ -224,11 +238,11 @@ module Hl7
     end
 
     def find_or_create_result
-      result = Result.find_by(MeasurementId: @measurement.id)
+      result = Result.find_by(MeasurementId: @measurement.Id)
       return result if result
 
       Result.create!(
-        MeasurementId: @measurement.id,
+        MeasurementId: @measurement.Id,
         ImportDate:    Time.current,
         IsValid:       true,
         ImportUserId:  Hl7::Config::SYSTEM_USER_ID
@@ -236,18 +250,17 @@ module Hl7
     end
 
     def save_analyte_results(result, rows)
-      AnalyteResult.where(ResultId: result.MeasurementId).delete_all
-
       if rows.any?
+        AnalyteResult.includes(:analyte).where(Analytes: { ProjectId: @project_id }).where(ResultId: result.MeasurementId).destroy_all
         records = rows.map do |row|
-          row.merge(ResultId: result.MeasurementId, Result_MeasurementId: result.MeasurementId)
+          row.merge(ResultId: result.MeasurementId)
         end
         AnalyteResult.insert_all(records)
       end
     end
 
     def update_measurement_status
-      @measurement.update!(Status: 4, MeasureDate: Time.current)
+      @measurement.update!(Status: 4, MeasureDate: Time.current, InstrumentId: 15, AuthorizedById: nil, AuthorizedAt: nil)
     end
 
     def archive_file_in_minio

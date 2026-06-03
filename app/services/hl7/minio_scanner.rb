@@ -9,7 +9,8 @@ module Hl7
         endpoint:          Rails.application.credentials.dig(:hl7_s3, :endpoint),
         force_path_style:  true,
         region:            "eu-central-1"
-      )
+      )           
+
       @bucket          = Rails.application.credentials.dig(:hl7_s3, :bucket)
       @new_files_count = 0
       @errors          = []
@@ -35,9 +36,9 @@ module Hl7
       imported_keys = Hl7Import.pluck(:s3_key)
 
       response.contents.reject do |obj|
-        obj.key.end_with?("/") ||
-          obj.key.start_with?("#{Hl7::Config::ARCHIVE_FOLDER}/") ||
-          imported_keys.include?(obj.key)
+        obj.key.end_with?("/") || # Skip directories
+        obj.key.start_with?("#{Hl7::Config::ARCHIVE_FOLDER}/") || # Skip archive folder
+        imported_keys.include?(obj.key) # Skip already imported
       end
     end
 
@@ -47,6 +48,7 @@ module Hl7
       response    = @s3_client.get_object(bucket: @bucket, key: s3_object.key)
       hl7_content = response.body.read
       parsed_data = parse_hl7_metadata(hl7_content)
+     
 
       unless parsed_data[:kit_code]
         @errors << "Could not extract kit code from #{s3_object.key}"
@@ -113,14 +115,14 @@ module Hl7
 
     def link_and_process(hl7_import, measurement)
       if measurement.hl7_import.present? && measurement.hl7_import.id != hl7_import.id
-        Rails.logger.info("[HL7 MinIO Scanner] Measurement #{measurement.id} already has HL7 import, marking as registration_error")
+        Rails.logger.info("[HL7 MinIO Scanner] Measurement #{measurement.Id} already has HL7 import, marking as registration_error")
         hl7_import.mark_registration_error!("Measurement already has HL7 import")
         return
       end
 
-      hl7_import.update!(measurement_id: measurement.id, status: :pending)
+      hl7_import.update!(measurement_id: measurement.Id, status: :pending)
       Hl7::MeasurementImportJob.perform_later(hl7_import.id)
-      Rails.logger.info("[HL7 MinIO Scanner] Linked and enqueued: #{hl7_import.s3_key} → Measurement #{measurement.id}")
+      Rails.logger.info("[HL7 MinIO Scanner] Linked and enqueued: #{hl7_import.s3_key} → Measurement #{measurement.Id}")
     end
 
     def mark_as_awaiting_registration(hl7_import, parsed_data)
@@ -130,19 +132,35 @@ module Hl7
     end
 
     def parse_hl7_metadata(hl7_content)
-      # ruby-hl7 expects \r as segment separator; strip trailing whitespace then normalize \n → \r
-      normalized = hl7_content.strip.tr("\n", "\r")
-      parsed     = HL7::Message.new(normalized)
-      obr        = parsed[:OBR]
+      ## ruby-hl7 expects \r as segment separator; strip trailing whitespace then normalize \n → \r
+      # normalized = hl7_content.strip.tr("\n", "\r")
+      # parsed     = HL7::Message.new(normalized)
+      # obr        = parsed[:OBR]
 
-      kit_code  = obr[13].to_s.strip
-      kit_code  = parsed[:PID][5].to_s.split("^").first.to_s.strip if kit_code.blank?
-      kit_code  = nil if kit_code.blank?
+      # kit_code  = obr[13].to_s.strip
+      # kit_code  = parsed[:PID][5].to_s.split("^").first.to_s.strip if kit_code.blank?
+      # kit_code  = nil if kit_code.blank?
 
-      test_code = obr[4].to_s.split("^").first.to_s.strip
-      test_code = nil if test_code.blank?
+      # test_code = obr[4].to_s.split("^").first.to_s.strip
+      # test_code = nil if test_code.blank?
 
-      { kit_code: kit_code, test_code: test_code }
+      # { kit_code: kit_code, test_code: test_code }
+
+      parsed = HL7::Message.parse(hl7_content)
+
+      kit = nil
+      kit_code = parsed[:OBR][13].to_s.strip
+      kit_code = parsed[:PID][5].to_s.split('^').first if kit_code.blank?
+      kit = Sample.find_by(Code: kit_code) unless kit_code.blank?
+      kit_code = nil if kit.nil?
+
+      # Extract test code from OBR[4]
+      test_code = parsed[:OBR][4].to_s&.split('^').first     
+
+      {
+        kit_code: kit_code&.strip,
+        test_code: test_code&.strip
+      }
     rescue StandardError => e
       Rails.logger.error("[HL7 MinIO Scanner] Failed to parse HL7 metadata: #{e.message}")
       { kit_code: nil, test_code: nil }

@@ -4,7 +4,7 @@ module Hl7
 
     # ⚠️ BLOCKER: must be set before first import — integer ID of system user for Result.ImportUserId
     # Find with: User.find(24) or check Cerascreen::Labordatenbank::ResultImporterJob
-    SYSTEM_USER_ID = nil
+    SYSTEM_USER_ID = 24
 
     # Molar mass of creatinine in g/mol — used for unit conversions
     # mmol/L → mg/dl:  value_mg_dl  = mmol_per_L × CREATININE_MOLAR_MASS / 10
