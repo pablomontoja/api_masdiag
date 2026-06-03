@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Hl7::MinioScanner do
-  let(:hl7_content) { File.read(Rails.root.join("spec/fixtures/hl7/urine_metals.hl7")) }
+  let(:hl7_content) { File.read(Rails.root.join("spec/metals.hl7")) }
   let(:bucket_name) { "hl7-results" }
   let(:s3_key)      { "results/test_#{SecureRandom.hex(4)}.hl7" }
 
@@ -43,9 +43,10 @@ RSpec.describe Hl7::MinioScanner do
           p.eng_name = "NutriPATH Metals"
         end
       end
-      let(:measurement) { create(:measurement, sample: sample, ProjectId: project.id, Status: 1) }
+      let(:measurement) { create(:measurement, sample: sample, ProjectId: 32, Status: 1) }
 
       before do
+        project
         measurement
         allow(Hl7::MeasurementImportJob).to receive(:perform_later)
       end
@@ -65,7 +66,7 @@ RSpec.describe Hl7::MinioScanner do
         described_class.new.scan_and_import
 
         import = Hl7Import.last
-        expect(import.measurement_id).to eq(measurement.id)
+        expect(import.measurement_id).to eq(measurement.Id)
         expect(Hl7::MeasurementImportJob).to have_received(:perform_later).with(import.id)
       end
 

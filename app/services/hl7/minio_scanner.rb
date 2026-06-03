@@ -132,33 +132,17 @@ module Hl7
     end
 
     def parse_hl7_metadata(hl7_content)
-      ## ruby-hl7 expects \r as segment separator; strip trailing whitespace then normalize \n → \r
-      # normalized = hl7_content.strip.tr("\n", "\r")
-      # parsed     = HL7::Message.new(normalized)
-      # obr        = parsed[:OBR]
-
-      # kit_code  = obr[13].to_s.strip
-      # kit_code  = parsed[:PID][5].to_s.split("^").first.to_s.strip if kit_code.blank?
-      # kit_code  = nil if kit_code.blank?
-
-      # test_code = obr[4].to_s.split("^").first.to_s.strip
-      # test_code = nil if test_code.blank?
-
-      # { kit_code: kit_code, test_code: test_code }
-
       parsed = HL7::Message.parse(hl7_content)
 
-      kit = nil
       kit_code = parsed[:OBR][13].to_s.strip
-      kit_code = parsed[:PID][5].to_s.split('^').first if kit_code.blank?
-      kit = Sample.find_by(Code: kit_code) unless kit_code.blank?
-      kit_code = nil if kit.nil?
+      kit_code = parsed[:PID][5].to_s.split('^').first.to_s.strip if kit_code.blank?
+      kit_code = nil if kit_code.blank?
 
       # Extract test code from OBR[4]
-      test_code = parsed[:OBR][4].to_s&.split('^').first     
+      test_code = parsed[:OBR][4].to_s&.split('^').first
 
       {
-        kit_code: kit_code&.strip,
+        kit_code: kit_code,
         test_code: test_code&.strip
       }
     rescue StandardError => e
