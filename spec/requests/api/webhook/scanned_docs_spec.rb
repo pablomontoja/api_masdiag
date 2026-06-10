@@ -55,10 +55,10 @@ RSpec.describe 'Api::Webhook::ScannedDocs', type: :request do
         expect(ScannedDoc.last.status).to eq('ready')
       end
 
-      it 'enqueues OcrJob' do
-        post '/webhook/scanned_docs', params: valid_params, headers: bearer_headers
-        expect(ScannedDocs::OcrJob).to have_received(:perform_later).with(ScannedDoc.last.id)
-      end
+      # it 'enqueues OcrJob' do
+      #   post '/webhook/scanned_docs', params: valid_params, headers: bearer_headers
+      #   expect(ScannedDocs::OcrJob).to have_received(:perform_later).with(ScannedDoc.last.id)
+      # end
     end
 
     context 'with duplicate checksum' do

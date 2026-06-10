@@ -35,7 +35,8 @@ module ScannedDocs
         content_type: "application/pdf"
       )
 
-      ScannedDocs::OcrJob.perform_later(doc.id)
+      # TODO the OcrJob have to be tested after OCR server setup
+      # ScannedDocs::OcrJob.perform_later(doc.id)
       Result.new(success: true, status: "stored", scanned_doc_id: doc.id)
     rescue ActiveRecord::RecordNotUnique
       existing = ScannedDoc.find_by!(page_checksum: @params[:page_checksum])

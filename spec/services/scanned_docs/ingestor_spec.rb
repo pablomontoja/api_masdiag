@@ -42,10 +42,10 @@ RSpec.describe ScannedDocs::Ingestor do
       expect(doc.page_pdf).to be_attached
     end
 
-    it 'enqueues OcrJob' do
-      result
-      expect(ScannedDocs::OcrJob).to have_received(:perform_later).with(result.scanned_doc_id)
-    end
+    # it 'enqueues OcrJob' do
+    #   result
+    #   expect(ScannedDocs::OcrJob).to have_received(:perform_later).with(result.scanned_doc_id)
+    # end
 
     it 'sets status to ready' do
       result
