@@ -1,7 +1,8 @@
 FROM ruby:3.1.2-alpine AS builder
 
 RUN apk add --update --no-cache binutils-gold build-base curl file g++ git gcc less libstdc++ libffi-dev libc-dev linux-headers \
-												mariadb-dev libxml2-dev libxslt-dev libgcrypt-dev make netcat-openbsd nodejs openssl pkgconfig tzdata yarn sqlite-dev
+												mariadb-dev libxml2-dev libxslt-dev libgcrypt-dev make netcat-openbsd nodejs openssl pkgconfig tzdata yarn sqlite-dev \
+												poppler-utils
 RUN	rm -rf /var/cache/apk/* && mkdir /app && mkdir /bundle
 WORKDIR /app
 COPY . /app/

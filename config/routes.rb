@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   root "health#check"
 
+  #########################################################
+  ### WEBHOOK (machine-to-machine, Bearer token auth)
+  #########################################################
+  namespace :webhook do
+    resources :scanned_docs, only: [:create]
+  end
+
   get "health/check", to: 'health#check'
   get "health/invalid", to: 'health#invalid'
   get "health/not_found", to: 'health#not_found'

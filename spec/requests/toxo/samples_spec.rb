@@ -62,6 +62,50 @@ RSpec.describe "Toxo::SamplesController", type: :request do
     end
   end
 
+  # ───── GET /toxo/samples — sorting ──────────────────────────────────────────
+
+  describe "GET /toxo/samples (sorting)" do
+    it "returns samples sorted by dispatch_date ascending" do
+      early = create_registered_sample(code: "TX001A")
+      early.update_column(:dispatch_date, 3.days.ago)
+      late = create_registered_sample(code: "TX002A")
+      late.update_column(:dispatch_date, 1.day.ago)
+
+      get "/toxo/samples", params: { sort: "dispatch_date", direction: "asc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json.map { |s| s["Code"] }
+      expect(codes.index("TX001A")).to be < codes.index("TX002A")
+    end
+
+    it "returns samples sorted by code descending" do
+      create_registered_sample(code: "TX001A")
+      create_registered_sample(code: "TX002A")
+
+      get "/toxo/samples", params: { sort: "code", direction: "desc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json.map { |s| s["Code"] }
+      expect(codes.index("TX002A")).to be < codes.index("TX001A")
+    end
+
+    it "returns 200 with no sort params (no regression)" do
+      create_registered_sample
+
+      get "/toxo/samples", headers: bearer
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "silently ignores unknown sort column" do
+      create_registered_sample
+
+      get "/toxo/samples", params: { sort: "sql_injection", direction: "DROP" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   # ───── DELETE /toxo/samples/:id ──────────────────────────────────────────────
 
   describe "DELETE /toxo/samples/:id" do
