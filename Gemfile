@@ -51,6 +51,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'oj'
 gem 'alba'
 gem "aws-sdk-s3"
+gem "ruby-hl7"
 
 
 group :test do

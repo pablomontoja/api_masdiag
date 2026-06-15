@@ -1,10 +1,20 @@
 class Toxo::MeasurementsController < Toxo::BaseController
+  include Toxo::Sortable
+
+  SORTABLE_COLUMNS = {
+    "sample_code"   => "Samples.Code",
+    "lot"           => "Samples.Lot",
+    "authorized_at" => "Measurements.AuthorizedAt",
+    "project"       => "Measurements.ProjectId"
+  }.freeze
+
   before_action :set_measurement, only: :show
 
   # GET /toxo/measurements
   def index
-    @measurements = policy_scope(Measurement, policy_scope_class: Toxo::MeasurementPolicy::Scope)
-    pp @measurements.map { |m| serialize_measurement(m) }
+    @measurements = apply_sort(
+      policy_scope(Measurement, policy_scope_class: Toxo::MeasurementPolicy::Scope)
+    )
     render json: @measurements.map { |m| serialize_measurement(m) }
   end
 
