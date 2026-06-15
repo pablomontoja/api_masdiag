@@ -48,6 +48,7 @@ The API is versioned by namespace, each serving a different client type:
 | `masdiag_mailer/` | Email notification endpoints |
 | `patient_portal/` | Patient-facing endpoints (results, samples) |
 | `regspec/` | REGSPEC system (institutions, contractors, patients) |
+| `webhook/` | Machine-to-machine webhooks (Bearer token auth, no ApiAccount) |
 
 ### Authentication
 
@@ -135,3 +136,9 @@ No fixtures — use factories exclusively.
 - `V1::Common` (`app/lib/v1/common.rb`) holds shared constants: test codes, identity document types, Lalen institution IDs
 - Composite primary keys used on some models — be careful with ActiveRecord finders
 - `app/lib/` is autoloaded (configured in `application.rb`)
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+at `specs/003-api-sort-support/plan.md`.
+<!-- SPECKIT END -->

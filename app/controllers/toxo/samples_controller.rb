@@ -1,9 +1,19 @@
 class Toxo::SamplesController < Toxo::BaseController
+  include Toxo::Sortable
+
+  SORTABLE_COLUMNS = {
+    "code"            => "Samples.Code",
+    "lot"             => "Samples.Lot",
+    "dispatch_date"   => "Samples.dispatch_date",
+    "acceptance_date" => "Samples.AcceptanceDate",
+    "status"          => "Samples.SampleStatus"
+  }.freeze
+
   before_action :set_sample, only: %i[show destroy]
 
   # GET /toxo/samples
   def index
-    @samples = policy_scope(Toxo::Sample.all)
+    @samples = apply_sort(policy_scope(Toxo::Sample.all))
     render json: serialize_samples(@samples)
   end
 

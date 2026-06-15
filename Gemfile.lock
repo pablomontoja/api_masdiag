@@ -247,6 +247,8 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.1)
+    ruby-hl7 (1.4.0)
+      rake (>= 12.3.3)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     sentry-rails (5.20.1)
@@ -306,6 +308,7 @@ DEPENDENCIES
   roo (~> 2.10.0)
   rspec-json_expectations
   rspec-rails
+  ruby-hl7
   sentry-rails
   sentry-ruby
   shoulda (~> 3.5)
