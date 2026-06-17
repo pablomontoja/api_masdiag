@@ -36,6 +36,18 @@ class V1::KitController < ApplicationController
       return
     end
 
+    requested_test_ids = assignment_params[:test_ids].map(&:to_i)
+
+    if requested_test_ids.include?(26) && @current_rsc.reserved_tests.exists?
+      json_response({ message: "Tests for this sample collection card have already been assigned and cannot be changed" }, :unprocessable_entity)
+      return
+    end
+
+    if requested_test_ids.include?(26) && !@current_rsc.dbs_i4?
+      json_response({ message: "Test 26 can only be assigned to a dbs_i4 material handler" }, :unprocessable_entity)
+      return
+    end
+
     assignment = validate_assignment(assignment_params[:test_ids])
     if assignment.invalid
       json_response({message: assignment.errors.join("; ")}, :unprocessable_entity)
