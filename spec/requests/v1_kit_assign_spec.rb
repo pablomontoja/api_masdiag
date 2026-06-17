@@ -262,7 +262,7 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
         tmp_params = { data: { code: rsc_dbs_i4.Code, test_ids: [26] } }
         post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
         expect(response).to have_http_status(422)
-        expect(json.dig("message")).to eq("Tests for this sample have already been assigned and cannot be changed")
+        expect(json.dig("message")).to eq("Tests for this sample collection card have already been assigned and cannot be changed")
       end
 
       it 'assigns test 26 successfully when material_handler is dbs_i4 and no existing tests' do
