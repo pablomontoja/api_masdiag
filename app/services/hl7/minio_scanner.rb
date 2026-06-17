@@ -134,11 +134,10 @@ module Hl7
     def parse_hl7_metadata(hl7_content)
       parsed = HL7::Message.parse(hl7_content)
 
-      kit_code = parsed[:OBR][13].to_s.strip
-      kit_code = parsed[:PID][5].to_s.split('^').first.to_s.strip if kit_code.blank?
+      kit_code = strip_hl7_escapes(parsed[:OBR][13].to_s).strip
+      kit_code = strip_hl7_escapes(parsed[:PID][5].to_s).split('^').first.to_s.strip if kit_code.blank?
       kit_code = nil if kit_code.blank?
 
-      # Extract test code from OBR[4]
       test_code = parsed[:OBR][4].to_s&.split('^').first
 
       {
@@ -148,6 +147,10 @@ module Hl7
     rescue StandardError => e
       Rails.logger.error("[HL7 MinIO Scanner] Failed to parse HL7 metadata: #{e.message}")
       { kit_code: nil, test_code: nil }
+    end
+
+    def strip_hl7_escapes(str)
+      str.gsub(/\\[^\\]+\\/, '')
     end
   end
 end

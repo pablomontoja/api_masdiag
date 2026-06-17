@@ -103,6 +103,42 @@ RSpec.describe Hl7::MinioScanner do
       end
     end
 
+    context "when kit code contains HL7 escape sequences" do
+      let(:hl7_content) { File.read(Rails.root.join("spec/fixtures/hl7/metals_with_escape.hl7")) }
+
+      let(:sample) { create(:sample, Code: "A6Y1IF") }
+      let(:project) do
+        Project.find_or_create_by(Id: 32) do |p|
+          p.Name = "NutriPATH Metals"
+          p.WithCutter = false
+          p.PlateDimensionX = 8
+          p.PlateDimensionY = 12
+          p.InjectionVolume = 0
+          p.is_blocked_online = false
+          p.eng_name = "NutriPATH Metals"
+        end
+      end
+      let(:measurement) { create(:measurement, sample: sample, ProjectId: 32, Status: 1) }
+
+      before do
+        project
+        measurement
+        allow(Hl7::MeasurementImportJob).to receive(:perform_later)
+      end
+
+      it "strips escape sequences and stores the clean kit code" do
+        described_class.new.scan_and_import
+        import = Hl7Import.last
+        expect(import.kit_code_extracted).to eq("A6Y1IF")
+      end
+
+      it "links the import to the measurement despite the escape sequence" do
+        described_class.new.scan_and_import
+        import = Hl7Import.last
+        expect(import.measurement_id).to eq(measurement.Id)
+      end
+    end
+
     context "when MinIO raises a ServiceError" do
       before do
         allow(s3_client).to receive(:list_objects_v2)
