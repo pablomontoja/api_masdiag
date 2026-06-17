@@ -6,6 +6,7 @@ class Masdiag::NotificationController < ApplicationController
   def trigger
     begin
       Cerascreen::Labordatenbank::GetResultsJob.perform_later()
+      Hl7MinioScannerJob.perform_later()
       
       errors = []
       ids = ApiAccount.pluck(:contractor_id)
