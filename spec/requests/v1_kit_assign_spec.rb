@@ -249,11 +249,29 @@ RSpec.describe 'V1::KitController#assign_tests', type: :request do
         expect(json.dig("message")).to eq("Assignment of tests for 2 different types of material is not possible")
       end
 
-      it 'returns error message when weight limit exceeded for DBS material' do
+      it 'returns error when test 26 requested but material_handler is not dbs_i4' do
         tmp_params = assign_params.tap{|prm| prm[:data][:test_ids]=[2, 3, 26]}
         post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
         expect(response).to have_http_status(422)
-        expect(json.dig("message")).to eq("Weight limit exceeded for DBS material")
+        expect(json.dig("message")).to eq("Test 26 can only be assigned to a dbs_i4 material handler")
+      end
+
+      it 'returns error when test 26 requested but reserved_tests already exist' do
+        rsc_dbs_i4 = create(:reserved_sample_code, Code: "IAA4X", package_id: package.id, InstitutionId: inst.id, IsRetailSale: true, material_handler: :dbs_i4)
+        rsc_dbs_i4.reserved_tests.create!(project_id: 2)
+        tmp_params = { data: { code: rsc_dbs_i4.Code, test_ids: [26] } }
+        post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+        expect(response).to have_http_status(422)
+        expect(json.dig("message")).to eq("Tests for this sample have already been assigned and cannot be changed")
+      end
+
+      it 'assigns test 26 successfully when material_handler is dbs_i4 and no existing tests' do
+        project_26 = create(:project, Id: 26)
+        rsc_dbs_i4 = create(:reserved_sample_code, Code: "IAA4Y", package_id: package.id, InstitutionId: inst.id, IsRetailSale: true, material_handler: :dbs_i4)
+        TestTransaction.create(project_id: project_26.Id, amount_change: 2, contractor_id: contractor.Id)
+        tmp_params = { data: { code: rsc_dbs_i4.Code, test_ids: [26] } }
+        post "/v1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+        expect(response).to have_http_status(204)
       end
 
       it 'returns error message when code is not found for Institution' do
