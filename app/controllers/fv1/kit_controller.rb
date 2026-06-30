@@ -42,9 +42,22 @@ class Fv1::KitController < V1::KitController
         @current_rsc.reserved_tests.create!(project_id: test)
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: Current.api_account.institution.api_contractor_id)
+      assign_tests_in_lalen_api
     end
     
     head :no_content
   end
+
+private
+
+  def assign_tests_in_lalen_api
+    return if Current.api_account.institution.id != 83 # FFTB
+    return if assignment_params[:test_ids].map(&:to_i).uniq.count > 3 # blockade for trying the DRIFTs assignement
+    api_keys = assignment_params[:test_ids].map(&:to_i).uniq.filter_map { |t| V1::Common::LALEN_TEST_API_KEYS[t] }
+    return if api_keys.empty?
+
+    LalenApi::AssignKitTestsJob.perform_later(@current_rsc.Code, api_keys)
+  end
+
 
 end

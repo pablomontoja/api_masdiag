@@ -140,5 +140,5 @@ No fixtures — use factories exclusively.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/003-api-sort-support/plan.md`.
+at `specs/004-lalen-assign-kit-tests/plan.md`.
 <!-- SPECKIT END -->

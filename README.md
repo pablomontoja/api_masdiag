@@ -54,6 +54,14 @@ RAILS_ENV=test rails db:drop db:create db:schema:load
 
 ---
 
+# Database schema reload during migration
+
+```ruby
+Test.reset_column_information
+```
+
+---
+
 
 # Checking not included in measurement summaries
 ```ruby

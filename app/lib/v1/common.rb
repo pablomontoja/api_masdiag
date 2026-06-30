@@ -32,8 +32,16 @@ module V1::Common
                      {id: 23, name: "HbA1c", material: "DBS", weight: 1, comment: ""},
                      {id: 26, name: "GSSG/GSH - Glutathione Index", material: "DBS", weight: 2, comment: "A special DBS card is required"},
                      {id: 27, name: "Phosphatidylethanol", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"},
-                     {id: 28, name: "Goldcup TOXO", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"}             
+                     {id: 28, name: "Goldcup TOXO", material: "DBS", weight: 1, comment: "Capitainer B50 card is required"}
                    ].freeze
+
+  LALEN_TEST_API_KEYS = {
+    22 => "vitamin-d",
+    21 => "omega-3-basic",
+    23 => "hba1c",
+    12 => "homocysteine",
+    26 => "glutathione-index"
+  }.freeze
 end
 
 # {id: 14, name: "TSH", material: "DBS", weight: 2, comment: ""},
