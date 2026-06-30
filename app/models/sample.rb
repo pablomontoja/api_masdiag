@@ -61,6 +61,7 @@ class Sample < ApplicationRecord
 
   # callbacks
   before_save :set_defaults
+  after_commit :set_rsc, on: :create
 
   # walidacja
   validates :Code, presence: true, uniqueness: true
@@ -85,7 +86,7 @@ class Sample < ApplicationRecord
   validates :WrongRegistrationStatus, presence: true
 
   def rsc
-    ReservedSampleCode.find_by(Code: self.Code)
+    self.reserved_sample_code || ReservedSampleCode.find_by(Code: self.Code)
   end
 
   def hasResult?
@@ -132,4 +133,10 @@ class Sample < ApplicationRecord
     self.access_hash = SecureRandom.urlsafe_base64
     self.RegistrationDate = DateTime.now if self.new_record?
   end
+
+  def set_rsc
+    r = ReservedSampleCode.find_by(Code: self.Code)
+    self.update_column(:reserved_sample_code_id, r.Id) unless r.nil?
+  end
+
 end
