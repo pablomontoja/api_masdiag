@@ -106,6 +106,11 @@ class Sample < ApplicationRecord
     !self.AcceptanceDate.nil?
   end
 
+  def register_in_lalen_api
+    return "VIRTUAL PATIENT" if self.patient.IsVirtual == true
+    ::LalenApi::RegisterKitJob.perform_later(self) if V1::Common::LALEN_INSTITUTION_IDS.include?(self.patient&.contractor&.institution_id)
+  end
+
   #######################
   private
   #######################
