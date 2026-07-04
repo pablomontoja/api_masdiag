@@ -26,6 +26,13 @@ class Fv1::SampleController < ApplicationController
     @sample.validate
 
     if @sample.save!(context: :fv1)
+      if [4,5].include?(@sample.soaking_degree_id)
+        @sample.measurements.destroy_all
+        Notification::SampleChangedJob.perform_later(@sample.Id)
+      else
+        MasdiagEvent::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+      end
+      
       ::LalenApi::RegisterKitJob.perform_later(@sample) if V1::Common::LALEN_INSTITUTION_IDS.include?(@sample.patient&.contractor&.institution_id)
       json_response(SampleResource.new(@sample), :created)
     else

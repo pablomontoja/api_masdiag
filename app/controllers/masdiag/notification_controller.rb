@@ -7,6 +7,8 @@ class Masdiag::NotificationController < ApplicationController
     begin
       Cerascreen::Labordatenbank::GetResultsJob.perform_later()
       Hl7MinioScannerJob.perform_later()
+      Hl7LinkPendingJob.perform_later()
+      Hl7RetryFailedJob.perform_later()
       
       errors = []
       ids = ApiAccount.pluck(:contractor_id)
