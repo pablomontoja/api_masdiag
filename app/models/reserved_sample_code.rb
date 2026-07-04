@@ -85,6 +85,15 @@ class ReservedSampleCode < ApplicationRecord
     TestTransaction.set_callback(:create, :after, :change_test_amount)
   end
 
+  def assign_tests_in_lalen_api
+    return if self.InstitutionId != 83 # FFTB
+    return if self.reserved_tests.pluck(:project_id).uniq.count > 3 # blockade for trying the DRIFTs assignement
+    api_keys = self.reserved_tests.pluck(:project_id).map(&:to_i).uniq.filter_map { |t| V1::Common::LALEN_TEST_API_KEYS[t] }
+    return if api_keys.empty?
+
+    LalenApi::AssignKitTestsJob.perform_later(self.Code, api_keys)
+  end
+
   private
 
   def calculate_test_expiry_date(old_test)
