@@ -1,7 +1,7 @@
 class Lalen::SampleController < ApplicationController
   include LalenCheck
   before_action :set_rsc
-  before_action :set_sample, only: :destroy
+  before_action :set_sample, only: %i[destroy update]
 
   def create
     if @current_rsc&.expiry_date < Time.zone.now
@@ -50,6 +50,14 @@ class Lalen::SampleController < ApplicationController
     end
   end
 
+  def update
+    if @sample.update(update_params)
+      json_response(SampleResource.new(@sample))
+    else
+      json_response({ message: @sample.errors }, :unprocessable_entity)
+    end
+  end
+
   # TODO - activate_confirmation_test - rspec tests needed
   def activate_confirmation_test
     sample = Sample.where.not(AcceptanceDate: nil).find_by(Code: sample_code)
@@ -83,6 +91,8 @@ class Lalen::SampleController < ApplicationController
       code = sample_code
     when "destroy"
       code = sample_code
+    when "update"
+      code = sample_params[:code]
     end
 
     # lalen_institution_ids is included from LalenCheck
@@ -94,10 +104,10 @@ class Lalen::SampleController < ApplicationController
   end
 
   def set_sample
-    @sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
+    @sample = Sample.where(AcceptanceDate: nil).find_by(Code: @current_rsc.Code)
 
     if @sample.nil?
-      json_response({ message: "This sample does not exist or cannot be deleted." }, :unprocessable_entity)
+      json_response({ message: "This sample does not exist or cannot be modified." }, :unprocessable_entity)
     end
   end
 
@@ -118,6 +128,10 @@ class Lalen::SampleController < ApplicationController
         value.each_value { |value| value.try(:strip!) }
       end
     end
+  end
+
+  def update_params
+    params.require(:sample).permit(:sample_collection_date)
   end
 
 end

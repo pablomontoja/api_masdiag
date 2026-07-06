@@ -89,6 +89,7 @@ Rails.application.routes.draw do
   namespace :lalen, defaults: {format: :json} do
     resources :sample, only: %i{create} do
       delete "/delete/:code",on: :collection, to: 'sample#destroy'
+      put "/update", on: :collection, to: 'sample#update'
       # post "/activate_confirmation_test/:code", on: :collection, to: 'sample#activate_confirmation_test'
     end
 
@@ -173,14 +174,14 @@ Rails.application.routes.draw do
   #########################################################
   ### LALEN
   #########################################################
-  namespace :lalen, defaults: {format: :json} do
-    resources :sample, only: %i{create} do
-      delete "/delete/:code",on: :collection, to: 'sample#destroy'
-    end
+  # namespace :lalen, defaults: {format: :json} do
+  #   resources :sample, only: %i{create} do
+  #     delete "/delete/:code",on: :collection, to: 'sample#destroy'
+  #   end
 
-    # get "/result/get/:code", to: 'result#show'
-    # post "/kits/assign_tests", to: 'kit#assign_tests'
-  end
+  #   # get "/result/get/:code", to: 'result#show'
+  #   # post "/kits/assign_tests", to: 'kit#assign_tests'
+  # end
 
 
   #########################################################
