@@ -121,6 +121,7 @@ Rails.application.routes.draw do
     namespace :samples do
       resources :registrations, only: %i[new create]
       resources :exports, only: %i[index]
+      resources :on_request_measurements, only: %i[create]
     end
 
     resources :samples, only: %i[index show destroy]

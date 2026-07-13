@@ -4,6 +4,7 @@ class Toxo::SamplePolicy < ApplicationPolicy
   def new?     = user.can_add_samples?
   def create?  = user.can_add_samples?
   def destroy? = record.deletable? && owner?
+  def create_on_request_measurement? = user.can_add_samples? && owner_or_super?
 
   class Scope < ApplicationPolicy::Scope
     def resolve
@@ -34,11 +35,11 @@ class Toxo::SamplePolicy < ApplicationPolicy
     end
   end
 
-  private
-
   def owner_or_super?
     owner? || user.is_super_contractor?
   end
+
+  private
 
   def owner?
     record.patient.ContractorId == user.Id

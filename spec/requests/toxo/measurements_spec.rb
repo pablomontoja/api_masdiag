@@ -187,5 +187,23 @@ RSpec.describe "Toxo::MeasurementsController", type: :request do
       get "/toxo/measurements/999999", headers: bearer
       expect(response).to have_http_status(:not_found)
     end
+
+    it "flags has_on_request_measurement as false when no on-request measurement exists" do
+      m = create_measurement(code: "TX001A")
+
+      get "/toxo/measurements/#{m.Id}", headers: bearer
+
+      expect(json["has_on_request_measurement"]).to eq(false)
+    end
+
+    it "flags has_on_request_measurement as true when an on-request measurement exists" do
+      m = create_measurement(code: "TX001A")
+      on_request_project = create(:toxo_project_on_request)
+      Measurement.create!(SampleId: m.SampleId, ProjectId: on_request_project.Id, Status: 7, MaterialType: 0, IsRepeat: false)
+
+      get "/toxo/measurements/#{m.Id}", headers: bearer
+
+      expect(json["has_on_request_measurement"]).to eq(true)
+    end
   end
 end

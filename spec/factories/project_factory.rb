@@ -84,6 +84,18 @@ FactoryBot.define do
     eng_name { "Toxo IgM" }
     initialize_with { Project.find_or_create_by(Id: 40) { |p| p.assign_attributes(Name: "Toxo IgM", WithCutter: false, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: false, InjectionVolume: 0, eng_name: "Toxo IgM") } }
   end
+
+  factory :toxo_project_on_request, class: Project do
+    Id { 42 }
+    Name { "Toxo na zlecenie" }
+    WithCutter { false }
+    PlateDimensionX { 8 }
+    PlateDimensionY { 12 }
+    is_blocked_online { false }
+    InjectionVolume { 0 }
+    eng_name { "Toxo on request" }
+    initialize_with { Project.find_or_create_by(Id: 42) { |p| p.assign_attributes(Name: "Toxo na zlecenie", WithCutter: false, PlateDimensionX: 8, PlateDimensionY: 12, is_blocked_online: false, InjectionVolume: 0, eng_name: "Toxo on request") } }
+  end
 end
 
 

@@ -49,7 +49,8 @@ class Toxo::MeasurementsController < Toxo::BaseController
       SampleLevel:   measurement.sample.Level,
       SampleMaterialType: measurement.sample.MaterialType,
       SampleDispatchDate: measurement.sample.dispatch_date,
-      report_pdf_url: unencrypted_result_url(measurement)
+      report_pdf_url: unencrypted_result_url(measurement),
+      has_on_request_measurement: measurement.sample.measurements.exists?(ProjectId: 42)
     }
   end
 
