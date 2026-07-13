@@ -1,5 +1,7 @@
 class Toxo::MeasurementsController < Toxo::BaseController
   include Toxo::Sortable
+  include Toxo::Searchable
+  include Toxo::Paginatable
 
   SORTABLE_COLUMNS = {
     "sample_code"   => "Samples.Code",
@@ -8,14 +10,16 @@ class Toxo::MeasurementsController < Toxo::BaseController
     "project"       => "Measurements.ProjectId"
   }.freeze
 
+  SEARCHABLE_COLUMNS = %w[Samples.Code Samples.Lot].freeze
+
   before_action :set_measurement, only: :show
 
   # GET /toxo/measurements
   def index
-    @measurements = apply_sort(
-      policy_scope(Measurement, policy_scope_class: Toxo::MeasurementPolicy::Scope)
-    )
-    render json: @measurements.map { |m| serialize_measurement(m) }
+    scoped = policy_scope(Measurement, policy_scope_class: Toxo::MeasurementPolicy::Scope)
+    scoped = apply_sort(apply_search(scoped))
+    @measurements, meta = paginate(scoped)
+    render json: { data: @measurements.map { |m| serialize_measurement(m) }, meta: meta }
   end
 
   # GET /toxo/measurements/:id
@@ -44,6 +48,7 @@ class Toxo::MeasurementsController < Toxo::BaseController
       SampleLot:   measurement.sample.Lot,
       SampleLevel:   measurement.sample.Level,
       SampleMaterialType: measurement.sample.MaterialType,
+      SampleDispatchDate: measurement.sample.dispatch_date,
       report_pdf_url: unencrypted_result_url(measurement)
     }
   end

@@ -18,6 +18,7 @@ pl:
         post_examination_procedure: "Procedura po badaniu"
         infectious_risk: "Ryzyko zakaźne"
         execution_mode: "Tryb wykonania"
+        sample_collection_date: "Data pobrania próbki"
     errors:
       models:
         toxo/sample:
@@ -37,3 +38,5 @@ pl:
               blank: "nie dokonano wyboru"
             execution_mode:
               blank: "nie dokonano wyboru"
+            sample_collection_date:
+              cannot_be_in_future: "nie może być datą przyszłą"

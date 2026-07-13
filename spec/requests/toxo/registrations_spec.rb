@@ -100,5 +100,31 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
       post "/toxo/samples/registrations", params: valid_params, headers: bearer
       expect(response).to have_http_status(:forbidden)
     end
+
+    it "creates a sample when sample_collection_date is blank" do
+      post "/toxo/samples/registrations",
+           params: valid_params.merge(sample_collection_date: ""),
+           headers: bearer
+
+      expect(response).to have_http_status(:created)
+      expect(json["sample_collection_date"]).to be_nil
+    end
+
+    it "returns 422 when sample_collection_date is in the future" do
+      post "/toxo/samples/registrations",
+           params: valid_params.merge(sample_collection_date: 1.day.from_now.to_date.to_s),
+           headers: bearer
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json["errors"]).to have_key("sample_collection_date")
+    end
+
+    it "creates a sample when sample_collection_date is a valid past date" do
+      post "/toxo/samples/registrations",
+           params: valid_params.merge(sample_collection_date: 3.days.ago.to_date.to_s),
+           headers: bearer
+
+      expect(response).to have_http_status(:created)
+    end
   end
 end

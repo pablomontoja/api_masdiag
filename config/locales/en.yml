@@ -50,6 +50,7 @@ en:
         post_examination_procedure: "Post-examination procedure"
         infectious_risk: "Infectious risk"
         execution_mode: "Execution mode"
+        sample_collection_date: "Sample collection date"
     errors:
       models:
         toxo/sample:
@@ -69,5 +70,7 @@ en:
               blank: "no selection has been made"
             execution_mode:
               blank: "no selection has been made"
+            sample_collection_date:
+              cannot_be_in_future: "cannot be a future date"
 
               
