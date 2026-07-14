@@ -77,7 +77,7 @@ class Toxo::Sample < ApplicationRecord
   validate :code_must_belong_to_contractor_institution
   validate :code_must_not_be_already_registered
   validate :sample_collection_date_not_in_future
-  validate :project_ids_presence
+  validate :project_ids_presence, on: :create
 
   scope :toxo, -> {
     joins(:measurements).where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS }).distinct
