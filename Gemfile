@@ -79,3 +79,4 @@ gem "i18n", "~> 1.12.0"
 gem 'mobility', '~> 1.3.2'
 gem 'pundit'
 gem 'nokogiri', '~> 1.15.0'
+gem 'pagy', '~> 6.2'
