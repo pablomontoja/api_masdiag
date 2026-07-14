@@ -6,7 +6,9 @@ class Toxo::MeasurementsController < Toxo::BaseController
   SORTABLE_COLUMNS = {
     "sample_code"   => "Samples.Code",
     "lot"           => "Samples.Lot",
+    "level"         => "Samples.Level",
     "authorized_at" => "Measurements.AuthorizedAt",
+    "dispatch_date" => "Samples.dispatch_date",
     "project"       => "Measurements.ProjectId"
   }.freeze
 

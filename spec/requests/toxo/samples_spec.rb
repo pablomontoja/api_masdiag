@@ -89,6 +89,28 @@ RSpec.describe "Toxo::SamplesController", type: :request do
       expect(codes.index("TX002A")).to be < codes.index("TX001A")
     end
 
+    it "returns samples sorted by level ascending" do
+      create_registered_sample(code: "TX001A").update_column(:Level, "2")
+      create_registered_sample(code: "TX002A").update_column(:Level, "1")
+
+      get "/toxo/samples", params: { sort: "level", direction: "asc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json["data"].map { |s| s["Code"] }
+      expect(codes.index("TX002A")).to be < codes.index("TX001A")
+    end
+
+    it "returns samples sorted by level descending" do
+      create_registered_sample(code: "TX001A").update_column(:Level, "2")
+      create_registered_sample(code: "TX002A").update_column(:Level, "1")
+
+      get "/toxo/samples", params: { sort: "level", direction: "desc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json["data"].map { |s| s["Code"] }
+      expect(codes.index("TX001A")).to be < codes.index("TX002A")
+    end
+
     it "returns 200 with no sort params (no regression)" do
       create_registered_sample
 

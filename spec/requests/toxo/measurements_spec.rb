@@ -8,9 +8,11 @@ RSpec.describe "Toxo::MeasurementsController", type: :request do
 
   let!(:toxo_patient) { create(:toxo_patient, contractor: contractor) }
 
-  def create_measurement(code:, authorized_at: nil)
+  def create_measurement(code:, authorized_at: nil, level: nil, dispatch_date: nil)
     project = create(:toxo_project_igg)
     sample  = create(:toxo_sample, Code: code, patient: toxo_patient)
+    sample.update_column(:Level, level) if level
+    sample.update_column(:dispatch_date, dispatch_date) if dispatch_date
     m = Measurement.create!(SampleId: sample.Id, ProjectId: project.Id, Status: 1, MaterialType: 0, IsRepeat: false)
     m.update_column(:AuthorizedAt, authorized_at) if authorized_at
     m
@@ -74,6 +76,50 @@ RSpec.describe "Toxo::MeasurementsController", type: :request do
       expect(response).to have_http_status(:ok)
       codes = json["data"].map { |r| r["SampleCode"] }
       expect(codes.index("TX001A")).to be < codes.index("TX002A")
+    end
+
+    it "returns measurements sorted by level ascending" do
+      create_measurement(code: "TX001A", level: "2")
+      create_measurement(code: "TX002A", level: "1")
+
+      get "/toxo/measurements", params: { sort: "level", direction: "asc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json["data"].map { |r| r["SampleCode"] }
+      expect(codes.index("TX002A")).to be < codes.index("TX001A")
+    end
+
+    it "returns measurements sorted by level descending" do
+      create_measurement(code: "TX001A", level: "2")
+      create_measurement(code: "TX002A", level: "1")
+
+      get "/toxo/measurements", params: { sort: "level", direction: "desc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json["data"].map { |r| r["SampleCode"] }
+      expect(codes.index("TX001A")).to be < codes.index("TX002A")
+    end
+
+    it "returns measurements sorted by dispatch_date ascending" do
+      create_measurement(code: "TX001A", dispatch_date: 3.days.ago)
+      create_measurement(code: "TX002A", dispatch_date: 1.day.ago)
+
+      get "/toxo/measurements", params: { sort: "dispatch_date", direction: "asc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json["data"].map { |r| r["SampleCode"] }
+      expect(codes.index("TX001A")).to be < codes.index("TX002A")
+    end
+
+    it "returns measurements sorted by dispatch_date descending" do
+      create_measurement(code: "TX001A", dispatch_date: 3.days.ago)
+      create_measurement(code: "TX002A", dispatch_date: 1.day.ago)
+
+      get "/toxo/measurements", params: { sort: "dispatch_date", direction: "desc" }, headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      codes = json["data"].map { |r| r["SampleCode"] }
+      expect(codes.index("TX002A")).to be < codes.index("TX001A")
     end
 
     it "silently ignores unknown sort column" do

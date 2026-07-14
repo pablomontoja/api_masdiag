@@ -6,6 +6,7 @@ class Toxo::SamplesController < Toxo::BaseController
   SORTABLE_COLUMNS = {
     "code"            => "Samples.Code",
     "lot"             => "Samples.Lot",
+    "level"           => "Samples.Level",
     "dispatch_date"   => "Samples.dispatch_date",
     "acceptance_date" => "Samples.AcceptanceDate",
     "status"          => "Samples.SampleStatus"
