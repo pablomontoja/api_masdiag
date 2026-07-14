@@ -229,6 +229,15 @@ RSpec.describe "Toxo::MeasurementsController", type: :request do
       expect(Date.parse(json["SampleDispatchDate"])).to eq(Date.new(2026, 7, 10))
     end
 
+    it "includes the sample's state" do
+      m = create_measurement(code: "TX001A")
+      m.sample.update_column(:SampleState, 4)
+
+      get "/toxo/measurements/#{m.Id}", headers: bearer
+
+      expect(json["SampleState"]).to eq(4)
+    end
+
     it "returns 404 for non-existent measurement" do
       get "/toxo/measurements/999999", headers: bearer
       expect(response).to have_http_status(:not_found)
