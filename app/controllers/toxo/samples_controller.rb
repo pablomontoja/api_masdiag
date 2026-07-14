@@ -1,20 +1,26 @@
 class Toxo::SamplesController < Toxo::BaseController
   include Toxo::Sortable
+  include Toxo::Searchable
+  include Toxo::Paginatable
 
   SORTABLE_COLUMNS = {
     "code"            => "Samples.Code",
     "lot"             => "Samples.Lot",
+    "level"           => "Samples.Level",
     "dispatch_date"   => "Samples.dispatch_date",
     "acceptance_date" => "Samples.AcceptanceDate",
     "status"          => "Samples.SampleStatus"
   }.freeze
 
+  SEARCHABLE_COLUMNS = %w[Samples.Code Samples.Lot].freeze
+
   before_action :set_sample, only: %i[show destroy]
 
   # GET /toxo/samples
   def index
-    @samples = apply_sort(policy_scope(Toxo::Sample.all))
-    render json: serialize_samples(@samples)
+    scoped = apply_sort(apply_search(policy_scope(Toxo::Sample.all)))
+    @samples, meta = paginate(scoped)
+    render json: { data: serialize_samples(@samples), meta: meta }
   end
 
   # GET /toxo/samples/:id

@@ -118,16 +118,19 @@ Rails.application.routes.draw do
   ### TOXO
   #########################################################
   namespace :toxo, defaults: { format: :json } do
-    resources :samples, only: %i[index show destroy]
-
     namespace :samples do
       resources :registrations, only: %i[new create]
+      resources :exports, only: %i[index]
+      resources :on_request_measurements, only: %i[create]
     end
+
+    resources :samples, only: %i[index show destroy]
 
     resources :patients,              only: %i[index show]
     resources :projects,              only: %i[index]
     resources :reserved_sample_codes, only: %i[index show]
     resources :measurements,          only: %i[index show]
+    get "dashboard", to: "dashboard#index"
   end
 
 

@@ -67,7 +67,6 @@ class Toxo::Sample < ApplicationRecord
   validates :SampleState, presence: true
   validates :SampleStatus, presence: true
   validates :MaterialType, presence: true
-  validates :sample_collection_date, presence: true
   validates :WrongRegistrationStatus, presence: true
   validates_inclusion_of :IsWrongRegistration, in: [true, false]
   validates_inclusion_of :WasWrongRegistration, in: [true, false]
@@ -77,6 +76,7 @@ class Toxo::Sample < ApplicationRecord
 
   validate :code_must_belong_to_contractor_institution
   validate :code_must_not_be_already_registered
+  validate :sample_collection_date_not_in_future
   validate :project_ids_presence
 
   scope :toxo, -> {
@@ -131,6 +131,11 @@ private
   def project_ids_presence
     # byebug
     errors.add(:project_ids, :no_tests_selected) if self.project_ids.empty?
+  end
+
+  def sample_collection_date_not_in_future
+    return if sample_collection_date.blank?
+    errors.add(:sample_collection_date, :cannot_be_in_future) if sample_collection_date.to_date > Date.current
   end
 
   def set_rsc
