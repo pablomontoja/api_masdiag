@@ -18,7 +18,7 @@ class Toxo::SamplesController < Toxo::BaseController
 
   # GET /toxo/samples
   def index
-    scoped = apply_sort(apply_search(policy_scope(Toxo::Sample.all)))
+    scoped = apply_sort(apply_search(policy_scope(Toxo::Sample.all))).includes(:patient)
     @samples, meta = paginate(scoped)
     render json: { data: serialize_samples(@samples), meta: meta }
   end
@@ -70,6 +70,7 @@ class Toxo::SamplesController < Toxo::BaseController
       WasWrongRegistration:       sample.WasWrongRegistration,
       SampleStatus:               sample.SampleStatus,
       SampleState:                sample.SampleState,
+      ContractorId:               sample.patient&.ContractorId,
       measurements:               sample.measurements.map { |m|
         { Id: m.Id, ProjectId: m.ProjectId, Status: m.Status, SampleMaterialType: m.sample.MaterialType, IsRepeat: m.IsRepeat }
       }

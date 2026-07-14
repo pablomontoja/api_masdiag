@@ -41,6 +41,16 @@ RSpec.describe "Toxo::SamplesController", type: :request do
       expect(ids).to include(sample.Id)
       expect(ids).not_to include(other_sample.Id)
     end
+
+    it "includes the patient's ContractorId" do
+      sample = create_registered_sample
+
+      get "/toxo/samples", headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      returned = json["data"].find { |s| s["Id"] == sample.Id }
+      expect(returned["ContractorId"]).to eq(contractor.Id)
+    end
   end
 
   # ───── GET /toxo/samples/:id ─────────────────────────────────────────────────
