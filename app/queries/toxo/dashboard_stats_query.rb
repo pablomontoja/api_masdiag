@@ -42,11 +42,10 @@ module Toxo
     end
 
     def unused_reserved_codes_scope
-      used_rsc_ids = Toxo::Sample.where.not(reserved_sample_code_id: nil).select(:reserved_sample_code_id)
-
       ReservedSampleCode.where(InstitutionId: user.institution_id)
                          .where("LENGTH(ReservedSampleCodes.Code) = 7")
-                         .where.not(Id: used_rsc_ids)
+                         .joins("LEFT JOIN Samples ON Samples.reserved_sample_code_id = ReservedSampleCodes.Id")
+                         .where(Samples: { Id: nil })
     end
 
     def group_by_day(scope, column)

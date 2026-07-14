@@ -46,5 +46,48 @@ RSpec.describe Toxo::DashboardStatsQuery do
       stats = described_class.new(user: contractor, window: 30).call
       expect(stats[:authorized_measurements_count]).to eq(0)
     end
+
+    describe "unused_reserved_codes_count" do
+      it "counts an institution's unused RSC even when there are zero Samples in the whole table" do
+        create(:reserved_sample_code, Code: "ABCDEFG", InstitutionId: institution.id, package_id: nil)
+
+        stats = described_class.new(user: contractor, window: 30).call
+        expect(stats[:unused_reserved_codes_count]).to eq(1)
+      end
+
+      it "excludes an RSC that is linked to a Sample" do
+        rsc = create(:reserved_sample_code, Code: "ABCDEFG", InstitutionId: institution.id, package_id: nil)
+        sample = create(:toxo_sample, Code: "TX001A", patient: toxo_patient)
+        sample.update_column(:reserved_sample_code_id, rsc.Id)
+
+        stats = described_class.new(user: contractor, window: 30).call
+        expect(stats[:unused_reserved_codes_count]).to eq(0)
+      end
+
+      it "counts an RSC not linked to any Sample alongside one that is linked" do
+        used_rsc = create(:reserved_sample_code, Code: "ABCDEFG", InstitutionId: institution.id, package_id: nil)
+        create(:reserved_sample_code, Code: "HIJKLMN", InstitutionId: institution.id, package_id: nil)
+        sample = create(:toxo_sample, Code: "TX001A", patient: toxo_patient)
+        sample.update_column(:reserved_sample_code_id, used_rsc.Id)
+
+        stats = described_class.new(user: contractor, window: 30).call
+        expect(stats[:unused_reserved_codes_count]).to eq(1)
+      end
+
+      it "excludes legacy codes that are not 7 characters long" do
+        create(:reserved_sample_code, Code: "JV4XJ", InstitutionId: institution.id, package_id: nil)
+
+        stats = described_class.new(user: contractor, window: 30).call
+        expect(stats[:unused_reserved_codes_count]).to eq(0)
+      end
+
+      it "excludes RSCs belonging to a different institution" do
+        other_institution = create(:institution)
+        create(:reserved_sample_code, Code: "ABCDEFG", InstitutionId: other_institution.id, package_id: nil)
+
+        stats = described_class.new(user: contractor, window: 30).call
+        expect(stats[:unused_reserved_codes_count]).to eq(0)
+      end
+    end
   end
 end
