@@ -17,16 +17,20 @@ class ProductionOrder < ApplicationRecord
   belongs_to :product
   belongs_to :stock_room
   has_many :packages, dependent: :destroy
-  has_many :reserved_sample_codes, through: :packages
+  has_many :reserved_sample_codes, class_name: "ReservedSampleCode", through: :packages
+
+  attribute :barcode_prefix, :string
 
   validates :packages_expiry_date, presence: true
   validates :packages_count, presence: true
   validates :lot, presence: true, uniqueness: true
   validates :packages_count, numericality: { only_integer: true }
+  validates :sample_code_char_count, numericality: { only_integer: true }, comparison: { greater_than_or_equal_to: 5 }
+  validates :barcode_prefix, length: { within: 0..2 }
 
   before_create :set_expiry_date_at_end_of_day
 
-  private
+private
 
   def set_expiry_date_at_end_of_day
     self.packages_expiry_date = self.packages_expiry_date.at_end_of_day

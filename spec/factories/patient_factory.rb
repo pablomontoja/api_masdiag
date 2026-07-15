@@ -45,6 +45,17 @@ end
 
 
 FactoryBot.define do
+  factory :toxo_patient, class: Patient do
+    FirstName { "PACJENT" }
+    LastName  { "TOXO" }
+    Gender    { 0 }
+    BirthDate { 20.years.ago }
+    IsVirtual { false }
+    contractor
+  end
+end
+
+FactoryBot.define do
   factory :virtual_patient, class: Patient do
     email { Faker::Internet.email }
     email_confirmation { email }

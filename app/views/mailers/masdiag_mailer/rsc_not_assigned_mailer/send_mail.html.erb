@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h3>UWAGA</h3>
+    <p>
+      Przyjęto do laboratorium nośnik, który nie ma przypisanych badań.
+    </p>
+
+    <table style="border: 1px solid black; border-spacing: 15px;">
+      <tr>
+        <th>Kod nośnika</th>
+        <th>Instytucja</th>
+        <th>Data i godzina przyjęcia</th>
+      </tr>
+
+      <tr> 
+        <td><%= @rsc.Code %></td>
+        <td><%= @rsc.institution&.name %></td>
+        <td><%= @rsc.sample&.AcceptanceDate&.strftime("%F %R") %></td>
+      </tr>
+    
+    </table>
+
+    <br>
+
+    <p>
+      Z poważaniem,<br><br>
+      Dział IT<br>
+      Masdiag Sp. z o.o.    
+    </p>
+
+
+    <p>
+      Wiadomość wygenerowana automatycznie.
+    </p>
+  </body>
+</html>

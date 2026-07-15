@@ -31,3 +31,46 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    attributes:
+      toxo/sample:
+        Code: "Sample code"
+        project_ids: "Selected tests"
+        MaterialType: "Material type"
+        RegistrationDate: "Registration date"
+        SampleState: "Sample state"
+        SampleStatus: "Sample status"
+        WrongRegistrationStatus: "Wrong registration status"
+        IsWrongRegistration: "Wrong registration"
+        WasWrongRegistration: "Was wrong registration"
+        IsControlSample: "Control sample"
+        IsSentBack: "Sent back"
+        IsAuthWithoutResult: "Authorized without result"
+        IsValid: "Valid"
+        post_examination_procedure: "Post-examination procedure"
+        infectious_risk: "Infectious risk"
+        execution_mode: "Execution mode"
+        sample_collection_date: "Sample collection date"
+    errors:
+      models:
+        toxo/sample:
+          attributes:
+            Code:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              not_in_pool: "code does not belong to the institution's pool"
+              already_registered: "code is already registered"
+            project_ids:
+              no_tests_selected: "no tests selected"
+            MaterialType:
+              blank: "no selection has been made"
+            post_examination_procedure:
+              blank: "no selection has been made"
+            infectious_risk:
+              blank: "no selection has been made"
+            execution_mode:
+              blank: "no selection has been made"
+            sample_collection_date:
+              cannot_be_in_future: "cannot be a future date"
+
+              

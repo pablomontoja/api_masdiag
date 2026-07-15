@@ -34,6 +34,10 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include ApiHelpers, type: :controller
   config.include ApiHelpers, type: :request
+
+  config.before(:each) do
+    I18n.locale = :en
+  end
   # config.include ActiveJob::TestHelper
   # config.include ActionMailer::TestHelper
 

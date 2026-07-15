@@ -52,6 +52,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'oj'
 gem 'alba'
 gem "aws-sdk-s3"
+gem "ruby-hl7"
 
 
 group :test do
@@ -65,7 +66,9 @@ end
 
 gem 'faraday'
 gem 'faraday-net_http_persistent', '~> 2.0'
-gem "lockbox"
+gem 'pundit'
+# Lockbox >= 2.2 refuses to load on Active Record 7.1
+gem "lockbox", "~> 1.2.0"
 # gem 'composite_primary_keys', '=14.0.6'
 gem "solid_queue"
 gem "mission_control-jobs"
@@ -89,3 +92,7 @@ gem "k-php-serialize", github: 'pablomontoja/php-serialize'
 gem 'sanitize'
 gem 'microsoft_graph_mailer'
 gem 'listen' # used by config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+gem "rails-i18n"
+gem 'mobility', '~> 1.3.2'
+gem 'pagy', '~> 6.2'

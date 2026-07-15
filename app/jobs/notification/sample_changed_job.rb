@@ -11,15 +11,18 @@ class Notification::SampleChangedJob < ApplicationJob
     if inst_id.nil?
       puts "-------------------------------------------------------------"
       puts "Masdiag::NotificationController#sample_status_changed aborted"
-      puts "sample #{sample.Code} doesn't have ReservedSampleCode."
+      puts "sample #{@sample&.Code} doesn't have ReservedSampleCode."
       puts "-------------------------------------------------------------"
       return
     end
 
     if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
       Notification::LalenSampleResultSender.perform_later(@sample)
-      return
     end
+
+    # all with configured result_post_endpoint but without LalenAU
+    result_post_endpoint = ApiAccount.includes(:contractor).where.not(id: 9).where(contractor: {institution_id: inst_id}).first&.result_post_endpoint
+    return if result_post_endpoint.blank?
 
     res = Notification::ResultService.call(@sample)    
 

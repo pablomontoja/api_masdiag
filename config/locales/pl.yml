@@ -1,0 +1,42 @@
+pl:
+  activerecord:
+    attributes:
+      toxo/sample:
+        Code: "Kod próbki"
+        project_ids: "Wybrane badania"
+        MaterialType: "Typ materiału"
+        RegistrationDate: "Data rejestracji"
+        SampleState: "Stan próbki"
+        SampleStatus: "Status próbki"
+        WrongRegistrationStatus: "Status błędnej rejestracji"
+        IsWrongRegistration: "Błędna rejestracja"
+        WasWrongRegistration: "Była błędna rejestracja"
+        IsControlSample: "Próbka kontrolna"
+        IsSentBack: "Odesłana"
+        IsAuthWithoutResult: "Autoryzacja bez wyniku"
+        IsValid: "Ważna"
+        post_examination_procedure: "Procedura po badaniu"
+        infectious_risk: "Ryzyko zakaźne"
+        execution_mode: "Tryb wykonania"
+        sample_collection_date: "Data pobrania próbki"
+    errors:
+      models:
+        toxo/sample:
+          attributes:
+            Code:
+              blank: "nie może być puste"
+              taken: "jest już zajęty"
+              not_in_pool: "kod nie istnieje lub nie należy do puli kodów instytucji"
+              already_registered: "kod jest już zarejestrowany"
+            project_ids:
+              no_tests_selected: "nie wybrano żadnego badania"
+            MaterialType:
+              blank: "nie dokonano wyboru"
+            post_examination_procedure:
+              blank: "nie dokonano wyboru"
+            infectious_risk:
+              blank: "nie dokonano wyboru"
+            execution_mode:
+              blank: "nie dokonano wyboru"
+            sample_collection_date:
+              cannot_be_in_future: "nie może być datą przyszłą"

@@ -16,6 +16,18 @@ class Fv1::KitController < V1::KitController
       return
     end
 
+    requested_test_ids = assignment_params[:test_ids].map(&:to_i)
+
+    if requested_test_ids.include?(26) && @current_rsc.reserved_tests.exists?
+      json_response({ message: "Tests for this sample collection card have already been assigned and cannot be changed" }, :unprocessable_entity)
+      return
+    end
+
+    if requested_test_ids.include?(26) && !@current_rsc.dbs_i4?
+      json_response({ message: "A Glutathione test can only be assigned to a special DBS sample collection card" }, :unprocessable_entity)
+      return
+    end
+
     assignment = validate_assignment(assignment_params[:test_ids])
     if assignment.invalid
       json_response({message: assignment.errors.join("; ")}, :unprocessable_entity)
@@ -30,9 +42,22 @@ class Fv1::KitController < V1::KitController
         @current_rsc.reserved_tests.create!(project_id: test)
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: Current.api_account.institution.api_contractor_id)
+      assign_tests_in_lalen_api
     end
     
     head :no_content
   end
+
+private
+
+  def assign_tests_in_lalen_api
+    return if Current.api_account.institution.id != 83 # FFTB
+    return if assignment_params[:test_ids].map(&:to_i).uniq.count > 3 # blockade for trying the DRIFTs assignement
+    api_keys = assignment_params[:test_ids].map(&:to_i).uniq.filter_map { |t| V1::Common::LALEN_TEST_API_KEYS[t] }
+    return if api_keys.empty?
+
+    LalenApi::AssignKitTestsJob.perform_later(@current_rsc.Code, api_keys)
+  end
+
 
 end

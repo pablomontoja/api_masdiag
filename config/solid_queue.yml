@@ -2,6 +2,19 @@ default: &default
   dispatchers:
     - polling_interval: 1
       batch_size: 100
+  recurring_tasks:
+    hl7_minio_scanner:
+      class: Hl7MinioScannerJob
+      schedule: every 5 minutes
+      queue: background
+    hl7_link_pending:
+      class: Hl7LinkPendingJob
+      schedule: every 15 minutes
+      queue: background
+    hl7_retry_failed:
+      class: Hl7RetryFailedJob
+      schedule: every 30 minutes
+      queue: background
   workers:
     - queues: [ mailers background ]
       threads: 1

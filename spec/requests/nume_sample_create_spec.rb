@@ -82,6 +82,46 @@ RSpec.describe 'Nume::SampleController#create', type: :request do
       end
     end
 
+    context 'with invalid sample_collection_date' do
+      let!(:product) { create(:product) }
+      let!(:project) { create(:project) }
+      let!(:package) { create(:package, product: product) }
+      let!(:inst) { create(:institution, name: "Nume") }
+      let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true) }
+      let!(:contractor) { create(:contractor, institution_id: inst.id) }
+      let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+      let(:smp_params) { build(:sample_foreigner) }
+
+      before :each do
+        rsc.reserved_tests.create!(project_id: 2)
+        rsc.update(IsRetailSale: true, InstitutionId: inst.id)
+      end
+
+      it 'accepts sample_collection_date in the future (no date range validation for non-Lalen)' do
+        smp_params[:sample][:sample_collection_date] = 1.day.from_now.to_date.to_s
+        post '/nume/sample', params: smp_params, headers: http_auth_header
+        expect(response).to have_http_status(201)
+      end
+
+      it 'accepts sample_collection_date older than 6 weeks (no date range validation for non-Lalen)' do
+        smp_params[:sample][:sample_collection_date] = 7.weeks.ago.to_date.to_s
+        post '/nume/sample', params: smp_params, headers: http_auth_header
+        expect(response).to have_http_status(201)
+      end
+
+      it 'accepts sample_collection_date equal to today' do
+        smp_params[:sample][:sample_collection_date] = Date.today.to_s
+        post '/nume/sample', params: smp_params, headers: http_auth_header
+        expect(response).to have_http_status(201)
+      end
+
+      it 'accepts sample_collection_date exactly 6 weeks ago' do
+        smp_params[:sample][:sample_collection_date] = 6.weeks.ago.to_date.to_s
+        post '/nume/sample', params: smp_params, headers: http_auth_header
+        expect(response).to have_http_status(201)
+      end
+    end
+
     context 'with invalid parameters' do
       # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:product) { create(:product) }

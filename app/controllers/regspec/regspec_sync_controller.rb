@@ -1,6 +1,5 @@
-class Api::RegspecSyncController < ApplicationController
+class Regspec::RegspecSyncController < ApplicationController
   http_basic_authenticate_with name: Rails.application.credentials.regspec[:name], password: Rails.application.credentials.regspec[:password]
-  protect_from_forgery except: [:push_sample, :push_patient, :cancel_sample]
 
   def push_sample
     @sample = Sample.find_by(Code: sample_params[:Code])
@@ -49,7 +48,8 @@ class Api::RegspecSyncController < ApplicationController
         return
     end
 
-    IndMailer.regspec_cancellation(sample.Id).deliver_later if cancellation_params[:should_backup_kit_be_sent]
+    # TODO: MasdiagMailer::IndMailer#regspec_cancellation nie istnieje — metoda i szablon do napisania
+    MasdiagMailer::IndMailer.regspec_cancellation(sample.Id).deliver_later if cancellation_params[:should_backup_kit_be_sent]
     render json: {}, status: :ok
   end
 
@@ -61,7 +61,7 @@ class Api::RegspecSyncController < ApplicationController
       process_accepted_sample(params)
     else      
       process_not_accepted_sample(params)
-      SendMailNotificationJob.perform_later("send_acceptance_notifications", @sample)
+      MasdiagMailer::SendAcceptanceNotificationsJob.perform_later([@sample.Id])
     end
   end
 

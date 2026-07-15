@@ -35,6 +35,7 @@
 #  confirmation_token         :string(255)
 #  unconfirmed_email          :string(255)
 #  creator_id                 :integer
+#  locale                     :string(255)      default("pl"), not null
 #
 class Contractor < ApplicationRecord
   self.table_name = "Contractors"
@@ -47,6 +48,25 @@ class Contractor < ApplicationRecord
 
   def fullname
     "#{first_name} #{last_name}"
+  end
+
+  def can_add_samples?
+    can_add_samples == true
+  end
+
+  def is_super_contractor?
+    is_super_contractor == true
+  end
+
+  # Returns or creates the dedicated toxo patient for this contractor.
+  def patient
+    Patient.find_or_initialize_by(ContractorId: self.Id, FirstName: "PACJENT", LastName: "TOXO").tap do |p|
+      if p.new_record?
+        p.Gender = 0
+        p.BirthDate = 20.years.ago
+        p.save!
+      end
+    end
   end
 
   # def readonly?

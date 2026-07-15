@@ -6,12 +6,13 @@
 #  name                   :string(255)
 #  acronym                :string(255)
 #  name_in_invoice        :string(255)
-#  project_id             :integer          not null
+#  project_id             :integer
 #  default_price_cents    :integer          default(0), not null
 #  default_price_currency :string(255)      default("PLN"), not null
 #  material_type          :integer
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  vat_rate               :integer          default(0)
 #
 class Test < ApplicationRecord
   monetize :default_price_cents,

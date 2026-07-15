@@ -1,3 +1,15 @@
+# API MASDIAG
+
+## TOXO migration
+1. rails db:migrate
+2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
+3. use `rails c` and `require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')` and `ToxicologyQuantProject.new.change`
+4. add `20260311113835` to schema_migrations table
+5. uncomment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
+6. rails db:migrate
+
+---
+
 # TODO in README.md
 - authentication controller for mission_control gem, currently config.mission_control.jobs.http_basic_auth_enabled is false
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
@@ -33,7 +45,14 @@ To run validation script please use the following command:
 rails runner LSI_validation.rb
 ```
 
+### PROMPTS
 
+`git log --pretty=format:"%h - %an, %cd : %s" b2079cbfecd32fc1b1702f040bc399d43e5eca46..6ef70b987fd7c4847ba6166988edd3508d6994e3
+List all commits from dd68a0a9afb614e9bf484af6d848121379752c1d to d18c53fadbc8f40e1209f1cf72e9524bed3944d1.
+Check all above git commits and gather info about changes across all commits between the specified range.
+Finally create a table with a git hash (including the commit date in the same column beow the hash), a description of the changes, the category of changes (minor correction, security correction, backend change, frontend change, hotfixes, and so on), and the impact of the changes on patient safety (in the context of EN 62304)? Please use markdown format and translate content to Polish language. Order by by commit date, ascending.`
+
+---
 
 # Typical workflow for API samples
 
@@ -47,6 +66,45 @@ To some extent, the data provided in this step can be anonymised. We do not need
 MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
 I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
 
+---
+
+# LALEN FAL cheats
+```ruby
+ReservedSampleCode.find_by(Code: "GB81I5PM").assign_tests_in_lalen_api
+
+Sample.find_by(Code: "GB81I5PM").register_in_lalen_api
+
+
+codes = %w[]
+ReservedSampleCode.where(Code: codes).each do |rsc|
+	rsc.assign_tests_in_lalen_api
+end
+
+Sample.where(Code: codes).each do |s|
+	s.register_in_lalen_api
+end
+```
+
+
+---
+
+# Test DB preparation
+
+```bash
+rails db:schema:dump
+rails tmp:clear
+RAILS_ENV=test rails db:drop db:create db:schema:load
+```
+
+---
+
+# Database schema reload during migration
+
+```ruby
+Test.reset_column_information
+```
+
+---
 
 # Enabling ruby YJIT
 ```bash
@@ -74,6 +132,117 @@ Measurement.includes(sample: { patient: { contractor: :institution }}).where(sam
 ).pluck("sample.Code")
 ```
 
+# Run migrations from rails console
+```ruby
+require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')
+ToxicologyQuantProject.new.change
+```
+
+
+# Undamage plate
+```ruby
+plate_id = 21394
+
+plate = Plate.find(plate_id)
+
+plate.measurements.each do |m|
+	meas = m.sample.measurements.includes(:sample).where(Samples: { IsControlSample: false }).find_by(ProjectId: plate.ProjectId, Status: 1)
+	meas.destroy unless meas.nil?
+	m.update(Status: 2)
+end
+
+plate.update(IsValid: false)
+
+```
+
+
+# Export results by Institution and Project
+```ruby
+require "csv"
+INST_ID = 128 # ORKLA
+PROJECTID = 34
+
+def extract_result_row(res)
+	res.analyte_results.sort_by{|ar| ar.AnalyteId}.map { |ar| ar.Value  }
+end
+
+def sex(gender)
+	return "M" if gender == 0
+	return "K" if gender == 1
+end
+
+codes = ReservedSampleCode.where(InstitutionId: INST_ID).pluck(:Code)
+
+r_ids = Result.includes(:measurement).includes(measurement: :sample).where(measurement: {Samples: {IsControlSample: false, Code: codes}}).where(Measurements: { ProjectId: PROJECTID, Status: [4, 5] }).order(MeasurementId: :desc).limit(10000).pluck(:MeasurementId)
+
+
+CSV.open("tmp/aa-result-export-2.csv", "wb") do |csv|
+	header = []
+	header << "Kod"
+	header << "Imię"
+	header << "Nazwisko"
+	header << "PESEL"
+	header << "Płeć"
+	header << "Data wydania"
+	header << "Data urodzenia"
+	header << "Data pobrania"
+	header << "Wyjście z magazynu"
+
+	header = header + Result.includes(:analyte_results).where(MeasurementId: r_ids).first.analyte_results.sort_by{|ar| ar.AnalyteId}.map { |ar| ar.analyte.Name  }
+
+	pp header
+
+	csv << header
+
+	Result.includes(:analyte_results).includes(measurement: {sample: :patient}).where(MeasurementId: r_ids).find_in_batches(batch_size: 1000) do |group|	  
+	  group.each do |res|
+	  	pat = res.measurement.sample.patient 
+	  	csv << [res.measurement.sample.Code, pat.FirstName, pat.LastName, pat.Pesel, sex(pat.Gender), res.measurement.AuthorizedAt&.strftime("%F"), pat.BirthDate&.strftime("%F"), res.measurement.sample.sample_collection_date&.strftime("%F"), res.measurement.sample.rsc&.package&.stock_room_item&.date_out&.strftime("%F")] + extract_result_row(res)
+	  end
+	end
+
+end
+
+
+
+```
+
+# QNS sample after acceptance in Lab
+```ruby
+codes = %w[AUREWFTG AUU7TIHQ AUCD5TE7 AUB45H9C AUIW2BC9 AUJNFBL4 AUIXWNTX]
+reason = %q(
+Hi Lalen
+
+We have received 5 DBS cards from you for measuring glutathione levels. Unfortunately, these cards have expired. We have tested these samples, but the glutathione levels were found to be low. We must cancel these samples and mark them as QNS. Please send new cards to the customer. Below is a list of these samples with their production and expiry dates.
+
+AUUYSNGE - EXP 11-01-2025 - MANUFACTURED 10-2024
+AUREWFTG - EXP 20-12-2025 - MANUFACTURED 12-2024
+AUU7TIHQ - EXP 20-12-2025 - MANUFACTURED 12-2024
+AUCD5TE7 - EXP 20-12-2025 - MANUFACTURED 12-2024
+AUB45H9C - EXP 20-12-2025 - MANUFACTURED 12-2024
+
+We have also received three DBS cards from you for vitamins A, E and Q10. These have also expired. We are unable to issue results for them.
+The codes for these samples are listed below.
+
+AUIW2BC9, AUJNFBL4, AUIXWNTX
+
+Best regards,
+
+Renata
+
+Renata Halak
+Diagnostic laboratory manager
+)
+
+user = User.find_by(email: "pawelswider@gmail.com")
+
+Measurement.includes(:sample).where(Samples: { Code: codes }).destroy_all
+Sample.where(Code: codes).each do |sample|
+	sample.update(Comment: reason, SampleStatus: 4, CancelledById: user.Id, CancellationDate: DateTime.now)
+	#Notification::LalenSampleResultSender.perform_later(sample)
+end
+
+```
 
 
 # Transfer EU barcodes to AU

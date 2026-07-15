@@ -10,22 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_02_184748) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
     t.integer "AgeTo", null: false
     t.integer "Gender"
-    t.decimal "Min", precision: 20, scale: 4, null: false
-    t.decimal "Max", precision: 20, scale: 4, null: false
+    t.decimal "Min", precision: 18, scale: 2, null: false
+    t.decimal "Max", precision: 18, scale: 2, null: false
     t.integer "AnalyteId"
-    t.integer "AgeFromMonth", null: false
-    t.integer "AgeToMonth", null: false
     t.integer "AgeFromInMonths", null: false
     t.integer "AgeToInMonths", null: false
     t.decimal "Multiplier", precision: 18, scale: 2, null: false
-    t.decimal "AcceptableMin", precision: 20, scale: 4
-    t.decimal "AcceptableMax", precision: 20, scale: 4
+    t.decimal "AcceptableMin", precision: 18, scale: 2
+    t.decimal "AcceptableMax", precision: 18, scale: 2
     t.index ["AnalyteId"], name: "IX_AnalyteId"
   end
 
@@ -107,9 +105,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.string "confirmation_token"
     t.string "unconfirmed_email"
     t.integer "creator_id"
+    t.string "locale", default: "pl", null: false
     t.index ["agent_id"], name: "index_Contractors_on_agent_id"
     t.index ["email"], name: "index_Contractors_on_email", unique: true
     t.index ["institution_id"], name: "index_Contractors_on_institution_id"
+    t.index ["locale"], name: "index_Contractors_on_locale"
     t.index ["reset_password_token"], name: "index_Contractors_on_reset_password_token", unique: true
   end
 
@@ -235,6 +235,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.boolean "IsPartOfMultiplex", null: false
     t.integer "MultiplexId"
     t.integer "Suffix", null: false
+    t.binary "qc_report_file", size: :long
     t.index ["CreatedById"], name: "IX_CreatedById"
     t.index ["ModifiedById"], name: "IX_ModifiedById"
     t.index ["MultiplexId"], name: "IX_MultiplexId"
@@ -346,7 +347,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.boolean "IsValid", default: true, null: false
     t.integer "PatientId"
     t.integer "UserId"
-    t.integer "ProtocolIdOld"
     t.boolean "IsAuthWithoutResult", default: false, null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -354,7 +354,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.datetime "AcceptanceDate", precision: nil
     t.string "access_hash"
     t.datetime "sample_collection_date", precision: nil
-    t.boolean "UnsatisfactoryMaterialQuality", default: false, null: false
     t.integer "soaking_degree_id"
     t.boolean "WasWrongRegistration", null: false
     t.integer "MaterialType", null: false
@@ -366,12 +365,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.integer "WrongRegistrationStatus", null: false
     t.integer "CancelledById"
     t.datetime "UtilizationDate", precision: nil
-    t.boolean "institution_custom_cbx"
     t.text "Lot", size: :tiny
     t.text "Level", size: :tiny
     t.text "selected_tests"
     t.text "clinical_info"
     t.integer "reserved_sample_code_id"
+    t.datetime "dispatch_date"
+    t.integer "post_examination_procedure", default: 0, null: false
+    t.integer "infectious_risk", default: 0, null: false
+    t.integer "execution_mode", default: 0, null: false
     t.index ["CancelledById"], name: "IX_CancelledById"
     t.index ["Code"], name: "IX_Code"
     t.index ["PatientId"], name: "IX_PatientId"
@@ -572,6 +574,30 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
   end
 
   create_table "fileables", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+  end
+
+  create_table "hl7_imports", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "measurement_id"
+    t.string "s3_key", null: false
+    t.string "s3_bucket"
+    t.string "s3_etag"
+    t.integer "file_size"
+    t.string "control_id"
+    t.string "message_type"
+    t.datetime "message_datetime"
+    t.string "sending_application"
+    t.string "sending_facility"
+    t.string "external_order_id"
+    t.string "hl7_test_code"
+    t.string "kit_code_extracted"
+    t.integer "status", default: 0, null: false
+    t.datetime "processed_at"
+    t.text "error_message"
+    t.text "processing_stats"
+    t.integer "retry_count", default: 0
+    t.datetime "last_retry_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "institution_order_components", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
@@ -793,6 +819,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.index ["test_id"], name: "index_measurement_summary_items_on_test_id"
   end
 
+  create_table "mobility_string_translations", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.string "locale", null: false
+    t.string "key", null: false
+    t.string "value"
+    t.string "translatable_type"
+    t.bigint "translatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["translatable_id", "translatable_type", "key"], name: "index_mobility_string_translations_on_translatable_attribute"
+    t.index ["translatable_id", "translatable_type", "locale", "key"], name: "index_mobility_string_translations_on_keys", unique: true
+    t.index ["translatable_type", "key", "value", "locale"], name: "index_mobility_string_translations_on_query_keys"
+  end
+
+  create_table "mobility_text_translations", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.string "locale", null: false
+    t.string "key", null: false
+    t.text "value"
+    t.string "translatable_type"
+    t.bigint "translatable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["translatable_id", "translatable_type", "key"], name: "index_mobility_text_translations_on_translatable_attribute"
+    t.index ["translatable_id", "translatable_type", "locale", "key"], name: "index_mobility_text_translations_on_keys", unique: true
+  end
+
   create_table "notes", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
     t.text "description"
     t.string "key"
@@ -1003,6 +1054,37 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
     t.index ["id"], name: "IX_id"
     t.index ["measurement_id"], name: "IX_measurement_id"
     t.index ["sample_id"], name: "IX_sample_id"
+  end
+
+  create_table "scanned_docs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "source_filename", null: false
+    t.string "page_checksum", limit: 64, null: false
+    t.string "document_key"
+    t.integer "status", default: 0, null: false
+    t.string "source", default: "scan_watcher", null: false
+    t.integer "sample_id"
+    t.datetime "captured_at"
+    t.datetime "received_at"
+    t.datetime "ocr_started_at"
+    t.datetime "transcribed_at"
+    t.text "processing_error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_checksum"], name: "index_scanned_docs_on_page_checksum", unique: true
+    t.index ["sample_id"], name: "index_scanned_docs_on_sample_id"
+    t.index ["status"], name: "index_scanned_docs_on_status"
+  end
+
+  create_table "sessions", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+    t.integer "contractor_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.string "token", null: false
+    t.datetime "last_active_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contractor_id"], name: "index_sessions_on_contractor_id"
+    t.index ["token"], name: "index_sessions_on_token", unique: true
   end
 
   create_table "shipments", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
@@ -1335,6 +1417,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_27_111933) do
   add_foreign_key "result_sending_events", "Measurements", column: "measurement_id", primary_key: "Id", name: "FK_result_sending_events_Measurements_measurement_id"
   add_foreign_key "result_sending_events", "Samples", column: "sample_id", primary_key: "Id", name: "FK_result_sending_events_Samples_sample_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "result_sending_events", "fileables", column: "id", name: "FK_result_sending_events_fileables_id"
+  add_foreign_key "scanned_docs", "Samples", column: "sample_id", primary_key: "Id"
+  add_foreign_key "sessions", "Contractors", column: "contractor_id", primary_key: "Id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

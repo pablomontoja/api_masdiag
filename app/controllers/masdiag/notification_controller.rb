@@ -6,6 +6,9 @@ class Masdiag::NotificationController < ApplicationController
   def trigger
     begin
       Cerascreen::Labordatenbank::GetResultsJob.perform_later()
+      Hl7MinioScannerJob.perform_later()
+      Hl7LinkPendingJob.perform_later()
+      Hl7RetryFailedJob.perform_later()
       
       errors = []
       ids = ApiAccount.pluck(:contractor_id)
@@ -42,24 +45,8 @@ class Masdiag::NotificationController < ApplicationController
       sample = Sample.find(params[:sample_id])
 
       Lock::CheckJob.perform_later(sample&.rsc)
-
-      allowed_contractor_ids = [637, 638, 659, 671, 699] # epiexpert, nume, physikit, trime, FFTB, luxbiotech=745
-      inst_id = sample.rsc&.InstitutionId
-      if inst_id.nil?
-        puts "-------------------------------------------------------------"
-        puts "Masdiag::NotificationController#sample_status_changed aborted"
-        puts "sample #{sample.Code} doesn't have ReservedSampleCode."
-        puts "-------------------------------------------------------------"
-        return
-      end      
-
-      if V1::Common::LALEN_INSTITUTION_IDS.include?(inst_id)
-        # ::LalenApi::RegisterKitJob.perform_now(sample) if inst_id == 89
-        Notification::SampleChangedJob.perform_later(sample.Id)
-      else
-        notify = ApiAccount.includes(:contractor).where(contractor: {institution_id: inst_id}).where(contractor_id: allowed_contractor_ids).any? 
-        Notification::SampleChangedJob.perform_later(params[:sample_id]) if notify
-      end
+      MasdiagMailer::CheckRscAssignementJob.perform_later(sample&.Id)
+      Notification::SampleChangedJob.perform_later(sample&.Id)
       
       render json: { message: "notification was properly scheduled" }, status: 200
     rescue StandardError => ex

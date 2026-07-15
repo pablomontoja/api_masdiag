@@ -5,7 +5,7 @@ RSpec.describe MasdiagMailer::SendNotificationAfterDelayedRegJob, type: :job do
     let(:sample_id) { 123 }
     let(:project1) { create(:project, responsible_person_email: 'person1@example.com') }
     let(:project2) { create(:project, responsible_person_email: 'person2@example.com', Id: 10) }
-    let(:sample) { create(:sample, Id: sample_id) }
+    let(:sample) { create(:sample, Id: sample_id, AcceptanceDate: 2.days.ago) }
     
     let!(:measurement1) { create(:measurement, Id: 1, project: project1, sample: sample) }
     let!(:measurement2) { create(:measurement, Id: 2, project: project1, sample: sample) }

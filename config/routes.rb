@@ -1,6 +1,13 @@
 Rails.application.routes.draw do
   root "health#check"
 
+  #########################################################
+  ### WEBHOOK (machine-to-machine, Bearer token auth)
+  #########################################################
+  namespace :webhook do
+    resources :scanned_docs, only: [:create]
+  end
+
   get "health/check", to: 'health#check'
   get "health/invalid", to: 'health#invalid'
   get "health/not_found", to: 'health#not_found'
@@ -85,6 +92,7 @@ Rails.application.routes.draw do
   namespace :lalen, defaults: {format: :json} do
     resources :sample, only: %i{create} do
       delete "/delete/:code",on: :collection, to: 'sample#destroy'
+      put "/update", on: :collection, to: 'sample#update'
       # post "/activate_confirmation_test/:code", on: :collection, to: 'sample#activate_confirmation_test'
     end
 
@@ -106,6 +114,26 @@ Rails.application.routes.draw do
     delete "/kits/remove/declared/:code", to: 'kit#destroy_declared'
     post "/kits/assign_tests", to: 'kit#assign_tests'
     get "/kits/check_code/:code", to: 'kit#check_code'
+  end
+
+
+  #########################################################
+  ### TOXO
+  #########################################################
+  namespace :toxo, defaults: { format: :json } do
+    namespace :samples do
+      resources :registrations, only: %i[new create]
+      resources :exports, only: %i[index]
+      resources :on_request_measurements, only: %i[create]
+    end
+
+    resources :samples, only: %i[index show destroy]
+
+    resources :patients,              only: %i[index show]
+    resources :projects,              only: %i[index]
+    resources :reserved_sample_codes, only: %i[index show]
+    resources :measurements,          only: %i[index show]
+    get "dashboard", to: "dashboard#index"
   end
 
 
@@ -151,19 +179,14 @@ Rails.application.routes.draw do
   #########################################################
   ### LALEN
   #########################################################
-  namespace :lalen, defaults: {format: :json} do
-    resources :sample, only: %i{create} do
-      delete "/delete/:code",on: :collection, to: 'sample#destroy'
-    end
+  # namespace :lalen, defaults: {format: :json} do
+  #   resources :sample, only: %i{create} do
+  #     delete "/delete/:code",on: :collection, to: 'sample#destroy'
+  #   end
 
-    post "/trigger/send_result/:code", to: 'trigger#send_result'
-
-    post "/kits/declare", to: 'kit#declare'
-    post "/kits/declare/generic", to: 'kit#declare_generic'
-    delete "/kits/remove/declared/:code", to: 'kit#destroy_declared'
-    post "/kits/assign_tests", to: 'kit#assign_tests'
-    get "/kits/check_code/:code", to: 'kit#check_code'
-  end
+  #   # get "/result/get/:code", to: 'result#show'
+  #   # post "/kits/assign_tests", to: 'kit#assign_tests'
+  # end
 
 
   #########################################################

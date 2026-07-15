@@ -46,6 +46,8 @@
 #  email_for_results                     :string(255)
 #  assigned_masdiag_bban                 :string(255)      default("09 2490 0005 0000 4530 4006 9262")
 #  days_for_payment                      :integer
+#  email_for_notifications               :string(255)
+#  short_name                            :string(255)
 #
 FactoryBot.define do
   factory :institution, class: Institution do

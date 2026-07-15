@@ -3,7 +3,7 @@
 # Table name: ReservedSampleCodes
 #
 #  Id                        :integer          not null, primary key
-#  Code                      :text(4294967295)
+#  Code                      :string(50)
 #  CreatedAt                 :datetime         not null
 #  CreatedById               :integer
 #  InstitutionId             :integer
@@ -27,7 +27,7 @@ class ReservedSampleCode < ApplicationRecord
   self.table_name = "ReservedSampleCodes"
   self.primary_key = "Id"
 
-  enum :material_handler, MaterialHandlers::MODEL_HASH, instance_methods: false
+  enum :material_handler, MaterialHandlers::MODEL_HASH
   enum :MaterialType, MaterialTypes::MODEL_HASH, instance_methods: false
 
   belongs_to :package, optional: true
@@ -92,6 +92,15 @@ class ReservedSampleCode < ApplicationRecord
     self.reserved_tests.destroy_all
 
     TestTransaction.set_callback(:create, :after, :change_test_amount)
+  end
+
+  def assign_tests_in_lalen_api
+    return if self.InstitutionId != 83 # FFTB
+    return if self.reserved_tests.pluck(:project_id).uniq.count > 3 # blockade for trying the DRIFTs assignement
+    api_keys = self.reserved_tests.pluck(:project_id).map(&:to_i).uniq.filter_map { |t| V1::Common::LALEN_TEST_API_KEYS[t] }
+    return if api_keys.empty?
+
+    LalenApi::AssignKitTestsJob.perform_later(self.Code, api_keys)
   end
 
   private

@@ -35,6 +35,7 @@
 #  confirmation_token         :string(255)
 #  unconfirmed_email          :string(255)
 #  creator_id                 :integer
+#  locale                     :string(255)      default("pl"), not null
 #
 FactoryBot.define do
   factory :contractor, class: Contractor do
