@@ -25,9 +25,8 @@ module MasdiagMailer
       
       # Send notification email to each contractor
       files_by_contractor.each do |contractor_id, file_ids|
-        MasdiagMailer::ContractorResultNotificationMailer
-          .send_mail(contractor_id, file_ids)
-          .deliver_later
+        mail = MasdiagMailer::ContractorResultNotificationMailer.send_mail(contractor_id, file_ids)
+        mail&.deliver_later
       end
     end
     

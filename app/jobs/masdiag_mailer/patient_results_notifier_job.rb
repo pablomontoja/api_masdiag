@@ -42,10 +42,11 @@ module MasdiagMailer
     def process_eligible_files
       eligible_files.each do |file_id, patient_id|
         patient = Patient.find(patient_id)
-        
+
         next unless should_send_notification?(patient)
-        
-        PatientResultNotificationMailer.send_mail(patient_id, file_id).deliver_later
+
+        mail = MasdiagMailer::PatientResultNotificationMailer.send_mail(patient_id, file_id)
+        mail&.deliver_later
       end
     end
 

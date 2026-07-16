@@ -1,5 +1,13 @@
 # API MASDIAG
 
+## NEW MAILER MIGRATION
+
+```bash
+# Create database 'solid_queue_db'
+bin/rails db:create
+```
+
+
 ## TOXO migration
 1. rails db:migrate
 2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`

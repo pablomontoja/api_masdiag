@@ -23,7 +23,7 @@ module MasdiagMailer
                               .where(sample: { Patients: { send_results_on_mail: true } })
                               .order(Id: :desc).limit(100).pluck(:Id).sample
       online_file = OnlineFile.includes(measurement: { sample: { patient: { contractor: :institution } } }).find_by(measurement_id: meas_id)
-      MasdiagMailer::PatientResultNotificationMailer.send_mail(online_file.measurement.sample.PatientId, [online_file.measurement_id])
+      MasdiagMailer::PatientResultNotificationMailer.send_mail(online_file.measurement.sample.PatientId, online_file.measurement_id)
     end
 
     def patient_result_notification_mailer_ogen
@@ -34,7 +34,7 @@ module MasdiagMailer
                               .where.not(measurement: { sample: { Patients: { email: "" } } })
                               .order(measurement_id: :desc)
                               .find_by(measurement: { sample: { Patients: { send_results_on_mail: true } } })
-      MasdiagMailer::PatientResultNotificationMailer.send_mail(online_file.measurement.sample.PatientId, [online_file.measurement_id])
+      MasdiagMailer::PatientResultNotificationMailer.send_mail(online_file.measurement.sample.PatientId, online_file.measurement_id)
     end
 
     def patient_result_notification_mailer_lekam
@@ -47,7 +47,7 @@ module MasdiagMailer
                               .where(sample: { Patients: { send_results_on_mail: true } })
                               .order(Id: :desc).limit(100).pluck(:Id).sample
       online_file = OnlineFile.includes(measurement: { sample: { patient: { contractor: :institution } } }).find_by(measurement_id: meas_id)
-      MasdiagMailer::PatientResultNotificationMailer.send_mail(online_file.measurement.sample.PatientId, [online_file.measurement_id])
+      MasdiagMailer::PatientResultNotificationMailer.send_mail(online_file.measurement.sample.PatientId, online_file.measurement_id)
     end
 
 

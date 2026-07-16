@@ -21,9 +21,15 @@ module MasdiagMailer
 			cancelled = Sample.includes(:patient).where(soaking_degree_id: [4, 5]).where(Patients: {IsVirtual: false}).where.not(Patients: {email: nil}).limit(1000).pluck(:Code)
 			rsc_boxes = ReservedSampleCode.includes(package: :product).where(Code: cancelled, InstitutionId: 32).where(package: {products: {type: [1, 4]}}).where(IsRetailSale: true).limit(100).pluck(:Code)
 			sample = Sample.includes(:patient).where(Code: rsc_boxes).where(soaking_degree_id: [4, 5]).where(Patients: {IsVirtual: false}).where.not(Patients: {email: nil}).limit(10).sample
-			MasdiagMailer::SendCancellationNotificationsMailer.send_mail_to_patient_standard_dbs_paper(sample.Id)		
+			MasdiagMailer::SendCancellationNotificationsMailer.send_mail_to_patient_standard_dbs_paper(sample.Id)
 		end
 
-		
+		def send_mail_to_dziopa
+			cancelled = Sample.includes(:patient).where(soaking_degree_id: [4, 5]).where(Patients: {IsVirtual: false}).where.not(Patients: {email: nil}).limit(1000).pluck(:Code)
+			rsc_boxes = ReservedSampleCode.includes(package: :product).where(Code: cancelled, InstitutionId: 34).where(package: {products: {type: [1, 4]}}).where(IsRetailSale: true).limit(100).pluck(:Code)
+			sample = Sample.includes(:patient).where(Code: rsc_boxes).where(soaking_degree_id: [4, 5]).where(Patients: {IsVirtual: false}).where.not(Patients: {email: nil}).limit(10).sample
+			MasdiagMailer::SendCancellationNotificationsMailer.send_mail_to_dziopa(sample.Id)
+		end
+
 	end
 end

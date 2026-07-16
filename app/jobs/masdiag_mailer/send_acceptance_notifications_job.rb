@@ -3,8 +3,6 @@ module MasdiagMailer
     require 'json'
     # include Sidekiq::Worker
 
-    queue_as :default
-
     def perform(sample_ids)
       begin
 
@@ -18,7 +16,7 @@ module MasdiagMailer
         end
 
       rescue StandardError => err
-        MasdiagMailer::SendErrorNotificationsMailer.send_mail({SendAcceptanceNotificationsJob: "ERROR: #{err}", SampleCode: @sample&.Code})
+        MasdiagMailer::SendErrorNotificationsMailer.send_mail({SendAcceptanceNotificationsJob: "ERROR: #{err}", SampleCode: @sample&.Code}).deliver_later
       end
     end
 

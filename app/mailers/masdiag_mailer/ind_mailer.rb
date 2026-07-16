@@ -23,11 +23,6 @@ module MasdiagMailer
       mail(to: @sample.patient.email, subject: "Rejestracja Próbki - Masdiag Sp. z o.o.")
     end
 
-    # def aqipharm_registration(sample_id)
-    #   @sample = Sample.find(sample_id)   
-    #   mail(to: ["pawel.swider@masdiag.pl", "anna.kolodynska@masdiag.pl"], subject: "Rejestracja Próbki z AQI PHARM")
-    # end
-
   private
 
     def root_address

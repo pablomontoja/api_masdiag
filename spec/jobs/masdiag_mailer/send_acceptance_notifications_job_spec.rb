@@ -54,8 +54,8 @@ RSpec.describe MasdiagMailer::SendAcceptanceNotificationsJob, type: :job do
     context 'when an error occurs' do
       it 'sends error notification' do
         allow(Sample).to receive(:find).and_raise(StandardError.new('Test error'))
-        error_mailer = double('error_mailer')
-        allow(MasdiagMailer::SendErrorNotificationsMailer).to receive(:send_mail)
+        error_mailer = double('error_mailer', deliver_later: true)
+        allow(MasdiagMailer::SendErrorNotificationsMailer).to receive(:send_mail).and_return(error_mailer)
 
         described_class.perform_now([sample.Id])
 

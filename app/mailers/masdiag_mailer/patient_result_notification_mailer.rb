@@ -3,7 +3,7 @@ module MasdiagMailer
     default :template_path => "mailers/#{self.name.underscore}"
     after_action :set_sendmail
 
-    def send_mail(patient_id, file_ids)
+    def send_mail(patient_id, file_id)
       @show_info_about_leaflet = true
       @patient = Patient.find(patient_id)
       delivery_mail = "powiadomienia@masdiag.pl"
@@ -13,7 +13,7 @@ module MasdiagMailer
       # nie wysyłamy do szpitali oprócz pacjentów Szpitala Bielańskiego, którzy mają wpisany email
       return nil if @patient.contractor&.institution&.kind == "Hospital" && @patient.contractor&.institution_id != 69 # 69 to Szpital Bielański
 
-      @files = OnlineFile.where(measurement_id: file_ids)
+      @files = OnlineFile.where(measurement_id: file_id)
 
       return nil if @files.count == 0
 
