@@ -1,20 +1,16 @@
 # API MASDIAG
 
-## NEW MAILER MIGRATION
+# NEW MAILER MIGRATION - MasdiagMailer/MasdiagRecurring Notes
 
-```bash
-# Create database 'solid_queue_db'
-bin/rails db:create
-```
+List of tasks to do during deployment on production
+1. perhaps Dockerfile7.1 should be used for deploy in production 
+2. `rails db:prepare`    ---- it is needed for solid_queue migration if first task is not proceeded
+3. if "Specified key was too long max key length is 767 bytes" problem occurs go to Masdiag Obsidian and find solution
+4. `rails db:migrate:queue`  ---- applying solid_queue DB changes
+5. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
 
-
-## TOXO migration
-1. rails db:migrate
-2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
-3. use `rails c` and `require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')` and `ToxicologyQuantProject.new.change`
-4. add `20260311113835` to schema_migrations table
-5. uncomment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
-6. rails db:migrate
+Comments:
+1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
 
 ---
 
@@ -26,22 +22,7 @@ bin/rails db:create
 - new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
 - new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
 
-
-
-# MasdiagMailer/MasdiagRecurring Notes
-
-List of tasks to do during deployment on production
-1. perhaps Dockerfile7.1 should be used for deploy in production 
-2. rails db:prepare    ---- it is needed for solid_queue migration if first task is not proceeded
-3. if "Specified key was too long max key length is 767 bytes" problem occurs go to Masdiag Obsidian and find solution
-4. rails db:migrate:queue  ---- applying solid_queue DB changes
-5. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
-
-Comments:
-1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
-
-
-
+---
 
 # LSI validation
 

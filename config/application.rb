@@ -52,6 +52,7 @@ module ApiMasdiag
     config.solid_queue.use_skip_locked = false
     config.active_record.default_column_serializer = YAML
     config.mission_control.jobs.http_basic_auth_enabled = false
+    config.mission_control.jobs.base_controller_class = "AdminController"
 
     config.i18n.available_locales = [:pl, :en]
     config.i18n.default_locale = :en

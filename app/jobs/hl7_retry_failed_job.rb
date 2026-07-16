@@ -2,6 +2,7 @@ class Hl7RetryFailedJob < ApplicationJob
   queue_as :background
 
   def perform
+    return if Rails.env.development?
     count = 0
     Hl7Import.ready_for_retry.find_each do |hl7_import|
       hl7_import.update!(
