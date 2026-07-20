@@ -142,9 +142,16 @@ Rails.application.routes.draw do
   #########################################################
   namespace :masdiag, defaults: {format: :json} do
     post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
-    
+
     post "/notifications/trigger", to: 'notification#trigger'
     post "/notifications/sample_status_changed/:sample_id", to: 'notification#sample_status_changed'
+
+    # Ujednolicone endpointy zdarzeń powiadomień (LabSample) — wybór szablonu
+    # (laboratoryjny vs Toxo) po stronie tej aplikacji.
+    post "sample_accepted",       to: "notifications#sample_accepted"
+    post "sample_rejected",       to: "notifications#sample_rejected"
+    post "result_available",      to: "notifications#result_available"
+    post "registration_reminder", to: "notifications#registration_reminder"
 
     # storage app
     post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"

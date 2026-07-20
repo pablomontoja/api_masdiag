@@ -75,6 +75,7 @@ class Toxo::Samples::RegistrationsController < Toxo::SamplesController
     end
 
     if @sample.errors.empty?
+      Notifications::SampleRegistrationConfirmationJob.perform_later(@sample.Id)
       render json: serialize_sample(@sample), status: :created
     else
       render json: { errors: @sample.errors.as_json, error_full_messages: @sample.errors.full_messages }, status: :unprocessable_entity

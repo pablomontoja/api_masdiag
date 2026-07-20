@@ -36,6 +36,10 @@
 #  unconfirmed_email          :string(255)
 #  creator_id                 :integer
 #  locale                     :string(255)      default("pl"), not null
+#  allow_sample_acceptance_notifications  :boolean         default(TRUE), not null
+#  allow_sample_rejection_notifications   :boolean         default(TRUE), not null
+#  allow_result_notifications             :boolean         default(TRUE), not null
+#  allow_sample_registration_notifications :boolean        default(TRUE), not null
 #
 class Contractor < ApplicationRecord
   self.table_name = "Contractors"

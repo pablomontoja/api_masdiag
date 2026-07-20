@@ -14,6 +14,24 @@ Główni konsumenci API:
 
 Każda akcja jest chroniona przez `MasdiagCheck` (`app/controllers/concerns/masdiag_check.rb`), który w `before_action` wymaga `Current.api_account.institution.id == 1` — dostęp mają tylko konta API należące do instytucji Masdiag.
 
+## Relacja ze zunifikowanym systemem powiadomień (`masdiag`)
+
+Namespace `masdiag_mailer` to **historyczne** API powiadomień: każdy endpoint odpowiada jednemu, konkretnemu przepływowi, a decyzja „jaki szablon wysłać" jest rozproszona po jobach (najlepszy przykład: dziesięć gałęzi `if` w `SendCancellationNotificationsJob`). Endpointy te pozostają w pełni sprawne i są nadal wywoływane bezpośrednio przez LabSample / indclients2 / sklep.
+
+Równolegle działa **nowy, zunifikowany system powiadomień cyklu życia próbki** w namespace `masdiag` (`app/controllers/masdiag/notifications_controller.rb`, warstwa `app/services/notifications/`). Tam LabSample zgłasza tylko **zdarzenie** (`sample_accepted`, `sample_rejected`, `result_available`, `registration_reminder`), a aplikacja — nie LabSample — wybiera rodzinę szablonu na podstawie instytucji próbki: `:toxo` (gdy `institution.id ∈ V1::Common::TOXO_INSTITUTION_IDS`) albo `:lab` (pozostałe). Szczegóły w `docs/masdiag/README.md`.
+
+**Punkt styku:** dla rodziny `:lab` `Notifications::EventDispatcher#dispatch_lab` **deleguje do mailerów/jobów tego namespace, nie zmieniając ich zachowania**:
+
+| Zdarzenie zunifikowane | Delegacja do `masdiag_mailer` |
+|---|---|
+| `sample_accepted` | `MasdiagMailer::SendAcceptanceNotificationsJob.perform_later([sample.Id])` |
+| `sample_rejected` | `MasdiagMailer::SendCancellationNotificationsJob.perform_later([sample.Id])` |
+| `result_available` | `MasdiagMailer::ContractorResultNotificationMailer.send_mail(contractor_id, file_ids)` |
+| `sample_registration_confirmation` | `MasdiagMailer::IndMailer.after_sample_registration(sample.Id)` |
+| `registration_reminder`, `registration_reminder_final` | brak odpowiednika laboratoryjnego → pominięcie (przypomnienia są wyłącznie Toxo) |
+
+Wniosek praktyczny: mailery i joby opisane niżej mają teraz **dwie drogi wywołania** — bezpośrednio przez `MasdiagMailer::EmailsController` (jak dotąd) oraz pośrednio przez `Notifications::EventDispatcher`, gdy zunifikowany endpoint `masdiag` otrzyma zdarzenie dla próbki instytucji nie-Toxo. Modyfikując te klasy, należy uwzględnić oba wywołania.
+
 ## Routes i akcje kontrolera
 
 Wszystkie trasy zdefiniowane w `config/routes.rb` w bloku `namespace :masdiag_mailer, defaults: {format: :json}`.
@@ -88,6 +106,8 @@ Argument: `sample_id`. Nie jest wywoływany przez `EmailsController` — działa
 | `SendNotificationAfterDelayedRegMailer` | `send_mail(email, measurements_arr)` | odpowiedzialna osoba (`project.responsible_person_email`) | Zwraca wcześnie, jeśli e-mail jest pusty. |
 | `RscNotAssignedMailer` | `send_mail(rsc)` | `pawel.swider@masdiag.pl` | Adres odbiorcy jest na stałe zaszyty w kodzie. |
 
+> **Zgody kontraktora.** `ContractorResultNotificationMailer` honoruje globalną flagę `Contractor#are_notifications_enabled` (zwraca `nil`, gdy wyłączona). Niezależnie od tego, ścieżka **zunifikowana** (`Notifications::RecipientResolver`) bramkuje wysyłkę dodatkowo flagami per-zdarzenie na `Contractors` (bramka AND z globalną): `allow_sample_acceptance_notifications` (B), `allow_sample_rejection_notifications` (E), `allow_result_notifications` (F), `allow_sample_registration_notifications` (A). Wszystkie mają `default: true` (model opt-out). Bezpośrednie wywołania endpointów `masdiag_mailer` nie sprawdzają tych czterech flag — robi to tylko warstwa `Notifications::`.
+
 ## Szablony e-maili (widoki)
 
 Widoki w `app/views/mailers/masdiag_mailer/` dzielą się na dwie rodziny wizualne:
@@ -117,4 +137,6 @@ Każda z 10 klas mailerów ma pokrycie w co najmniej jednym pliku preview. Nowe 
 
 - **Request specs**: `spec/requests/masdiag_mailer/emails_controller_spec.rb` — pokrywa wszystkie 8 aktywnych akcji kontrolera (happy path + błędy).
 - **Job specs**: `spec/jobs/masdiag_mailer/` zawiera specs dla `ContractorResultsNotifierJob`, `PatientResultsNotifierJob`, `SendAcceptanceNotificationsJob`, `SendNotificationAfterDelayedRegJob`. Brak dedykowanych specs dla `SendCancellationNotificationsJob` i `CheckRscAssignementJob`.
-- **Mailer specs**: katalog `spec/mailers/` nie istnieje — żaden mailer nie ma dedykowanego testu weryfikującego treść/temat/załączniki wygenerowanej wiadomości; pokrycie jest wyłącznie pośrednie przez joby/request specs, które zazwyczaj stubują wywołanie mailera.
+- **Mailer specs**: żaden z **mailerów tego namespace** (`app/mailers/masdiag_mailer/`) nie ma dedykowanego testu weryfikującego treść/temat/załączniki — pokrycie jest wyłącznie pośrednie przez joby/request specs, które zazwyczaj stubują wywołanie mailera. (Uwaga: katalog `spec/mailers/` istnieje od czasu wprowadzenia zunifikowanego systemu — zawiera `spec/mailers/toxo/sample_notification_mailer_spec.rb` dla rodziny `:toxo`, ale nie dla mailerów `masdiag_mailer`.)
+
+Delegacja z zunifikowanego systemu do mailerów tego namespace (patrz sekcja „Relacja…") jest pokryta w `spec/services/notifications/event_dispatcher_spec.rb` (przykład „routes a non-toxo sample to the existing lab mailer"), który weryfikuje, że dla próbki nie-Toxo wywoływany jest odpowiedni mailer `MasdiagMailer::*` — bez zmiany jego wewnętrznego zachowania.

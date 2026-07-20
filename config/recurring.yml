@@ -75,6 +75,11 @@ default: &default
     queue: background
     args: []
     schedule: "15 5 * * *"
+  daily_toxo_registration_reminder_final:
+    class: Notifications::RegistrationReminderFinalJob
+    queue: background
+    args: []
+    schedule: "0 6 * * *"
 
 development:
  <<: *default

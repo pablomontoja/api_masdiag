@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_14_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_18_184044) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -106,6 +106,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_14_120000) do
     t.string "unconfirmed_email"
     t.integer "creator_id"
     t.string "locale", default: "pl", null: false
+    t.boolean "allow_sample_acceptance_notifications", default: true, null: false
+    t.boolean "allow_sample_rejection_notifications", default: true, null: false
+    t.boolean "allow_result_notifications", default: true, null: false
+    t.boolean "allow_sample_registration_notifications", default: true, null: false
     t.index ["agent_id"], name: "index_Contractors_on_agent_id"
     t.index ["email"], name: "index_Contractors_on_email", unique: true
     t.index ["institution_id"], name: "index_Contractors_on_institution_id"
