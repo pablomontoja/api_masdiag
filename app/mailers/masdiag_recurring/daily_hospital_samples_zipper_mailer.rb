@@ -13,15 +13,7 @@ module MasdiagRecurring
       @recipients = ['magdalena.pajdowska@masdiag.pl', 'renata.halak@masdiag.pl', 'dariusz.kozlowski@masdiag.pl']
       @online_files = OnlineFile.includes(measurement: { sample: {patient: :contractor}})
                                 .where(measurement_id: meas_ids)
-      @online_files.map do |of|
-        patient = of.measurement.sample.patient
-        fname = "#{patient.LastName}_#{of.filename}"
-        @pdf_files << PdfFile.new(
-          of.measurement.sample.Code,
-          fname,
-          of.file_contents
-        )
-      end
+      # @online_files = OnlineFile.includes(measurement: { sample: {patient: :contractor}}).where(measurement: {sample: {patient: {Contractors: {institution_id: 109}}}}).where(Measurements: {ProjectId: 27})
 
       return if @online_files.reject(&:blank?).blank?
       
@@ -37,9 +29,11 @@ module MasdiagRecurring
     def write_pdfs
       enc = Zip::TraditionalEncrypter.new('Masdiag')
       buffer = Zip::OutputStream.write_buffer(::StringIO.new(''), enc) do |output|
-        @pdf_files.each do |pdf|
-          output.put_next_entry(pdf.filename)
-          output.write pdf.file_contents        
+        @online_files.each do |of|
+          patient = of.measurement.sample.patient
+          fname = "#{patient.LastName}_#{of.filename}"
+          output.put_next_entry(fname)
+          output.write of.file_contents
         end
       end
 
