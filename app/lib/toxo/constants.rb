@@ -3,10 +3,10 @@ module Toxo
     TOXO_PROJECT_IDS = [39, 40, 41, 42].freeze
 
     PROJECT_NAMES = {
-      39 => "Toxo Quant",
-      40 => "Toxo Qual",
-      41 => "Toxo GHB",
-      42 => "Toxo NonStandard"
+      39 => "Analiza toksykologiczna ilościowa (LC-MS/MS)",
+      40 => "Analiza toksykologiczna jakościowa (LC-MS/MS)",
+      41 => "Analiza ilościowa kwasu γ-hydroksymasłowego (GHB) (LC-MS/MS)",
+      42 => "Analiza toksykologiczna na zlecenie"
     }.freeze
 
     # project_ids logic: Qual (40) always pulls in Quant (39)

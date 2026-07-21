@@ -38,9 +38,9 @@ module Toxo
     def sample_rejected(sample)
       @sample = sample
       @sample_code            = sample.Code
-      @sample_number          = sample.Code
-      @client_internal_number = sample.try(:client_internal_number)
-      @material_type          = sample.try(:MaterialType)
+      @sample_number          = sample.Lot
+      @client_internal_number = sample.try(:Level)
+      @material_type          = MaterialTypes::HASH[sample.MaterialType.to_sym]
       @ordered_tests          = ordered_tests_for(sample)
       @mode                   = execution_mode_label(sample)
       mail(subject: "Odrzucenie próbki zleconej do badań")

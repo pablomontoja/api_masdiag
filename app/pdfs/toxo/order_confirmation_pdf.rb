@@ -24,6 +24,7 @@ module Toxo
     def content
       fill_color "005072"
       text "Potwierdzenie zlecenia badania", size: 20, style: :bold
+      text "System TOXO Masdiag", size: 14, style: :bold
       fill_color "000000"
       move_down 6
       text "Data wygenerowania: #{Date.current.strftime('%F')}", size: 9
@@ -49,19 +50,20 @@ module Toxo
     def summary_rows
       [
         ["Kod próbki",            value(@sample.Code)],
-        ["Numer próbki",         value(@sample.Code)],
+        ["Numer próbki",         value(@sample.Lot)],
+        ["Numer wewnętrzny klienta", value(@sample.Level)],
         ["Typ materiału",        value(material_type)],
         ["Zlecone badania",      value(ordered_tests)],
         ["Tryb realizacji",      value(execution_mode)],
-        ["Data pobrania",        value(@sample.sample_collection_date)],
-        ["Data wysyłki",         value(@sample.try(:dispatch_date))],
-        ["Data rejestracji",     value(@sample.RegistrationDate)],
+        ["Data pobrania",        value(@sample.sample_collection_date&.to_date)],
+        ["Data wysyłki",         value(@sample.dispatch_date&.to_date)],
+        ["Data rejestracji",     value(@sample.RegistrationDate&.to_date)],
         ["Uwagi",                value(@sample.try(:Comment))]
       ]
     end
 
     def material_type
-      @sample.respond_to?(:MaterialType) ? @sample.MaterialType : nil
+      MaterialTypes::HASH[@sample.MaterialType.to_sym]
     end
 
     def ordered_tests
