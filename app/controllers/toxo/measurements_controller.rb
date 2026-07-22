@@ -13,7 +13,7 @@ class Toxo::MeasurementsController < Toxo::BaseController
     "project"       => "Measurements.ProjectId"
   }.freeze
 
-  SEARCHABLE_COLUMNS = %w[Samples.Code Samples.Lot].freeze
+  SEARCHABLE_COLUMNS = %w[Samples.Code Samples.Lot Samples.Level].freeze
 
   before_action :set_measurement, only: :show
 

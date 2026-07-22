@@ -148,7 +148,7 @@ class ResultResource < ApplicationService
       0 => "undefined",
       1 => "registered online",
       2 => "accepted for measurement",
-      3 => "clarification needed",
+      3 => "clarification needed / on hold",
       4 => "cancelled",
       5 => "pool recharged after cancellation"
     }

@@ -296,7 +296,7 @@ RSpec.describe ResultResource do
         expect(resource.send(:sample_status, 0)).to eq("undefined")
         expect(resource.send(:sample_status, 1)).to eq("registered online")
         expect(resource.send(:sample_status, 2)).to eq("accepted for measurement")
-        expect(resource.send(:sample_status, 3)).to eq("clarification needed")
+        expect(resource.send(:sample_status, 3)).to eq("clarification needed / on hold")
         expect(resource.send(:sample_status, 4)).to eq("cancelled")
         expect(resource.send(:sample_status, 5)).to eq("pool recharged after cancellation")
         expect(resource.send(:sample_status, 999)).to eq("unknown")
