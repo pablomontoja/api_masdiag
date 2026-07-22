@@ -124,6 +124,10 @@ Rails.application.routes.draw do
       resources :on_request_measurements, only: %i[create]
     end
 
+    namespace :measurements do
+      resources :exports, only: %i[index]
+    end
+
     resources :samples, only: %i[index show destroy]
 
     resources :patients,              only: %i[index show]
