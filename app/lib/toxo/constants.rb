@@ -2,6 +2,12 @@ module Toxo
   module Constants
     TOXO_PROJECT_IDS = [39, 40, 41, 42].freeze
 
+    # TODO: uzupełnić właściwymi Institution.Id po ustaleniu z użytkownikiem — mirrors
+    # toxo's ChromatogramRequest::ALLOWED_INSTITUTION_IDS (kept in sync manually)
+    CHROMATOGRAM_REQUEST_INSTITUTION_IDS = [1].freeze
+
+    CHROMATOGRAM_REQUEST_NOTE_KEY = "chromatogram-request-email".freeze
+
     PROJECT_NAMES = {
       39 => "Analiza toksykologiczna ilościowa (LC-MS/MS)",
       40 => "Analiza toksykologiczna jakościowa (LC-MS/MS)",

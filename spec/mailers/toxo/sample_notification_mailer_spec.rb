@@ -68,4 +68,29 @@ RSpec.describe Toxo::SampleNotificationMailer, type: :mailer do
       expect(mail.attachments["potwierdzenie_zlecenia.pdf"].content_type).to include("application/pdf")
     end
   end
+
+  describe "#chromatogram_request" do
+    let!(:toxo_project_igg) { create(:toxo_project_igg) }
+    let(:institution) { create(:institution) }
+    let(:contractor)  { create(:contractor, institution_id: institution.id, email: "kontrahent@example.com") }
+    let(:toxo_patient) { create(:toxo_patient, contractor: contractor) }
+    let(:toxo_sample) { create(:toxo_sample, Code: "TX001A", patient: toxo_patient) }
+    let(:measurement) do
+      Measurement.create!(SampleId: toxo_sample.Id, ProjectId: 39, Status: 5, MaterialType: 0, IsRepeat: false)
+    end
+
+    subject(:mail) { described_class.chromatogram_request(measurement, contractor) }
+
+    it "is addressed to the laboratory's request-handling inbox" do
+      expect(mail.to).to include("toxo@masdiag.pl")
+    end
+
+    it "has the correct Polish subject and includes contractor email, sample code, and test name" do
+      expect(mail.subject).to eq("Prośba o chromatogram")
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+      expect(body).to include("kontrahent@example.com")
+      expect(body).to include("TX001A")
+      expect(body).to include(Toxo::Constants::PROJECT_NAMES[39])
+    end
+  end
 end

@@ -40,6 +40,7 @@ private
 				registration-reminder-final-email
 				sample-rejected-email
 				result-available-email
+				chromatogram-request-email
 			)
 	end
 

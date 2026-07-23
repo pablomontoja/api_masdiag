@@ -53,6 +53,15 @@ module Toxo
       mail(subject: "Wynik badania")
     end
 
+    # G — Prośba o chromatogram.
+    def chromatogram_request(measurement, contractor)
+      @measurement      = measurement
+      @contractor_email = contractor.email
+      @sample_code      = measurement.sample.Code
+      @test_name        = Toxo::Constants::PROJECT_NAMES[measurement.ProjectId] || measurement.ProjectId
+      mail(to: "toxo@masdiag.pl", subject: "Prośba o chromatogram")
+    end
+
     private
 
     def ordered_tests_for(sample)

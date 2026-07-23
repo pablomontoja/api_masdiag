@@ -136,7 +136,9 @@ Rails.application.routes.draw do
     resources :patients,              only: %i[index show]
     resources :projects,              only: %i[index]
     resources :reserved_sample_codes, only: %i[index show]
-    resources :measurements,          only: %i[index show]
+    resources :measurements, only: %i[index show] do
+      resources :chromatogram_requests, only: %i[create], module: :measurements
+    end
     get "dashboard", to: "dashboard#index"
   end
 
