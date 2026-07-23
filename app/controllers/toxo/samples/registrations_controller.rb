@@ -88,11 +88,14 @@ class Toxo::Samples::RegistrationsController < Toxo::SamplesController
     p = params.permit(
       :Code, :dispatch_date, :sample_collection_date, :MaterialType,
       :Lot, :Level, :Comment,
-      :post_examination_procedure, :infectious_risk, :execution_mode, project_ids: []
+      :post_examination_procedure, :infectious_risk, :execution_mode, :SampleStatus, project_ids: []
     )
     %i[MaterialType post_examination_procedure infectious_risk execution_mode].each do |key|
       p[key] = p[key].to_i if p[key].present?
     end
+    # Only the "hold order" status may be set by the client; any other value is dropped
+    # so the frontend can never force a Sample into an arbitrary status at registration time.
+    p.delete(:SampleStatus) unless p[:SampleStatus].to_i == 3
     p
   end
 end

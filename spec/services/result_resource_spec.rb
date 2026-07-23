@@ -206,7 +206,7 @@ RSpec.describe ResultResource, type: :service do
         expect(service.send(:sample_status, 0)).to eq('undefined')
         expect(service.send(:sample_status, 1)).to eq('registered online')
         expect(service.send(:sample_status, 2)).to eq('accepted for measurement')
-        expect(service.send(:sample_status, 3)).to eq('clarification needed')
+        expect(service.send(:sample_status, 3)).to eq('clarification needed / on hold')
         expect(service.send(:sample_status, 4)).to eq('cancelled')
         expect(service.send(:sample_status, 5)).to eq('pool recharged after cancellation')
         expect(service.send(:sample_status, 999)).to eq('unknown')
