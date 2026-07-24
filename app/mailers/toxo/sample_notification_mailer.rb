@@ -62,6 +62,16 @@ module Toxo
       mail(to: "toxo@masdiag.pl", subject: "Prośba o chromatogram")
     end
 
+    # H — Zgłoszenie badania na zlecenie.
+    def on_request_measurement(measurement, contractor)
+      @institution_name = contractor.institution.name
+      @measurement      = measurement
+      @contractor_email = contractor.email
+      @sample_code      = measurement.sample.Code
+      @note             = measurement.sample.Comment
+      mail(to: "toxo@masdiag.pl", subject: "Zgłoszono badanie na zlecenie")
+    end
+
     private
 
     def ordered_tests_for(sample)

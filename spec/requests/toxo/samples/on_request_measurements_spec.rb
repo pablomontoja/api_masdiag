@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Toxo::Samples::OnRequestMeasurementsController", type: :request do
+  include ActiveJob::TestHelper
+
   let!(:institution) { create(:institution) }
   let!(:contractor)  { create(:contractor, institution_id: institution.id, can_add_samples: true, is_super_contractor: false) }
   let!(:session)     { create(:session, contractor: contractor) }
@@ -41,6 +43,22 @@ RSpec.describe "Toxo::Samples::OnRequestMeasurementsController", type: :request 
       expect(measurement).to be_present
       expect(measurement.Status).to eq(1)
       expect(measurement.IsRepeat).to eq(false)
+    end
+
+    it "enqueues a notification email to the laboratory" do
+      sample = create_sample
+      create_qualitative_measurement(sample)
+
+      perform_enqueued_jobs do
+        post "/toxo/samples/on_request_measurements", params: { sample_id: sample.Id, note: "Proszę o dodatkowe badanie" }, headers: bearer
+      end
+
+      expect(response).to have_http_status(:created)
+      mail = ActionMailer::Base.deliveries.last
+      expect(mail.to).to include("toxo@masdiag.pl")
+      expect(mail.subject).to eq("Zgłoszono badanie na zlecenie")
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+      expect(body).to include("Proszę o dodatkowe badanie")
     end
 
     it "appends the note to a blank comment" do

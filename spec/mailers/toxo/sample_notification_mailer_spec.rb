@@ -93,4 +93,29 @@ RSpec.describe Toxo::SampleNotificationMailer, type: :mailer do
       expect(body).to include(Toxo::Constants::PROJECT_NAMES[39])
     end
   end
+
+  describe "#on_request_measurement" do
+    let!(:toxo_project_on_request) { create(:toxo_project_on_request) }
+    let(:institution) { create(:institution) }
+    let(:contractor)  { create(:contractor, institution_id: institution.id, email: "kontrahent@example.com") }
+    let(:toxo_patient) { create(:toxo_patient, contractor: contractor) }
+    let(:toxo_sample) { create(:toxo_sample, Code: "TX001A", patient: toxo_patient, Comment: "Proszę o dodatkowe badanie") }
+    let(:measurement) do
+      Measurement.create!(SampleId: toxo_sample.Id, ProjectId: 42, Status: 1, MaterialType: 0, IsRepeat: false)
+    end
+
+    subject(:mail) { described_class.on_request_measurement(measurement, contractor) }
+
+    it "is addressed to the laboratory's request-handling inbox" do
+      expect(mail.to).to include("toxo@masdiag.pl")
+    end
+
+    it "has the correct Polish subject and includes contractor email, sample code, and the request note" do
+      expect(mail.subject).to eq("Zgłoszono badanie na zlecenie")
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+      expect(body).to include("kontrahent@example.com")
+      expect(body).to include("TX001A")
+      expect(body).to include("Proszę o dodatkowe badanie")
+    end
+  end
 end

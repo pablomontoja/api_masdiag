@@ -17,7 +17,7 @@ class Toxo::Samples::OnRequestMeasurementsController < Toxo::SamplesController
 
     ActiveRecord::Base.transaction do
       @sample.update_column(:Comment, append_comment(@sample.Comment, note))
-      Measurement.create!(
+      @measurement = Measurement.create!(
         SampleId:     @sample.Id,
         ProjectId:    42,
         Status:       1,
@@ -25,6 +25,8 @@ class Toxo::Samples::OnRequestMeasurementsController < Toxo::SamplesController
         MaterialType: @sample.read_attribute(:MaterialType)
       )
     end
+
+    Toxo::SampleNotificationMailer.on_request_measurement(@measurement, current_contractor).deliver_later
 
     render json: serialize_sample(@sample.reload), status: :created
   rescue ActiveRecord::RecordNotFound

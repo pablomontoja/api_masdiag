@@ -1,0 +1,14 @@
+<h1 style="font-family:Helvetica,Arial,sans-serif;font-size:22px;font-weight:300;color:#005072">Zgłoszono badanie na zlecenie</h1>
+<p>Zgłoszono badanie na zlecenie (Analiza Toksykologiczna na zlecenie):</p>
+<ul>
+  <li>Instytucja: <strong><%= @institution_name %></strong></li>
+  <li>Zlecający: <strong><%= @contractor_email %></strong></li>
+  <li>Kod próbki: <strong><%= @sample_code %></strong></li>
+  <li>
+    Treść zgłoszenia:
+    <div style="margin-top:4px;padding:8px 12px;border:1px solid #dddddd;border-radius:6px">
+      <%= simple_format(@note, {}, wrapper_tag: "span") %>
+    </div>
+  </li>
+</ul>
+<p style="font-size:12px;color:#999999">Laboratorium Masdiag Sp. z o.o.</p>
