@@ -8,10 +8,10 @@ module MasdiagMailer
       @patient = Patient.find(patient_id)
       delivery_mail = "powiadomienia@masdiag.pl"
 
-      return nil if @patient.email.blank? || !@patient.send_results_on_mail
+      permitted_hospital_institutions = [69, 115, 138] # Bielański, Biomed, Wojskowy Instytut
 
-      # nie wysyłamy do szpitali oprócz pacjentów Szpitala Bielańskiego, którzy mają wpisany email
-      return nil if @patient.contractor&.institution&.kind == "Hospital" && @patient.contractor&.institution_id != 69 # 69 to Szpital Bielański
+      return nil if @patient.email.blank? || !@patient.send_results_on_mail
+      return nil if @patient.contractor&.institution&.kind == "Hospital" && permitted_hospital_institutions.exclude?(@patient&.contractor&.institution_id)
 
       @files = OnlineFile.where(measurement_id: file_id)
 

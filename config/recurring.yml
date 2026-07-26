@@ -80,6 +80,11 @@ default: &default
     queue: background
     args: []
     schedule: "0 6 * * *"
+  daily_omegaquant_csv_results:
+    class: MasdiagRecurring::Daily::OmegaquantCsvResultsJob
+    queue: background
+    args: []
+    schedule: "0 18 * * *"
 
 development:
  <<: *default
