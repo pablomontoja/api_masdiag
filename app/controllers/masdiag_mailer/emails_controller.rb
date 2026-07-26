@@ -31,7 +31,7 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/send_acceptance_notifications
+    # POST /masdiag_mailer/send_acceptance_notifications
     # wykorzystywany przez LabSample w zakładce "Protokół przyjęcia próbek" do rozesłania maili dla przyjętych próbek
     def send_acceptance_notifications
       begin
@@ -42,7 +42,7 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/send_error_notifications
+    # POST /masdiag_mailer/send_error_notifications
     # raportowanie błędów - LabSample, indclients2
     def send_error_notifications
       begin
@@ -64,7 +64,7 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/after_sample_registration
+    # POST /masdiag_mailer/after_sample_registration
     # używany przez indclients2 do wysyłania powiadomień po rejestracji próbki
     def after_sample_registration
       begin
@@ -79,7 +79,7 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/shipping_after_new_order
+    # POST /masdiag_mailer/shipping_after_new_order
     #
     def shipping_after_new_order
       begin
@@ -90,7 +90,7 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/after_new_order_save
+    # POST /masdiag_mailer/after_new_order_save
     #
     def after_new_order_save
       begin
@@ -101,7 +101,7 @@ module MasdiagMailer
       end
     end
 
-    # POST /mailer/masdiag_website_contact_form
+    # POST /masdiag_mailer/masdiag_website_contact_form
     #
     # TODO masdiag_website_contact_form endpoint must be reconfigured at masdiag.pl site
     def masdiag_website_contact_form

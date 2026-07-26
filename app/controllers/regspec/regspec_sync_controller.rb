@@ -49,7 +49,7 @@ class Regspec::RegspecSyncController < ApplicationController
     end
 
     # TODO: MasdiagMailer::IndMailer#regspec_cancellation nie istnieje — metoda i szablon do napisania
-    MasdiagMailer::IndMailer.regspec_cancellation(sample.Id).deliver_later if cancellation_params[:should_backup_kit_be_sent]
+    # MasdiagMailer::IndMailer.regspec_cancellation(sample.Id).deliver_later if cancellation_params[:should_backup_kit_be_sent]
     render json: {}, status: :ok
   end
 
