@@ -16,7 +16,7 @@ module MasdiagRecurring
           jobs.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
-          SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+          MasdiagMailer::SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
         else
           puts "no error found for rejestracja"
         end
@@ -31,7 +31,7 @@ module MasdiagRecurring
           jobs_rej2.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
-          SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+          MasdiagMailer::SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
         else
           puts "no error found for rejestracja2"
         end
@@ -46,7 +46,7 @@ module MasdiagRecurring
           jobs_order_panel.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
-          SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+          MasdiagMailer::SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
         else
           puts "no error found for order_panel"
         end
@@ -61,7 +61,7 @@ module MasdiagRecurring
           jobs_storage.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
-          SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
+          MasdiagMailer::SendErrorNotificationsMailer.send_mail(result_hash).deliver_later
         else
           puts "no error found for storage"
         end

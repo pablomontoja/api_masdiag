@@ -1,5 +1,30 @@
 # API MASDIAG
 
+# RISKS FROM main -> staging MERGE REVIEW (2026-07-27) - to fix before production deploy
+
+Duplicate/lost notification emails:
+- Notifications::Sender idempotency relies only on an app-level uniqueness validation on Note (subject_type, subject_id, key) — there is no DB unique index, so a race between two concurrent job runs can send the same email twice; add a unique index on notes and rescue RecordInvalid/RecordNotUnique in app/services/notifications/sender.rb
+- Notifications::EventDispatcher#dispatch_lab calls the old MasdiagMailer::Send*NotificationsJob jobs directly, bypassing the Note-based idempotency used by the :toxo family — if LabSample still calls the old masdiag_mailer/emails_controller.rb endpoints in parallel with the new masdiag/* ones (see "TODO all mailer endpoints in LabSample must be updated" in the code), the same patient/contractor gets the same email twice from two independent code paths
+- Contractor#are_notifications_enabled defaults to false and is now an AND-gate in Notifications::RecipientResolver for :toxo events — verify this flag's current value for institutions in V1::Common::TOXO_INSTITUTION_IDS before deploy, or notifications may silently stop going out for contractors who never needed this flag before
+
+Config/credentials to verify before deploy:
+- config/environments/production.rb switched ActionMailer to :microsoft_graph — confirm credentials.mailer[:user_id/:tenant/:client_id/:client_secret] are present in config/credentials/production.yml.enc, otherwise all production email delivery fails
+- config/environments/staging.rb has no action_mailer delivery_method/smtp/microsoft_graph config at all — mail on staging may not go out
+- Regspec::RegspecSyncController / AdminController read credentials.regspec / credentials.mission_control — confirm these keys exist before hitting those endpoints
+
+Other findings from the review, lower priority:
+- StockRoomItem belongs_to :stock_room was uncommented without optional: true — any StockRoomItem created without stock_room_id now gets a validation error (422) instead of saving; check all creation call sites
+- composite_primary_keys is commented out in the Gemfile — confirm no model actually relied on it (legacy tables with composite Id columns)
+- db/migrate/20260718184044_add_notification_flags_to_contractors.rb has a 2026 timestamp (should be 2025) — cosmetic, but breaks migration chronology
+- db/schema.rb hl7_imports table charset changed from utf8mb4 to utf8/utf8_polish_ci — confirm this is intentional (utf8 can truncate characters outside the BMP in HL7 data)
+- Dockerfile7.0 (Ruby 3.1.2/Rails 7.0 fallback image) sits next to the main Dockerfile — risk of accidental use in CI/deploy since it's incompatible with the current Gemfile.lock (requires Ruby 3.3.7)
+- CLAUDE.md still tells contributors to `rvm use 3.1.2`, but Gemfile/.ruby-version now require 3.3.7
+- delayed_job_active_record was added as a second queueing system just for DelayedJobsMonitoringJob, alongside Solid Queue — possible source of confusion
+- Lalen::SampleController lost validate_confirmation_test_request (sample quality / duplicate confirmation test checks) — looks like dead code (no call sites found), but confirm before assuming it's safe to drop
+- All new Notifications::*Job use retry_on StandardError, attempts: 5 without distinguishing transient (network) errors from logic errors (e.g. RecordInvalid from the idempotency issue above) — increases risk of repeat sends on non-network failures
+
+---
+
 # NEW MAILER MIGRATION - MasdiagMailer/MasdiagRecurring Notes
 
 List of tasks to do during deployment on production
