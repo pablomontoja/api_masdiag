@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h3>Cześć,</h3>
+    <p>
+      W załączniku znajduje się zestawienie próbek wykonanych w poprzednim dniu.      
+    </p>
+
+    <p>
+      Załącznik dotyczy następującej instytucji:<br>
+      <b><%= @institution.name  %></b>
+    </p>
+
+    <p>
+      Pomiary zostały autoryzowane dnia: <%= 1.day.ago.strftime("%F") %>
+    </p>
+
+    <p>
+      Plik zip jest zabezpieczony hasłem. 
+    </p>
+
+    <p>
+      Adresaci tego powiadomienia powinni ustalić pomiędzy sobą kiedy i komu odesłać załączone wyniki badań.
+    </p>
+
+    <p>
+      Z poważaniem,<br>
+      <b>Dział IT</b><br>
+      Masdiag Sp. z o.o.<br>
+      ul. Stefana Żeromskiego 33<br>
+      01–882 Warszawa<br>
+      NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+      Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>      
+    </p>
+
+
+    <p>
+      Wiadomość wygenerowana automatycznie.
+    </p>
+  </body>
+</html>

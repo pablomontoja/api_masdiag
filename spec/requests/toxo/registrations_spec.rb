@@ -126,5 +126,23 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
 
       expect(response).to have_http_status(:created)
     end
+
+    it "sets SampleStatus to 3 when SampleStatus 3 (hold order) is submitted" do
+      post "/toxo/samples/registrations",
+           params: valid_params.merge(SampleStatus: 3),
+           headers: bearer
+
+      expect(response).to have_http_status(:created)
+      expect(json["SampleStatus"]).to eq(3)
+    end
+
+    it "ignores any other SampleStatus submitted by the client" do
+      post "/toxo/samples/registrations",
+           params: valid_params.merge(SampleStatus: 5),
+           headers: bearer
+
+      expect(response).to have_http_status(:created)
+      expect(json["SampleStatus"]).to eq(1)
+    end
   end
 end

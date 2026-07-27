@@ -1,17 +1,30 @@
 # API MASDIAG
 
-## TOXO migration
-1. rails db:migrate
-2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
-3. use `rails c` and `require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')` and `ToxicologyQuantProject.new.change`
-4. add `20260311113835` to schema_migrations table
-5. uncomment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
-6. rails db:migrate
+# NEW MAILER MIGRATION - MasdiagMailer/MasdiagRecurring Notes
 
+List of tasks to do during deployment on production
+1. perhaps Dockerfile7.1 should be used for deploy in production 
+2. `rails db:prepare`    ---- it is needed for solid_queue migration if first task is not proceeded
+3. if "Specified key was too long max key length is 767 bytes" problem occurs go to Masdiag Obsidian and find solution
+4. `rails db:migrate:queue`  ---- applying solid_queue DB changes
+5. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
+
+Comments:
+1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
 
 ---
 
-## LSI validation
+# TODO in README.md
+- authentication controller for mission_control gem, currently config.mission_control.jobs.http_basic_auth_enabled is false
+- new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
+- new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
+- new layout for /rails/mailers/cancellation_notification_mailer/standard_cancellation_notification
+- new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
+- new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
+
+---
+
+# LSI validation
 
 As part of the validation of the LSI Masdiag software in accordance with IEC 62304, it is necessary to prepare a software configuration report with each software release.
 A script has been created that prepares the data needed to prepare the report.
@@ -81,6 +94,18 @@ Test.reset_column_information
 ```
 
 ---
+
+# Enabling ruby YJIT
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+rustc --version
+
+rvm reinstall 3.3.7 --reconfigure --enable-yjit
+ruby --yjit -e "p RubyVM::YJIT.enabled?" 
+```
+
+
 
 
 # Checking not included in measurement summaries
@@ -282,6 +307,43 @@ end
 #---------------------------------------------------------
 
 ```
+
+
+# PROBLEMS
+
+---
+
+## Specified key was too long; max key length is 767 bytes
+
+Open my.ini and add this lines(if they already exist just edit everything after =) right after [mysqld]:
+```
+innodb_file_format = Barracuda
+innodb_file_per_table = on
+innodb_default_row_format = dynamic
+innodb_large_prefix = 1
+innodb_file_format_max = Barracuda
+```
+
+OR
+
+Autenticate to mysql:
+```
+mysql -h localhost -u root
+```
+or use phpmyadmin.
+
+Once you're authenticated run this queries(one at a time):
+```
+SET GLOBAL innodb_file_format = Barracuda;
+SET GLOBAL innodb_file_per_table = on;
+SET GLOBAL innodb_default_row_format = dynamic;
+SET GLOBAL innodb_large_prefix = 1;
+SET GLOBAL innodb_file_format_max = Barracuda;
+```
+
+
+
+
 
 
 Things you may want to cover:

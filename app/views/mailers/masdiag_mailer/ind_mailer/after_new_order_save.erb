@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+
+
+    <div id="v1wrapper" dir="ltr" style="background-color: #f1f1f1; margin: 0; padding: 70px 0; width: 100%; -webkit-text-size-adjust: none">
+      <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0">
+        <tbody>
+          <tr>
+            <td valign="top" align="center">
+              <div id="v1template_header_image">
+                <p style="margin-top: 0">
+                  <%= email_image_tag "logo_dp.png", style: "border: none; display: inline-block; font-size: 14px; font-weight: bold; height: auto; outline: none; text-decoration: none; text-transform: capitalize; vertical-align: middle; max-width: 400px; max-height: 100px; margin-left: 0; margin-right: 0", alt: "Diagnostyka Precyzyjna" %>                    
+                </p>
+              </div>
+              <table id="v1template_container" style="background-color: #ffffff; border: 1px solid #d9d9d9; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); border-radius: 3px" width="600" cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                  <tr>
+                    <td valign="top" align="center">
+                      
+                      <table id="v1template_header" style="background-color: #005072; color: white; border-bottom: 0; font-weight: bold; line-height: 100%; vertical-align: middle; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; border-radius: 3px 3px 0 0" width="100%" cellspacing="0" cellpadding="0" border="0">
+                        <tbody>
+                          <tr>
+                            <td id="v1header_wrapper" style="padding: 36px 48px; display: block">
+                              <h1 style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left;   color: white; background-color: inherit">
+                                Link do rejestracji
+                              </h1>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                    </td>
+                  </tr>
+                  <tr>
+                    <td valign="top" align="center">
+                      
+                      <table id="v1template_body" width="600" cellspacing="0" cellpadding="0" border="0">
+                        <tbody>
+                          <tr>
+                            <td id="v1body_content" style="background-color: #ffffff" valign="top">
+                              
+                              <table width="100%" cellspacing="0" cellpadding="20" border="0">
+                                <tbody>
+                                  <tr>
+                                    <td style="padding: 48px 48px 32px" valign="top">
+                                      <div id="v1body_content_inner" style="color: #676767; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left">
+                                        <p style="margin: 0 0 16px">Szanowna Pani/Szanowny Panie,</p>
+                                        <p style="margin: 0 0 16px">Sklep diagnostykaprecyzyjna.pl przesyła link do rejestracji zamówionych testów:</p>
+                                        
+                                        <div style="margin-left: auto; margin-right: auto; text-align: center; padding-bottom: 20px">
+                                          <a href="<%= @link %>" style="margin-left: auto; margin-right: auto; -webkit-appearance: button; -moz-appearance: button; appearance: button; text-decoration: none; color: initial; background-color: #26c6da; border: none;   padding: 15px 32px; text-align: center; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 18px;">Link do rejestracji</a>
+                                        </div>                  
+                                        
+                                        <br>
+
+                                        <p style="margin: 0 0 16px">Proszę wkleić podany niżej adres w przeglądarce, gdyby powyższy przycisk nie działał: </p>
+                                        <p style="margin: 12px; border: 1px solid; border-radius: 8px; padding: 8px 18px 8px 18px;"><samp><%= @link %></samp></p>
+
+                                        <br>
+
+                                        <p style="margin: 0 0 16px">Proszę mieć na uwadze, że powyższy link posłuży w przyszłości do śledzenia statusu zarejestrowanych zestawów, jak również do podglądu wyników badań. Wyniki do zarejestrowanych zestawów zostaną ponadto wysłane na email podany podczas rejestracji zestawu.</p>
+
+                                        <br>
+
+                                        <% if @shop_order.rscs.count > 1 %>
+                                          <hr>
+
+                                          <p style="margin: 0 0 16px">Jeśli zamówiono wielu zestawów i do każdego z nich zakupiono inne badania to można będzie rozróżnić te zestawy na podstawie poniższej tabeli: </p>
+
+                                            <center>
+                                              <table  border="0" cellpadding="0" cellspacing="0" bgcolor="#E3FFFE" style="border-collapse: collapse; width: 80%; ">
+                                                <tr>
+                                                  <td style="text-align: center; vertical-align: middle; border: 1px solid #dddddd; padding: 8px;"><b>Kod do rejestracji</b></td>
+                                                  <td style="text-align: center; vertical-align: middle; border: 1px solid #dddddd; padding: 8px;"><b>Zakupione badania</b></td>
+                                                </tr>
+                                                <% @shop_order.rscs.each do |rsc| %>
+                                                  <tr>
+                                                      <td style="text-align: center; vertical-align: middle; border: 1px solid #dddddd; padding: 8px;"><%= rsc.Code %></td>
+                                                      <td style="text-align: left; vertical-align: middle; border: 1px solid #dddddd; padding: 8px;">
+                                                        <%= rsc.projects.pluck(:Name).join(", ") %>
+                                                      </td>
+                                                  </tr>
+                                                <% end %>
+                                              </table>
+                                            </center>
+                                        <% end %>
+
+
+
+
+                                         
+
+
+
+
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top" align="center">
+              
+              <table id="v1template_footer" width="600" cellspacing="0" cellpadding="10" border="0">
+                <tbody>
+                  <tr>
+                    <td style="padding: 0; border-radius: 6px" valign="top">
+                      <table width="100%" cellspacing="0" cellpadding="10" border="0">
+                        <tbody>
+                          <tr>
+                            <td colspan="2" id="v1credit" style="border-radius: 6px; border: 0; color: #8d8d8d; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 12px; line-height: 150%; text-align: center; padding: 24px 0" valign="middle">
+                              <p style="margin: 0 0 16px">Diagnostyka
+                                Precyzyjna diagnostykaprecyzyjna.pl</p>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+
+
+
+  </body>
+</html>

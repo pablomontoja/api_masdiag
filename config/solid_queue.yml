@@ -16,7 +16,7 @@ default: &default
       schedule: every 30 minutes
       queue: background
   workers:
-    - queues: [ mailers ]
+    - queues: [ mailers background ]
       threads: 1
       processes: 1
       polling_interval: 1

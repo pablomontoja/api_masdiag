@@ -1,0 +1,19 @@
+<h1 style="font-family:Helvetica,Arial,sans-serif;font-size:22px;font-weight:300;color:#005072">Odrzucenie próbki zleconej do badań</h1>
+<p>Szanowni Państwo,</p>
+<p>
+  Informujemy, że próbka dotarła do laboratorium i nie została
+  zakwalifikowana do badania.
+</p>
+<table cellspacing="0" cellpadding="4" border="0" style="font-size:14px;margin-top:12px">
+  <tbody>
+    <tr><td><strong>Kod próbki:</strong></td><td><%= @sample_code %></td></tr>
+    <tr><td><strong>Numer próbki:</strong></td><td><%= @sample_number %></td></tr>
+    <% if @client_internal_number.present? %>
+      <tr><td><strong>Numer wewnętrzny klienta:</strong></td><td><%= @client_internal_number %></td></tr>
+    <% end %>
+    <tr><td><strong>Typ materiału:</strong></td><td><%= @material_type %></td></tr>
+    <tr><td><strong>Zlecone badania:</strong></td><td><%= Array(@ordered_tests).join(", ") %></td></tr>
+    <tr><td><strong>Tryb:</strong></td><td><%= @mode %></td></tr>
+  </tbody>
+</table>
+<p style="font-size:12px;color:#999999">Laboratorium Masdiag Sp. z o.o.</p>

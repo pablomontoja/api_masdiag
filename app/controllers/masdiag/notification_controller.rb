@@ -45,7 +45,7 @@ class Masdiag::NotificationController < ApplicationController
       sample = Sample.find(params[:sample_id])
 
       Lock::CheckJob.perform_later(sample&.rsc)
-      MasdiagEvent::CheckRscAssignementJob.perform_later(sample&.Id)
+      MasdiagMailer::CheckRscAssignementJob.perform_later(sample&.Id)
       Notification::SampleChangedJob.perform_later(sample&.Id)
       
       render json: { message: "notification was properly scheduled" }, status: 200

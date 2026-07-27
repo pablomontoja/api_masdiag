@@ -6,6 +6,7 @@ module Cerascreen
 		  end
 
 			def perform
+				return if Rails.env.development?
 				@meases = Measurement.includes(:sample).where(Status: [1, 2], ProjectId: 24)
 
 				@meases.each do |m|

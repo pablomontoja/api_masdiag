@@ -36,7 +36,7 @@ class Lalen::SampleController < ApplicationController
         @sample.measurements.destroy_all
         Notification::SampleChangedJob.perform_later(@sample.Id)
       else
-        MasdiagEvent::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+        MasdiagMailer::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
       end
       json_response(SampleResource.new(@sample), :created)
     else
@@ -72,16 +72,7 @@ class Lalen::SampleController < ApplicationController
     head :no_content
   end
 
-
   private
-
-  def validate_confirmation_test_request(sample)
-    errors = []
-    errors << "Quality of sample is not sufficient to add another test" if (sample.measurements.count > 0 && sample.soaking_degree_id != 1)
-    errors << "The sample does not have an authorised test for Borreliosis Screening" if (sample.measurements.where(Status: 5, ProjectId: 13).count == 0)
-    errors << "The sample already has a Borreliosis Confirmation test added" if (sample.measurements.where(ProjectId: 19).count > 0)
-    return errors.compact.empty? ? OpenStruct.new(invalid: false) : OpenStruct.new(invalid: true, errors: errors)
-  end
 
   def set_rsc
     case request.params[:action]

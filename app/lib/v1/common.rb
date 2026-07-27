@@ -14,6 +14,16 @@ module V1::Common
   # TODO lista instytucji Lalena nie moze byc w kodzie aplikacji
   LALEN_INSTITUTION_IDS = [83, 85, 89, 93, 95]
 
+  # Instytucje należące do systemu Toxo (toxo.masdiag.pl). Dla próbek tych
+  # instytucji system powiadomień wybiera szablon Toxo zamiast standardowego
+  # szablonu laboratoryjnego (patrz Notifications::TemplateResolver).
+  # TODO uzupełnić właściwymi id instytucji Toxo z konfiguracji puli kodów;
+  # TODO lista instytucji Toxo nie powinna docelowo być w kodzie aplikacji
+  TOXO_INSTITUTION_IDS = [141, 142, 143, 144, 145].freeze
+
+  # Adres portalu partnerskiego Toxo (używany w treści powiadomień C, D, F).
+  TOXO_PARTNER_PORTAL_URL = "toxo.masdiag.pl"
+
   CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EenLLdV5t-dMk71yga-TJiMBlPd9c8jwnHHVD6M4tPWSUg?e=sKEq5c"
   FV1_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/EfgjGaaBxYpFmFcWI7A50WIBLuzELM0NPUfCEvYilzsXaw?e=ezJUtw"
   NUME_CURRENT_DOCUMENTATION_URL = "https://laboratoriummasdiag-my.sharepoint.com/:w:/g/personal/pawel_swider_masdiag_pl/ESuHUfA4IxlNnWdO7NDeyVABRgMAGFLDSY2hite7jJeKGQ?e=GItJh0"

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style type="text/css">
+      /* Main Table Styles */
+      table.blueTable {
+        border: 2px solid #2C5282;
+        background-color: #F7FAFC;
+        width: 90%;
+        text-align: left;
+        border-collapse: collapse;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        font-family: Arial, sans-serif;
+      }
+
+      table.blueTable td, 
+      table.blueTable th {
+        border: 1px solid #CBD5E0;
+        padding: 12px 16px;
+        vertical-align: top;
+      }
+
+      table.blueTable tbody td {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      /* Improved alternating row colors */
+      table.blueTable tbody tr:nth-child(odd) {
+        background: #FFFFFF;
+      }
+
+      table.blueTable tbody tr:nth-child(even) {
+        background: #EDF2F7;
+      }
+
+      /* Modern header design */
+      table.blueTable thead {
+        background: linear-gradient(135deg, #2D3748 0%, #2C5282 50%, #2B6CB0 100%);
+        border-bottom: 3px solid #1A365D;
+      }
+
+      table.blueTable thead th {
+        font-size: 14px;
+        font-weight: 600;
+        color: #FFFFFF;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      table.blueTable thead th:last-child {
+        border-right: none;
+      }
+
+      /* Hover effects */
+      table.blueTable tbody tr:hover {
+        background-color: #E6FFFA !important;
+        transition: background-color 0.3s ease;
+      }
+
+      /* Nested Table Styles */
+      table.nestedTable {
+        width: 100%;
+        border-collapse: collapse;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        margin: 8px 0;
+        font-size: 13px;
+      }
+
+      table.nestedTable thead {
+        background: linear-gradient(135deg, #38B2AC 0%, #319795 100%);
+        border-bottom: 2px solid #2C7A7B;
+      }
+
+      table.nestedTable thead th {
+        color: #000000;
+        font-weight: 600;
+        padding: 10px 12px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      table.nestedTable thead th:last-child {
+        border-right: none;
+      }
+
+      table.nestedTable tbody td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #E2E8F0;
+        border-right: 1px solid #E2E8F0;
+      }
+
+      table.nestedTable tbody td:last-child {
+        border-right: none;
+      }
+
+      table.nestedTable tbody tr:nth-child(odd) {
+        background: #F7FAFC;
+      }
+
+      table.nestedTable tbody tr:nth-child(even) {
+        background: #FFFFFF;
+      }
+
+      table.nestedTable tbody tr:hover {
+        background-color: #E6FFFA !important;
+      }
+
+      /* Special styling for bold text */
+      .main-item {
+        font-weight: 600;
+        color: #2D3748;
+      }
+
+      .nested-item {
+        font-weight: 600;
+        color: #2C7A7B;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        table.blueTable {
+          font-size: 12px;
+        }
+        
+        table.blueTable td, 
+        table.blueTable th {
+          padding: 8px 10px;
+        }
+
+        table.nestedTable {
+          font-size: 11px;
+        }
+
+        table.nestedTable td, 
+        table.nestedTable th {
+          padding: 6px 8px;
+        }
+      }
+
+      /* Enhanced nested table container */
+      .nested-container {
+        padding: 16px;
+        background: #F1F5F9;
+        border-radius: 6px;
+        border: 1px solid #CBD5E0;
+      }
+
+      .summary-label {
+        color: #4A5568;
+        font-size: 13px;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h3>Cześć,</h3>
+    <p>
+      Poniżej znajduje się raport z wykonania próbek w poprzednim miesiącu dla zagranicznych klientów. 
+    </p>
+
+
+
+    <center>      
+
+      <table class="blueTable">
+          <thead>
+              <tr>
+                  <th>Nazwa</th>
+                  <th>Instytucja</th>
+                  <th>Od</th>      
+                  <th>Do</th>
+                  <th>Całkowita Ilość</th>
+              </tr>
+          </thead>
+
+          <tbody>
+              <% @measurement_summaries.each do |ms| %>
+                  <tr>
+                      <td><span class="main-item"><%= ms.name %></span></td>
+                      <td><%= ms.institution.name %></td>
+                      <td><%= ms.from_date %></td>        
+                      <td><%= ms.to_date %></td>
+                      <td><span class="main-item"><%= ms.measurement_summary_items.size %></span></td>
+                  </tr>
+
+                  <tr>
+                      <td colspan="5">
+                          <div class="nested-container">
+                              <div class="summary-label">Szczegóły pomiarów:</div>
+                              
+                              <table class="nestedTable">
+                                  <thead>
+                                      <tr>
+                                          <th>Projekt</th>
+                                          <th>Test</th>
+                                          <th>Wariant</th>
+                                          <th>Ilość</th>
+                                      </tr>
+                                  </thead>
+
+                                  <tbody>
+                                      <% ms.grouped_items.each do |item| %> 
+                                          <tr>
+                                              <td><span class="nested-item"><%= item.project_name %></span></td>
+                                              <td><span class="nested-item"><%= item.test_name %></span></td>
+                                              <td><%= item.test_variant %></td>
+                                              <td><span class="nested-item"><%= item.volume %></span></td>
+                                          </tr>
+                                      <% end %>
+                                  </tbody>
+                              </table>
+
+                          </div>
+                      </td>
+                  </tr>
+              <% end %>
+          </tbody>
+      </table>
+
+    </center>
+
+
+
+    <p>
+      Z poważaniem,<br>
+      <b>Dział IT</b><br>
+      Masdiag Sp. z o.o.<br>
+      ul. Stefana Żeromskiego 33<br>
+      01–882 Warszawa<br>
+      NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+      Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>      
+    </p>
+
+
+    <p>
+      Wiadomość wygenerowana automatycznie.
+    </p>
+  </body>
+</html>

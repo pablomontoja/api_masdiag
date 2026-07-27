@@ -28,10 +28,11 @@ class ReservedSampleCode < ApplicationRecord
   self.primary_key = "Id"
 
   enum :material_handler, MaterialHandlers::MODEL_HASH
-  enum :MaterialType, MaterialTypes::MODEL_HASH
+  enum :MaterialType, MaterialTypes::MODEL_HASH, instance_methods: false
 
   belongs_to :package, optional: true
   belongs_to :institution, class_name: "Institution", foreign_key: "InstitutionId", optional: true
+  has_one :sample
   # belongs_to :project, class_name: "Project", foreign_key: "ProjectId", optional: true
   has_many :reserved_tests, dependent: :destroy
   has_many :projects, through: :reserved_tests
@@ -54,10 +55,18 @@ class ReservedSampleCode < ApplicationRecord
     Sample.find_by(Code: self.Code)
   end
 
+  def projects_names_pl
+    return self.projects.map { |p| p.Name  }
+  end
+
   def projects_names
     proj_ids = self.projects.map { |p| p.Id  }
     tests = V1::Common::AVAILABLE_TESTS
     return tests.select{|t| proj_ids.include?(t[:id]) }.map{|t| t[:name]}
+  end
+
+  def projects_eng_names
+    return self.projects.map { |p| p.eng_name  }
   end
 
   def as_json(options = {})

@@ -18,7 +18,7 @@ class ApiAccount < ApplicationRecord
   after_initialize :init_settings
 
   # serialize :settings, type: Hash, coder: JSON, default: Hash.new
-  has_encrypted :settings, type: :hash#, migrating: true
+  has_encrypted :settings, type: :hash #, migrating: true
   
   self.ignored_columns = ["settings"]
 

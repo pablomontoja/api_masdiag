@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   get "health/invalid", to: 'health#invalid'
   get "health/not_found", to: 'health#not_found'
 
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # get "up" => "rails/health#show", as: :rails_health_check
 
   #########################################################
   ### POLISH
@@ -124,12 +127,18 @@ Rails.application.routes.draw do
       resources :on_request_measurements, only: %i[create]
     end
 
+    namespace :measurements do
+      resources :exports, only: %i[index]
+    end
+
     resources :samples, only: %i[index show destroy]
 
     resources :patients,              only: %i[index show]
     resources :projects,              only: %i[index]
     resources :reserved_sample_codes, only: %i[index show]
-    resources :measurements,          only: %i[index show]
+    resources :measurements, only: %i[index show] do
+      resources :chromatogram_requests, only: %i[create], module: :measurements
+    end
     get "dashboard", to: "dashboard#index"
   end
 
@@ -139,9 +148,22 @@ Rails.application.routes.draw do
   #########################################################
   namespace :masdiag, defaults: {format: :json} do
     post "/setup/result_post_endpoint", to: 'setup#result_post_endpoint'
-    
+
     post "/notifications/trigger", to: 'notification#trigger'
     post "/notifications/sample_status_changed/:sample_id", to: 'notification#sample_status_changed'
+
+    # Ujednolicone endpointy zdarzeń powiadomień (LabSample) — wybór szablonu
+    # (laboratoryjny vs Toxo) po stronie tej aplikacji.
+    post "sample_accepted",       to: "notifications#sample_accepted"
+    post "sample_rejected",       to: "notifications#sample_rejected"
+    post "result_available",      to: "notifications#result_available"
+    post "registration_reminder", to: "notifications#registration_reminder"
+
+    # storage app
+    post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
+    post "stock_room/stock_out_by_shipment", to: "stock_rooms#stock_out_by_shipment"
+    post "stock_room/back_to_stock_by_shipment/:shipment_id", to: "stock_rooms#back_to_stock_by_shipment"
+    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock" 
   end
 
 
@@ -157,7 +179,6 @@ Rails.application.routes.draw do
     post "send_error_notifications", to: 'emails#send_error_notifications'
     post 'send_notification_after_delayed_reg', to: 'emails#send_notification_after_delayed_reg'
     post 'after_sample_registration', to: 'emails#after_sample_registration'
-    post 'aqipharm_registration', to: 'emails#aqipharm_registration'
 
     # shop_orders
     post 'after_new_order_save', to: 'emails#after_new_order_save'
@@ -165,12 +186,6 @@ Rails.application.routes.draw do
 
     # www.masdiag.pl contact form
     post 'masdiag_website_contact_form', to: 'emails#masdiag_website_contact_form'
-    
-    # storage app
-    post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
-    post "stock_room/stock_out_by_shipment", to: "stock_rooms#stock_out_by_shipment"
-    post "stock_room/back_to_stock_by_shipment/:shipment_id", to: "stock_rooms#back_to_stock_by_shipment"
-    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock" 
   end
 
 
@@ -190,11 +205,13 @@ Rails.application.routes.draw do
   #########################################################
   ### PATIENT_PORTAL
   #########################################################
-  namespace :patient_portal, defaults: {format: :json} do
+  namespace :patient_portal, defaults: { format: :json } do
     resources :results, only: :index
     resources :samples, only: :index
   end
 
+  
+  
   #########################################################
   ### REGSPEC
   #########################################################
@@ -205,6 +222,16 @@ Rails.application.routes.draw do
     resources :patients, only: %i{ update }
   end
 
+  #########################################################
+  ### DiagnostykaPrecyzyjna
+  #########################################################
+  namespace :diagnostyka_precyzyjna, defaults: { format: :json } do
+    post :shop_orders, to: 'shop_orders#import'
+  end
+
+
+
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 
   # get '*path' => redirect('/')
 

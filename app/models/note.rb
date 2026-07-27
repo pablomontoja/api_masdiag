@@ -34,6 +34,13 @@ private
 				extended-metabolic-screening
 				omegaquant-result-exit-in-csv
 				stability-period-exceede
+				sample-registration-confirmation-email
+				sample-accepted-email
+				registration-reminder-email
+				registration-reminder-final-email
+				sample-rejected-email
+				result-available-email
+				chromatogram-request-email
 			)
 	end
 

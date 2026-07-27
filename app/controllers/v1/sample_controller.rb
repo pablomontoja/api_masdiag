@@ -36,7 +36,7 @@ class V1::SampleController < ApplicationController
         @sample.measurements.destroy_all
         Notification::SampleChangedJob.perform_later(@sample.Id)
       else
-        MasdiagEvent::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+        MasdiagMailer::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
       end
       json_response(SampleResource.new(@sample), :created)
     else

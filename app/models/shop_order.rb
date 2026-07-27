@@ -21,13 +21,18 @@ class ShopOrder < ApplicationRecord
 	has_many :packages, dependent: :nullify
 	has_many :reserved_sample_codes, through: :packages
 
-	serialize :package_ids, Array
+	# serialize :package_ids, type: Array, default: []
+	serialize :snapshot_package_ids, type: Array, default: []
+	serialize :kits, type: Array, default: []
+  serialize :coupons, type: Array, default: []
 
 	validates :number, uniqueness: true
 	validates :email, presence: true
-	validate :check_package_ids
+	# validate :check_package_ids
 
 	before_destroy :clean_packages
+	after_commit :link_packages, on: :create
+	after_commit :update_snapshot_package_ids, on: :create
 
 	def rscs
 		# ReservedSampleCode.where(package_id: self.package_ids).all
@@ -38,11 +43,32 @@ class ShopOrder < ApplicationRecord
 		"#{self.first_name} #{self.last_name}"
 	end
 
+  def is_jps10?
+    self.coupons.nil? ? false : self.coupons.any? {|c| c.code == "jps10"}
+  end
+
 private
 
-	def check_package_ids
-		errors.add(:base, 'package_ids cannot be blank Array') if self.package_ids.blank?
-	end
+	def update_snapshot_package_ids
+    self.update(snapshot_package_ids: packages.pluck(:id))
+  end
+
+	# def check_package_ids
+	# 	errors.add(:base, 'package_ids cannot be blank Array') if self.package_ids.blank?
+	# end
+	
+	def link_packages
+    return if self.package_ids.blank? || self.package_ids == "-"
+
+    self.package_ids.each do |package_id|
+      package = Package.find_by(id: package_id)
+      if package
+        package.update_column(:shop_order_id, self.id)
+      else
+        Sentry.capture_message("Warning: Package with id #{package_id} not found for ShopOrder ##{self.id}")
+      end
+    end
+  end
 
 	def clean_packages
 		self.rscs.each do |rsc|

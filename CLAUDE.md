@@ -90,6 +90,16 @@ ReservedSampleCode (barcode) → Package → Product
 
 Uses **Alba** (not JBuilder/AMS). Serializers live in `app/resources/` and are named `*Resource`.
 
+### Notification Dispatch (sample lifecycle emails)
+
+LabSample reports a lifecycle **event** to a unified endpoint under the `masdiag` namespace (HTTP Basic + `MasdiagCheck`) — `POST /masdiag/{sample_accepted,sample_rejected,result_available,registration_reminder}`. It does **not** choose the email template. Each endpoint enqueues a `Notifications::*Job` that calls `Notifications::EventDispatcher`, which:
+
+1. resolves the sample's institution (`Notifications::TemplateResolver`) — via the patient's contractor for registered samples, or via code → `ReservedSampleCode` → `Institution` for unregistered (virtual-patient) samples;
+2. picks the template **family**: `:toxo` if the institution is in `V1::Common::TOXO_INSTITUTION_IDS`, else `:lab`;
+3. for `:toxo`, builds `Toxo::SampleNotificationMailer` and routes through `Notifications::Sender` (idempotency via the `Note` model keyed per event on the Sample, plus `ResultSendingEvent`/`Fileable`/`DbFile` audit); for `:lab`, delegates to the existing lab mailers unchanged.
+
+Order confirmation (event A) fires from the toxo portal's `Toxo::Samples::RegistrationsController#create` (Bearer + Pundit), not LabSample. The final registration reminder (event D) has no external trigger — `Notifications::RegistrationReminderFinalJob` runs daily via `config/recurring.yml`, using `business_time` (Polish holidays configured in `config/initializers/business_time.rb`) to count 7 working days from `AcceptanceDate`. Registration reminders (C/D) have no lab analog and are toxo-only.
+
 ### Background Jobs
 
 **Solid Queue** (not Sidekiq). Jobs in `app/jobs/`. Pattern:
@@ -140,5 +150,5 @@ No fixtures — use factories exclusively.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/004-lalen-assign-kit-tests/plan.md`.
+at `specs/005-toxo-notification-system/plan.md`.
 <!-- SPECKIT END -->

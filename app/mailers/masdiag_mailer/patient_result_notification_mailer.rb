@@ -3,47 +3,21 @@ module MasdiagMailer
     default :template_path => "mailers/#{self.name.underscore}"
     after_action :set_sendmail
 
-    def send_mail(patient_id, file_ids)
+    def send_mail(patient_id, file_id)
       @show_info_about_leaflet = true
       @patient = Patient.find(patient_id)
       delivery_mail = "powiadomienia@masdiag.pl"
 
+      permitted_hospital_institutions = [69, 115, 138] # Bielański, Biomed, Wojskowy Instytut
+
       return nil if @patient.email.blank? || !@patient.send_results_on_mail
+      return nil if @patient.contractor&.institution&.kind == "Hospital" && permitted_hospital_institutions.exclude?(@patient&.contractor&.institution_id)
 
-      # nie wysyłamy do szpitali oprócz pacjentów Szpitala Bielańskiego, którzy mają wpisany email
-      return nil if @patient.contractor&.institution&.kind == "Hospital" && @patient.contractor&.institution_id != 69 # 69 to Szpital Bielański
-
-      @files = OnlineFile.where(measurement_id: file_ids)
+      @files = OnlineFile.where(measurement_id: file_id)
 
       return nil if @files.count == 0
 
       @projects = []
-
-      # measurement_id: 1098270, filename: "46XSR_2.pdf", patient_id: 160498, 9681
-      # measurement_id: 1097925, filename: "J9IPJ_2.pdf", patient_id: 119026, 1557
-      # measurement_id: 1096484, filename: "LDG7B.pdf", patient_id: 160211, 5740
-
-      # @files.each do |file|
-      #   tempfile = Tempfile.new([file.filename,'.pdf'], Rails.root.join('tmp') )
-      #   tempfile.binmode
-      #   tempfile.write(file.encrypted_file_contents) if file.encrypted_file_contents != nil
-      #   tempfile.write(file.file_contents) if file.encrypted_file_contents == nil || file.encrypted_file_contents&.size == 0
-      #   tempfile.close
-
-      #   my_pdf = Origami::PDF.read(tempfile.path, lazy: true, password: patient_password )
-
-      #   if my_pdf.encrypted?
-      #     attachments[file.filename] = File.read(tempfile.path)
-      #   else
-      #     my_pdf = Origami::PDF.read(tempfile.path)
-      #     tempfile2 = Tempfile.new([SecureRandom.hex(10),'.pdf'], Rails.root.join('tmp') )
-      #     my_pdf.encrypt(user_passwd: patient_password)
-      #     my_pdf.save(tempfile2.path)
-      #     attachments[file.filename] = File.read(tempfile2.path)
-      #   end
-
-      #   @projects.push(file.measurement.ProjectId)
-      # end
 
       @files.each do |file|
         attachments[file.filename] = file.encrypted_file_contents

@@ -21,7 +21,7 @@ Bundler.require(*Rails.groups)
 module ApiMasdiag
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 7.1
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -36,12 +36,24 @@ module ApiMasdiag
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    # Please, add to the `ignore` list any other `lib` subdirectories that do
+    # not contain `.rb` files, or that should not be reloaded or eager loaded.
+    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    config.autoload_lib(ignore: %w(tasks))
+
     config.autoload_paths << Rails.root.join('lib')
-    config.eager_load_paths << Rails.root.join('lib')
+    config.action_mailer.preview_paths << Rails.root.join("test/mailers/previews")
+    config.reload_classes_only_on_change = true
+
+    # config.eager_load_paths << Rails.root.join('lib')
+    pp config.action_mailer.preview_paths
 
     config.solid_queue.use_skip_locked = false
     config.last_use_of_send_all_mail = Time.now
     config.solid_queue.use_skip_locked = false
+    config.active_record.default_column_serializer = YAML
+    config.mission_control.jobs.http_basic_auth_enabled = false
+    config.mission_control.jobs.base_controller_class = "AdminController"
 
     config.i18n.available_locales = [:pl, :en]
     config.i18n.default_locale = :en

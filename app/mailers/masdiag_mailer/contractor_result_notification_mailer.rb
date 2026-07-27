@@ -1,5 +1,6 @@
 module MasdiagMailer
   class ContractorResultNotificationMailer < ApplicationMailer
+    include Rails.application.routes.url_helpers
     default :template_path => "mailers/#{self.name.underscore}"
     after_action :set_sendmail
     helper_method :b2b_online_file_url

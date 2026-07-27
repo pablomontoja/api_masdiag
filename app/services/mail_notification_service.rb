@@ -9,6 +9,9 @@ class MailNotificationService < ApplicationService
 
   def call
     begin
+      Sentry.capture_message("Someone use MailNotificationService in api_masdiag. It is deprecated and should not be used. Resource: #{@resource}")
+      return
+      
       attempts ||= 1
       uri_string = Rails.application.credentials.external_mailer[:url]
       uri = URI.parse("#{uri_string}/#{@action}")
