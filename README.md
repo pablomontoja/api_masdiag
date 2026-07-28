@@ -5,7 +5,7 @@
 Duplicate/lost notification emails:
 - Notifications::Sender idempotency relies only on an app-level uniqueness validation on Note (subject_type, subject_id, key) — there is no DB unique index, so a race between two concurrent job runs can send the same email twice; add a unique index on notes and rescue RecordInvalid/RecordNotUnique in app/services/notifications/sender.rb
 - Notifications::EventDispatcher#dispatch_lab calls the old MasdiagMailer::Send*NotificationsJob jobs directly, bypassing the Note-based idempotency used by the :toxo family — if LabSample still calls the old masdiag_mailer/emails_controller.rb endpoints in parallel with the new masdiag/* ones (see "TODO all mailer endpoints in LabSample must be updated" in the code), the same patient/contractor gets the same email twice from two independent code paths
-- Contractor#are_notifications_enabled defaults to false and is now an AND-gate in Notifications::RecipientResolver for :toxo events — verify this flag's current value for institutions in V1::Common::TOXO_INSTITUTION_IDS before deploy, or notifications may silently stop going out for contractors who never needed this flag before
+- FIXED: Contractor#are_notifications_enabled is no longer checked in Notifications::RecipientResolver — it belonged to the older ContractorResultsNotifierJob/ContractorResultNotificationMailer mechanism and defaulted to false (e.g. regspec-synced contractors), so using it as an AND-gate for :toxo events would have silently suppressed notifications for contractors who never needed the flag set
 
 Config/credentials to verify before deploy:
 - config/environments/production.rb switched ActionMailer to :microsoft_graph — confirm credentials.mailer[:user_id/:tenant/:client_id/:client_secret] are present in config/credentials/production.yml.enc, otherwise all production email delivery fails
@@ -40,7 +40,6 @@ Comments:
 ---
 
 # TODO in README.md
-- authentication controller for mission_control gem, currently config.mission_control.jobs.http_basic_auth_enabled is false
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
 - new layout for /rails/mailers/cancellation_notification_mailer/standard_cancellation_notification
