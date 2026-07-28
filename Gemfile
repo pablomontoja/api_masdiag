@@ -95,5 +95,4 @@ gem 'listen' # used by config.file_watcher = ActiveSupport::EventedFileUpdateChe
 
 gem "rails-i18n"
 gem 'mobility', '~> 1.3.2'
-gem 'nokogiri', '~> 1.15.0'
 gem 'pagy', '~> 6.2'
