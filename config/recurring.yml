@@ -85,6 +85,21 @@ default: &default
     queue: background
     args: []
     schedule: "0 18 * * *"
+  hl7_minio_scanner:
+    class: Hl7MinioScannerJob
+    queue: background
+    args: []
+    schedule: every 5 minutes
+  hl7_link_pending:
+    class: Hl7LinkPendingJob
+    queue: background
+    args: []
+    schedule: every 15 minutes
+  hl7_retry_failed:
+    class: Hl7RetryFailedJob
+    queue: background
+    args: []
+    schedule: every 30 minutes
 
 development:
  <<: *default

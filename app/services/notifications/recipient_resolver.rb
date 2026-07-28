@@ -9,9 +9,14 @@ module Notifications
     REMINDER_EVENTS = %i[registration_reminder registration_reminder_final].freeze
 
     # Flagi per-zdarzenie na Contractors pozwalające wyłączyć wybrane
-    # powiadomienia adresowane do kontraktora. Globalne are_notifications_enabled
-    # pozostaje nadrzędne (bramka AND). Zdarzenia bez wpisu w mapie nie są
+    # powiadomienia adresowane do kontraktora. Zdarzenia bez wpisu w mapie nie są
     # ograniczane dodatkową flagą.
+    #
+    # Uwaga: nie sprawdzamy tu Contractor#are_notifications_enabled — ta flaga
+    # należy do starszego mechanizmu (ContractorResultsNotifierJob /
+    # ContractorResultNotificationMailer) i domyślnie jest false (m.in. dla
+    # kontraktorów synchronizowanych z regspec), więc użyta tu wyciszałaby
+    # powiadomienia Toxo niezamierzenie.
     EVENT_FLAGS = {
       sample_accepted:    :allow_sample_acceptance_notifications,
       sample_rejected:    :allow_sample_rejection_notifications,
@@ -43,8 +48,7 @@ module Notifications
     def contractor_recipient
       contractor = @sample.patient&.contractor
       return nil if contractor.nil?
-      return nil unless contractor.are_notifications_enabled # globalna nadrzędna
-      return nil unless event_allowed?(contractor)           # flaga per-zdarzenie
+      return nil unless event_allowed?(contractor) # flaga per-zdarzenie
 
       contractor.email.presence
     end

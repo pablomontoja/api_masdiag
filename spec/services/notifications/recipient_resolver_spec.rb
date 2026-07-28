@@ -13,13 +13,16 @@ RSpec.describe Notifications::RecipientResolver do
       expect(described_class.call(sample: sample, event: :result_available)).to eq("doc@example.com")
     end
 
-    it "returns nil (skip) when notifications are disabled" do
+    it "returns the contractor email even when the legacy are_notifications_enabled flag is false" do
+      # are_notifications_enabled belongs to the older ContractorResultsNotifierJob /
+      # ContractorResultNotificationMailer mechanism and defaults to false (e.g. for
+      # regspec-synced contractors); Toxo notifications must not be gated by it.
       contractor = create(:contractor, institution: institution,
                                        email: "doc@example.com", are_notifications_enabled: false)
       patient = create(:patient, contractor: contractor, IsVirtual: false)
       sample = create(:sample, patient: patient)
 
-      expect(described_class.call(sample: sample, event: :result_available)).to be_nil
+      expect(described_class.call(sample: sample, event: :result_available)).to eq("doc@example.com")
     end
   end
 
@@ -58,7 +61,7 @@ RSpec.describe Notifications::RecipientResolver do
     end
   end
 
-  describe "per-event contractor opt-out flags (global are_notifications_enabled AND event flag)" do
+  describe "per-event contractor opt-out flags" do
     {
       sample_accepted:    :allow_sample_acceptance_notifications,
       sample_rejected:    :allow_sample_rejection_notifications,
@@ -68,8 +71,7 @@ RSpec.describe Notifications::RecipientResolver do
       context "event #{event} controlled by #{flag}" do
         def sample_for(institution, **contractor_attrs)
           contractor = create(:contractor, institution: institution,
-                                            email: "doc@example.com",
-                                            are_notifications_enabled: true, **contractor_attrs)
+                                            email: "doc@example.com", **contractor_attrs)
           patient = create(:patient, contractor: contractor, IsVirtual: false)
           create(:sample, patient: patient)
         end
@@ -84,12 +86,12 @@ RSpec.describe Notifications::RecipientResolver do
           expect(described_class.call(sample: sample, event: event)).to be_nil
         end
 
-        it "returns nil when global are_notifications_enabled is false regardless of the flag" do
+        it "returns the email even when the legacy are_notifications_enabled flag is false" do
           contractor = create(:contractor, institution: institution, email: "doc@example.com",
                                            are_notifications_enabled: false, flag => true)
           patient = create(:patient, contractor: contractor, IsVirtual: false)
           sample = create(:sample, patient: patient)
-          expect(described_class.call(sample: sample, event: event)).to be_nil
+          expect(described_class.call(sample: sample, event: event)).to eq("doc@example.com")
         end
       end
     end

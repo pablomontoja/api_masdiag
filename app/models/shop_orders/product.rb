@@ -79,11 +79,11 @@ module ShopOrders
         return 3
       when "Badanie stężenia CBD"
         Sentry.capture_message("Zamówiono test CBD w sklepie diagnostykaprecyzyjna.pl")
-        IndMailer.after_error(["IndClients2","RegShopOrder","Zamówiono test CBD w sklepie diagnostykaprecyzyjna.pl" ]).deliver_later
+        MasdiagMailer::IndMailer.after_error(["IndClients2","RegShopOrder","Zamówiono test CBD w sklepie diagnostykaprecyzyjna.pl" ]).deliver_later
         return 11
       when "Badanie nietolerancji histaminy (DAO)"
         Sentry.capture_message("Zamówiono test DAO w sklepie diagnostykaprecyzyjna.pl")
-        IndMailer.after_error(["IndClients2","RegShopOrder","Zamówiono test DAO w sklepie diagnostykaprecyzyjna.pl" ]).deliver_later
+        MasdiagMailer::IndMailer.after_error(["IndClients2","RegShopOrder","Zamówiono test DAO w sklepie diagnostykaprecyzyjna.pl" ]).deliver_later
         return 24
       when "Przeciwciała anty-SARS-CoV-2"
         return 9
@@ -119,7 +119,7 @@ module ShopOrders
         return [0]
       else
         Sentry.capture_message("Nie można rozpoznać typu badania na podstawie danych przesłanych ze sklepu diagnostykaprecyzyjna.pl.")
-        IndMailer.after_error(["IndClients2","RegShopOrder","Nie można rozpoznać typu badania na podstawie danych przesłanych ze sklepu diagnostykaprecyzyjna.pl.", txt ]).deliver_later
+        MasdiagMailer::IndMailer.after_error(["IndClients2","RegShopOrder","Nie można rozpoznać typu badania na podstawie danych przesłanych ze sklepu diagnostykaprecyzyjna.pl.", txt ]).deliver_later
         return []
       end
     end

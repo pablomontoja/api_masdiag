@@ -21,7 +21,9 @@ class ShopOrder < ApplicationRecord
 	has_many :packages, dependent: :nullify
 	has_many :reserved_sample_codes, through: :packages
 
-	# serialize :package_ids, type: Array, default: []
+	# package_ids/package_ids= come from has_many :packages (collection
+	# association methods), not a DB column — unlike snapshot_package_ids,
+	# which is the persisted point-in-time copy.
 	serialize :snapshot_package_ids, type: Array, default: []
 	serialize :kits, type: Array, default: []
   serialize :coupons, type: Array, default: []
