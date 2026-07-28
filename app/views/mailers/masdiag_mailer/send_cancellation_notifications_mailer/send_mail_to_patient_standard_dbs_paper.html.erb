@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+
+<body>
+  <h3>Szanowni Państwo,</h3>
+  <p>
+    Z przykrością informujemy, że nie jesteśmy w stanie wykonać analiz dla próbki, która dotarł od Państwa do naszego laboratorium.
+  </p>
+  <p>
+    Głównymi powodami odrzucenia materiału przez diagnostę laboratoryjnego są:
+  </p>
+  <% if @sample.MaterialType.to_sym == :dbs  %>
+    <ul>
+      <li>niedostateczna ilość materiału do wykonania badań</li>
+      <li>zła jakość pobrania mogąca wpływać na wynik (np. w przypadku pobierania krwi na bibułę jest to m. in. brak wysuszenia krwi przed wysłaniem, kilkukrotne naniesienie krwi na to samo pole czy niedostateczne jej przesączenie na drugą stronę)</li>
+    </ul>
+  <% elsif @sample.MaterialType.to_sym == :urine %>
+  <ul>
+    <li>Ilość moczu jest niewystarczająca do wykonania analiz.</li>
+    lub
+    <li>Próbka moczu uległa zniszczeniu podczas transportu.</li>
+  </ul>
+  <% end  %>
+  <p>Kod anulowanej próbki: <b>
+      <%= @sample.Code %></b></p>
+  <br>
+  <p>
+    Z poważaniem,<br><br>
+    <%= email_image_tag("logo_masdiag.png", width: "300px") %><br>
+    Masdiag Sp. z o.o.<br>
+    ul. Stefana Żeromskiego 33<br>
+    01–882 Warszawa<br>
+    NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+    Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>
+  </p>
+  <p>
+    Wiadomość wygenerowana automatycznie.
+  </p>
+</body>
+
+</html>

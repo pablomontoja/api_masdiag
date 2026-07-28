@@ -37,6 +37,7 @@ class Measurement < ApplicationRecord
 	# has_one :plate, through: :plate_measurement
 	has_one :result, class_name: "Result", foreign_key: "MeasurementId", dependent: :destroy
   has_one :hl7_import, class_name: "Hl7Import", foreign_key: :measurement_id, primary_key: "Id"
+  has_many :notes, as: :subject, dependent: :destroy
   
   def set_time_stamps
     self.CreatedAt = DateTime.now if self.new_record?

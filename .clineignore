@@ -1,0 +1,119 @@
+# Logs
+*.log
+log/*
+tmp/log/*
+
+# Temporary files
+tmp/*
+!tmp/.keep
+tmp/cache/*
+tmp/pids/*
+tmp/sessions/*
+tmp/sockets/*
+tmp/storage/*
+
+# Database files
+*.sqlite3
+*.sqlite3-*
+db/*.sqlite3
+db/*.sqlite3-journal
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+config/master.key
+config/credentials/*.key
+
+# Dependencies
+node_modules/
+vendor/bundle/
+.bundle/
+
+# Compiled assets
+public/assets/
+public/packs/
+public/packs-test/
+app/assets/builds/
+
+# Coverage reports
+coverage/
+.coverage/
+
+# Test artifacts
+spec/examples.txt
+test/tmp/
+test/version_tmp/
+
+# Cache directories
+.cache/
+.yarn-cache/
+.npm/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Ruby version managers
+.rvmrc
+.ruby-version
+.ruby-gemset
+
+# Yarn files
+yarn-error.log
+
+# Storage uploads (if using Active Storage locally)
+storage/
+
+# Documentation
+doc/
+.yardoc/
+
+# Package files
+*.gem
+*.rbc
+
+# Large binary files that shouldn't be analyzed
+*.pdf
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.dmg
+*.iso
+*.img
+
+# Images (optional - uncomment if you have many large images)
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.bmp
+# *.tiff
+# *.svg
+
+# Videos and audio
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.mp3
+*.wav
+*.flac
+
+# Backup files
+*.bak
+*.backup
+*.old

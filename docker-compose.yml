@@ -7,9 +7,8 @@ services:
     build:
       context: .
       args:
-        rails_master_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        rails_env: production
-    command: sh -c "rails s -p 3000 -b '0.0.0.0' -e production"
+        RAILS_MASTER_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        RAILS_ENV: production
     expose:
       - "3000"
     restart:

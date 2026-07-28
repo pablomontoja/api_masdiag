@@ -30,7 +30,7 @@ class Fv1::SampleController < ApplicationController
         @sample.measurements.destroy_all
         Notification::SampleChangedJob.perform_later(@sample.Id)
       else
-        MasdiagEvent::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+        MasdiagMailer::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
       end
       
       ::LalenApi::RegisterKitJob.perform_later(@sample) if V1::Common::LALEN_INSTITUTION_IDS.include?(@sample.patient&.contractor&.institution_id)

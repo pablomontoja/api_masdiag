@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h3>Cześć,</h3>
+    <p>
+      Znalazłem próbki, które zbyt długo oczekują na wykonanie badania:
+    </p>
+    <table style="border: 1px solid black; border-spacing: 10px;">
+      <tr>
+        <th colspan="3">Projekt: <%= @project.Name %></th>
+      </tr>
+      <tr>
+        <th>Lp.</th>
+        <th>Kody próbek</th>
+        <th>Data przyjęcia próbki</th>
+        <th>Data rejestracji próbki</th>
+      </tr>
+
+      <% @samples.each_with_index do |smp, idx| %>
+        <tr> 
+          <td><%= (idx+1).to_s %></td>
+          <td><%= smp.fetch(:code) %></td>
+          <td><%= smp.fetch(:acceptance_date) %></td>
+          <td><%= smp.fetch(:registration_date) %></td>
+        </tr>
+      <% end %>
+    
+    </table>
+
+    <p>
+      <h3>
+        Z poważaniem,<br>
+        <b>Dział IT</b><br>
+      </h3>
+      Masdiag Sp. z o.o.<br>
+      ul. Stefana Żeromskiego 33<br>
+      01–882 Warszawa<br>
+      NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+      Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>      
+    </p>
+
+
+    <p>
+      Wiadomość wygenerowana automatycznie.
+    </p>
+  </body>
+</html>

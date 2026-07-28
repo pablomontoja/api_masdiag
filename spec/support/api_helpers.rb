@@ -3,14 +3,129 @@ module ApiHelpers
     JSON.parse(response.body)
   end
 
+  def sample_cancellation_json
+    %Q(
+      {
+        "cancellation": {
+          "sample_code": "JV4XJ",
+          "cancellation_date": "2024-02-14T14:32:21.349+01:00",
+          "cancellation_reason": "za niska karnityna",
+          "cancelled_by_email": "pawel.swider@masdiag.pl",
+          "should_backup_kit_be_sent": true
+        }
+      }
+    )
+  end
+
+  def correct_import
+    %Q(
+						[
+        {
+          "order_number": "9800",
+          "order_date": "2022-05-10 10:50",
+          "billing_first_name": "Tomasz",
+          "billing_last_name": "Bialik",
+          "billing_email": "tbialik@onet.pl",
+          "billing_phone": "+48790582587",
+          "First Name (Shipping)": "Tomasz",
+          "Last Name (Shipping)": "Bialik",
+          "Address 1&amp;2 (Shipping)": "Zawiszy Czarnego 4\/50, Ci\u0105g dalszy adresu - adres 2",
+          "Postcode (Shipping)": "40-872",
+          "City (Shipping)": "Katowice",
+          "products": [
+            {
+              "Product Name (main)": "Badanie st\u0119\u017cenia witaminy D",
+              "Product Current Price": "450",
+              "Quantity": "1",
+              "_tmcartepo_data": ""
+            }
+          ],
+          "coupons": [
+            {
+              "Coupon Code": "jps10",
+              "Coupon Amount": "10",
+              "Discount Amount": "45"
+            }
+          ]
+        }
+      ]
+      	)
+  end
+
+  def incorrect_import
+    %Q(
+						[
+        {
+          "order_number": "9800",
+          "order_date": "2022-05-10 10:50",
+          "billing_first_name": "Tomasz",
+          "billing_last_name": "Bialik",
+          "billing_email": "",
+          "billing_phone": "+48790582587",
+          "First Name (Shipping)": "Tomasz",
+          "Last Name (Shipping)": "Bialik",
+          "Address 1&amp;2 (Shipping)": "Zawiszy Czarnego 4\/50, Ci\u0105g dalszy adresu - adres 2",
+          "Postcode (Shipping)": "40-872",
+          "City (Shipping)": "Katowice",
+          "products": [
+            {
+              "Product Name (main)": "Badanie st\u0119\u017cenia witaminy D",
+              "Quantity": "1",
+              "_tmcartepo_data": ""
+            }
+          ]
+        }
+      ]
+      	)
+  end
+
+  def two_kits_correct_import
+    %Q(
+						[
+        {
+          "order_number": "9800",
+          "order_date": "2022-05-10 10:50",
+          "billing_first_name": "Tomasz",
+          "billing_last_name": "Bialik",
+          "billing_email": "tbialik@onet.pl",
+          "billing_phone": "+48790582587",
+          "First Name (Shipping)": "Tomasz",
+          "Last Name (Shipping)": "Bialik",
+          "Address 1&amp;2 (Shipping)": "Zawiszy Czarnego 4\/50, Ci\u0105g dalszy adresu - adres 2",
+          "Postcode (Shipping)": "40-872",
+          "City (Shipping)": "Katowice",
+          "products": [
+            {
+              "Product Name (main)": "Badanie st\u0119\u017cenia witaminy D",
+              "Product Current Price": "450",
+              "Quantity": "2",
+              "_tmcartepo_data": ""
+            }
+          ],
+          "coupons": [
+            {
+              "Coupon Code": "jps10",
+              "Coupon Amount": "10",
+              "Discount Amount": "45"
+            }
+          ]
+        }
+      ]
+      	)
+  end
+
   def http_login
     user = 'username'
     pw = 'password'
     request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials(user,pw)
-  end  
+  end
 
   def http_auth_header
     {"Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("username","password")}
+  end
+
+  def http_auth_header_with_json_content_type
+    {"Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("username","password"), 'Content-Type' => 'application/json'}
   end
 
   def generate_results(codes: [])

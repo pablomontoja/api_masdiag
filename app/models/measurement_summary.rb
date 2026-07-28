@@ -33,6 +33,12 @@ class MeasurementSummary < ApplicationRecord
     end    
   end
 
+  def self.last_month
+    date_start = Time.now.at_beginning_of_month
+    date_end = Time.now.at_end_of_month
+    self.where(created_at: date_start..date_end)
+  end
+
   def self.search(search)
     if search.present?
       base_query = self.includes(measurements: :sample).includes(:institution).references(:Samples, :Measurements, :institutions)

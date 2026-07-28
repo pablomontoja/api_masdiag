@@ -1,4 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
+  self.delivery_job = MasdiagMailDeliveryJob
   include ActionView::Helpers::AssetTagHelper
   include ActionView::Helpers::UrlHelper
   default from: "powiadomienia@masdiag.pl", reply_to: "pomoc@masdiag.pl"
@@ -21,7 +22,7 @@ class ApplicationMailer < ActionMailer::Base
 private
 
   def wait_three_seconds
-    sleep(10) if Rails.env.production?
+    sleep(3) if Rails.env.production?
   end
 
 end

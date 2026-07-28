@@ -1,0 +1,119 @@
+default: &default
+  
+  hourly_failed_executions_checking:
+    class: MasdiagRecurring::Hourly::FailedExecutionMonitoringJob
+    queue: background
+    args: []
+    schedule: every hour
+  hourly_delayed_jobs_monitoring:
+    class: MasdiagRecurring::Hourly::DelayedJobsMonitoringJob
+    queue: background
+    args: []
+    schedule: every hour
+  monthly_decretion_report_job:
+    class: MasdiagRecurring::Monthly::DecretionReportJob
+    queue: background
+    args: []
+    schedule: "0 4 1 * *"
+  monthly_foreign_samples_report_job:
+    class: MasdiagRecurring::Monthly::ForeignSamplesReportJob
+    queue: background
+    args: []
+    schedule: "15 4 1 * *"
+  monthly_hospital_summary_job:
+    class: MasdiagRecurring::Monthly::HospitalSummaryJob
+    queue: background
+    args: []
+    schedule: "30 4 1 * *"
+  monthly_ptc_summary_job:
+    class: MasdiagRecurring::Monthly::PtcSummaryJob
+    queue: background
+    args: []
+    schedule: "45 4 1 * *"
+  monthly_jps10_report_job:
+    class: MasdiagRecurring::Monthly::Jps10Report
+    queue: background
+    args: []
+    schedule: "0 6 1 * *"
+  daily_solid_queue_cleanup:
+    class: MasdiagRecurring::Daily::SolidQueueCleanup
+    queue: background
+    args: []
+    schedule: "0 1 * * *"
+  daily_ceracreen_performance_statistic:
+    class: MasdiagRecurring::Daily::CerascreenPerformanceStatisticJob
+    queue: background
+    args: []
+    schedule: "45 6 * * *"
+  daily_ceracreen_dao_declaration:
+    class: MasdiagRecurring::Daily::CerascreenDaoDeclarationJob
+    queue: background
+    args: []
+    schedule: "0 20 * * *"
+  daily_delayed_samples:
+    class: MasdiagRecurring::Daily::DelayedSamplesJob
+    queue: background
+    args: []
+    schedule: "0 5 * * *"
+  daily_fftb_report_sender:
+    class: MasdiagRecurring::Daily::FftbReportSenderJob
+    queue: background
+    args: []
+    schedule: "45 5 * * *"
+  daily_hospital_samples_zipper:
+    class: MasdiagRecurring::Daily::HospitalsSamplesZipperJob
+    queue: background
+    args: []
+    schedule: "30 5 * * *"
+  daily_lalen_incoming_samples:
+    class: MasdiagRecurring::Daily::LalenIncomingSamplesJob
+    queue: background
+    args: []
+    schedule: "0 17 * * *"
+  daily_local_contractors_year_report:
+    class: MasdiagRecurring::Daily::LocalContractorsYearRaportJob
+    queue: background
+    args: []
+    schedule: "15 5 * * *"
+  daily_toxo_registration_reminder_final:
+    class: Notifications::RegistrationReminderFinalJob
+    queue: background
+    args: []
+    schedule: "0 6 * * *"
+  daily_omegaquant_csv_results:
+    class: MasdiagRecurring::Daily::OmegaquantCsvResultsJob
+    queue: background
+    args: []
+    schedule: "0 18 * * *"
+  hl7_minio_scanner:
+    class: Hl7MinioScannerJob
+    queue: background
+    args: []
+    schedule: every 5 minutes
+  hl7_link_pending:
+    class: Hl7LinkPendingJob
+    queue: background
+    args: []
+    schedule: every 15 minutes
+  hl7_retry_failed:
+    class: Hl7RetryFailedJob
+    queue: background
+    args: []
+    schedule: every 30 minutes
+
+development:
+ <<: *default
+
+# test:
+#  <<: *default
+
+staging:
+ <<: *default
+
+production:
+ <<: *default
+
+
+
+
+ 

@@ -1,16 +1,16 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.2"
+ruby "3.3.7"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.0.4", ">= 7.0.8.7"
+gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 
 # Use mysql as the database for Active Record
 gem "mysql2", "~> 0.5"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 5.0"
+gem "puma", ">= 5.0"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
@@ -22,7 +22,7 @@ gem "puma", "~> 5.0"
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -35,6 +35,7 @@ gem "bootsnap", require: false
 
 group :development, :test, :staging do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  # gem "debug", platforms: %i[ mri windows ]
   # gem "debug", platforms: %i[ mri mingw x64_mingw ]
   gem 'faker'
 end
@@ -65,18 +66,34 @@ end
 
 gem 'faraday'
 gem 'faraday-net_http_persistent', '~> 2.0'
-gem "lockbox"
-gem 'composite_primary_keys', '=14.0.6'
+gem 'pundit'
+# Lockbox >= 2.2 refuses to load on Active Record 7.1
+gem "lockbox", "~> 1.2.0"
+# gem 'composite_primary_keys', '=14.0.6'
 gem "solid_queue"
+gem "mission_control-jobs"
+gem "propshaft" # for mission_control-jobs
 gem "groupdate", "~> 6.4"
 gem "sentry-ruby"
 gem "sentry-rails"
 gem "roo", "~> 2.10.0"
 gem 'async', "~> 2.21.1"
+gem 'prawn'
+gem 'prawn-table'
+
+# needed only for MasdiagRecurring::Hourly::DelayedJobsMonitoringJob
+gem 'delayed_job_active_record'
+
 gem 'money-rails', '~> 1.12'
+gem 'business_time'
+gem 'caxlsx_rails'
+gem 'caxlsx'
+gem "k-php-serialize", github: 'pablomontoja/php-serialize'
+gem 'sanitize'
+gem 'microsoft_graph_mailer'
+gem 'listen' # used by config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
 gem "rails-i18n"
-gem "i18n", "~> 1.12.0"
 gem 'mobility', '~> 1.3.2'
-gem 'pundit'
 gem 'nokogiri', '~> 1.15.0'
 gem 'pagy', '~> 6.2'

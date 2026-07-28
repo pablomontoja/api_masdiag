@@ -1,17 +1,54 @@
 # API MASDIAG
 
-## TOXO migration
-1. rails db:migrate
-2. after "Mysql2::Error: Table 'LabSample.mobility_string_translations' doesn't exist" error comment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
-3. use `rails c` and `require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')` and `ToxicologyQuantProject.new.change`
-4. add `20260311113835` to schema_migrations table
-5. uncomment `extend Mobility` and `translates :NameInReport, type: :string, default: -> { read_attribute(:NameInReport) }`
-6. rails db:migrate
+# RISKS FROM main -> staging MERGE REVIEW (2026-07-27) - to fix before production deploy
 
+Duplicate/lost notification emails:
+- Notifications::Sender idempotency relies only on an app-level uniqueness validation on Note (subject_type, subject_id, key) — there is no DB unique index, so a race between two concurrent job runs can send the same email twice; add a unique index on notes and rescue RecordInvalid/RecordNotUnique in app/services/notifications/sender.rb
+- Notifications::EventDispatcher#dispatch_lab calls the old MasdiagMailer::Send*NotificationsJob jobs directly, bypassing the Note-based idempotency used by the :toxo family — if LabSample still calls the old masdiag_mailer/emails_controller.rb endpoints in parallel with the new masdiag/* ones (see "TODO all mailer endpoints in LabSample must be updated" in the code), the same patient/contractor gets the same email twice from two independent code paths
+- FIXED: Contractor#are_notifications_enabled is no longer checked in Notifications::RecipientResolver — it belonged to the older ContractorResultsNotifierJob/ContractorResultNotificationMailer mechanism and defaulted to false (e.g. regspec-synced contractors), so using it as an AND-gate for :toxo events would have silently suppressed notifications for contractors who never needed the flag set
+
+Config/credentials to verify before deploy:
+- config/environments/production.rb switched ActionMailer to :microsoft_graph — confirm credentials.mailer[:user_id/:tenant/:client_id/:client_secret] are present in config/credentials/production.yml.enc, otherwise all production email delivery fails
+- config/environments/staging.rb has no action_mailer delivery_method/smtp/microsoft_graph config at all — mail on staging may not go out
+- Regspec::RegspecSyncController / AdminController read credentials.regspec / credentials.mission_control — confirm these keys exist before hitting those endpoints
+
+Other findings from the review, lower priority:
+- StockRoomItem belongs_to :stock_room was uncommented without optional: true — any StockRoomItem created without stock_room_id now gets a validation error (422) instead of saving; check all creation call sites
+- composite_primary_keys is commented out in the Gemfile — confirm no model actually relied on it (legacy tables with composite Id columns)
+- db/migrate/20260718184044_add_notification_flags_to_contractors.rb has a 2026 timestamp (should be 2025) — cosmetic, but breaks migration chronology
+- db/schema.rb hl7_imports table charset changed from utf8mb4 to utf8/utf8_polish_ci — confirm this is intentional (utf8 can truncate characters outside the BMP in HL7 data)
+- Dockerfile7.0 (Ruby 3.1.2/Rails 7.0 fallback image) sits next to the main Dockerfile — risk of accidental use in CI/deploy since it's incompatible with the current Gemfile.lock (requires Ruby 3.3.7)
+- CLAUDE.md still tells contributors to `rvm use 3.1.2`, but Gemfile/.ruby-version now require 3.3.7
+- delayed_job_active_record was added as a second queueing system just for DelayedJobsMonitoringJob, alongside Solid Queue — possible source of confusion
+- Lalen::SampleController lost validate_confirmation_test_request (sample quality / duplicate confirmation test checks) — looks like dead code (no call sites found), but confirm before assuming it's safe to drop
+- All new Notifications::*Job use retry_on StandardError, attempts: 5 without distinguishing transient (network) errors from logic errors (e.g. RecordInvalid from the idempotency issue above) — increases risk of repeat sends on non-network failures
 
 ---
 
-## LSI validation
+# NEW MAILER MIGRATION - MasdiagMailer/MasdiagRecurring Notes
+
+List of tasks to do during deployment on production
+1. perhaps Dockerfile7.1 should be used for deploy in production 
+2. `rails db:prepare`    ---- it is needed for solid_queue migration if first task is not proceeded
+3. if "Specified key was too long max key length is 767 bytes" problem occurs go to Masdiag Obsidian and find solution
+4. `rails db:migrate:queue`  ---- applying solid_queue DB changes
+5. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
+
+Comments:
+1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
+
+---
+
+# TODO in README.md
+- new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
+- new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
+- new layout for /rails/mailers/cancellation_notification_mailer/standard_cancellation_notification
+- new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
+- new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
+
+---
+
+# LSI validation
 
 As part of the validation of the LSI Masdiag software in accordance with IEC 62304, it is necessary to prepare a software configuration report with each software release.
 A script has been created that prepares the data needed to prepare the report.
@@ -81,6 +118,18 @@ Test.reset_column_information
 ```
 
 ---
+
+# Enabling ruby YJIT
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+rustc --version
+
+rvm reinstall 3.3.7 --reconfigure --enable-yjit
+ruby --yjit -e "p RubyVM::YJIT.enabled?" 
+```
+
+
 
 
 # Checking not included in measurement summaries
@@ -282,6 +331,43 @@ end
 #---------------------------------------------------------
 
 ```
+
+
+# PROBLEMS
+
+---
+
+## Specified key was too long; max key length is 767 bytes
+
+Open my.ini and add this lines(if they already exist just edit everything after =) right after [mysqld]:
+```
+innodb_file_format = Barracuda
+innodb_file_per_table = on
+innodb_default_row_format = dynamic
+innodb_large_prefix = 1
+innodb_file_format_max = Barracuda
+```
+
+OR
+
+Autenticate to mysql:
+```
+mysql -h localhost -u root
+```
+or use phpmyadmin.
+
+Once you're authenticated run this queries(one at a time):
+```
+SET GLOBAL innodb_file_format = Barracuda;
+SET GLOBAL innodb_file_per_table = on;
+SET GLOBAL innodb_default_row_format = dynamic;
+SET GLOBAL innodb_large_prefix = 1;
+SET GLOBAL innodb_file_format_max = Barracuda;
+```
+
+
+
+
 
 
 Things you may want to cover:

@@ -13,6 +13,43 @@
 class Note < ApplicationRecord
 	belongs_to :subject, polymorphic: true
 
+	KEYS_BY_SUBJECT = {
+		"Sample" => %w[
+			lalen-eu-incoming-samples-email
+			stability-period-exceeded
+			tandem-ms-sample
+			alloisoleucine-sample
+			extended-metabolic-screening
+			sample-registration-confirmation-email
+			sample-accepted-email
+			registration-reminder-email
+			registration-reminder-final-email
+			sample-rejected-email
+			result-available-email
+			chromatogram-request-email
+			lab-user-note
+		],
+		"ReservedSampleCode" => %w[
+			cerascreen-dao-declaration-email
+			kit-lock
+			cancelled-handler
+			free-or-demo
+			lab-user-note
+		],
+		"Measurement" => %w[
+			included-in-monthly-hospital-report
+			included-in-daily-hospital-zip-archive
+			included-in-monthly-ptc-report
+			included-in-monthly-invoice-for-hospitals
+			omegaquant-result-exit-in-csv
+			lab-user-note
+		]
+	}.freeze
+
+	def self.keys_for(subject_type)
+		KEYS_BY_SUBJECT.fetch(subject_type.to_s, [])
+	end
+
 	validates :key, presence: true
 	validates :subject_id, uniqueness: { scope: [:subject_type, :key] }
 	validates_inclusion_of :key, in: :available_keys
@@ -20,21 +57,7 @@ class Note < ApplicationRecord
 private
 
 	def available_keys
-		%w( 
-				included-in-monthly-hospital-report
-				included-in-daily-hospital-zip-archive
-				lalen-eu-incoming-samples-email
-				included-in-monthly-ptc-report
-				cerascreen-dao-declaration-email
-				kit-lock
-				tandem-ms-sample
-				lab-user-note
-				alloisoleucine-sample
-				cancelled-handler
-				extended-metabolic-screening
-				omegaquant-result-exit-in-csv
-				stability-period-exceede
-			)
+		KEYS_BY_SUBJECT.values.flatten.uniq
 	end
 
 end

@@ -1,6 +1,7 @@
 class Toxo::MeasurementPolicy < ApplicationPolicy
   def index? = true
   def show?  = true
+  def request_chromatogram? = user.can_add_samples?
 
   class Scope < ApplicationPolicy::Scope
     def resolve

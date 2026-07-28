@@ -17,22 +17,22 @@
 FactoryBot.define do
   factory :stock_room_item, class: StockRoomItem do
   	association :storagable, factory: :package
+    association :stock_room
     capacity { 1 }
     remaining_quantity { 1 }
     last_partial_consume_date { nil }
     date_in { 1.month.ago }
     date_out { nil }
-    stock_room_id { 1 }
   end
 
   factory :second_stock_room_item, class: StockRoomItem do
     association :storagable, factory: :second_package
+    association :stock_room
     capacity { 1 }
     remaining_quantity { 1 }
     last_partial_consume_date { nil }
     date_in { 1.month.ago }
     date_out { nil }
-    stock_room_id { 1 }
   end
 end
 

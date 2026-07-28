@@ -45,8 +45,6 @@
 class Sample < ApplicationRecord
   before_validation -> { self.Code.upcase! }
 
-  enum :MaterialType, MaterialTypes::MODEL_HASH
-
   self.table_name = "Samples"
   self.primary_key = "Id"
   belongs_to :patient, class_name: "Patient", foreign_key: "PatientId"
@@ -56,6 +54,8 @@ class Sample < ApplicationRecord
   accepts_nested_attributes_for :patient
   has_many :test_transactions # in labpanel here is has_one used
   has_many :notes, as: :subject
+
+  enum :MaterialType, MaterialTypes::MODEL_HASH, instance_methods: false
 
   attr_accessor :approve
 
@@ -111,9 +111,9 @@ class Sample < ApplicationRecord
     ::LalenApi::RegisterKitJob.perform_later(self) if V1::Common::LALEN_INSTITUTION_IDS.include?(self.patient&.contractor&.institution_id)
   end
 
-  #######################
-  private
-  #######################
+#######################
+private
+#######################
 
   def today_date
     Date.today
@@ -143,5 +143,4 @@ class Sample < ApplicationRecord
     r = ReservedSampleCode.find_by(Code: self.Code)
     self.update_column(:reserved_sample_code_id, r.Id) unless r.nil?
   end
-
 end

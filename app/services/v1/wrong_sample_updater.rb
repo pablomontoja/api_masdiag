@@ -10,12 +10,13 @@ class V1::WrongSampleUpdater < ApplicationService
     update_sample_attrs
     update_measurements
 
+    # Notifications are dispatched by the callers after sample.save!
     # if [4,5].include?(@sample.soaking_degree_id)
     #   @sample.measurements.destroy_all
     #   Notification::SampleChangedJob.perform_later(@sample.Id)
     #   # SendMailNotificationJob.perform_later("send_cancellation_notifications", @sample)
     # else
-    #   MasdiagEvent::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
+    #   MasdiagMailer::SendNotificationAfterDelayedRegJob.perform_later(@sample.Id)
     #   # SendMailNotificationJob.perform_later("send_notification_after_delayed_reg", @sample)
     # end
 

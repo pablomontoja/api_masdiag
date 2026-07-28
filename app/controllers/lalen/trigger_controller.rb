@@ -12,6 +12,9 @@ class Lalen::TriggerController < ApplicationController
     meas = Measurement.includes(:sample).where(Status: 5).find_by(Samples: { Code: sample_code })
 
     if meas.nil?
+      sample = Sample.find_by(Code: sample_code)
+      # if sample was QNSed the meas is nil
+      Notification::LalenSampleResultSender.perform_later(sample) if sample&.cancelled?
       puts "#{sample_code} - does not have authorized measurements (Lalen::TriggerController)"
       render json: { message: "#{sample_code} - does not have authorized measurements" }, status: 200      
     else

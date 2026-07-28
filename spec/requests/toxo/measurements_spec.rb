@@ -260,5 +260,22 @@ RSpec.describe "Toxo::MeasurementsController", type: :request do
 
       expect(json["has_on_request_measurement"]).to eq(true)
     end
+
+    it "flags has_chromatogram_request as false when no chromatogram request note exists" do
+      m = create_measurement(code: "TX001A")
+
+      get "/toxo/measurements/#{m.Id}", headers: bearer
+
+      expect(json["has_chromatogram_request"]).to eq(false)
+    end
+
+    it "flags has_chromatogram_request as true when a chromatogram request note exists" do
+      m = create_measurement(code: "TX001A")
+      m.notes.create!(key: Toxo::Constants::CHROMATOGRAM_REQUEST_NOTE_KEY, description: "test")
+
+      get "/toxo/measurements/#{m.Id}", headers: bearer
+
+      expect(json["has_chromatogram_request"]).to eq(true)
+    end
   end
 end

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+</head>
+
+<body>
+  <h3>Darku,</h3>
+  <p>
+    Dziewczyny w labie odrzuciły bibułę, która dotarła do nas i pochodziła z pudełka AqiPharmu. Poniżej dane na temat pacjenta i bibuły.
+  </p>
+  <table>
+    <tr>
+      <td><b>Pacjent:</b></td>
+      <td>
+        <%= @sample.patient.fullname %>
+      </td>
+    </tr>
+    <tr>
+      <td><b>Telefon pacjenta:</b></td>
+      <td>
+        <%= @sample.patient.phone %>
+      </td>
+    </tr>
+    <tr>
+      <td><b>Email pacjent:</b></td>
+      <td>
+        <%= @sample.patient.email %>
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><b>Kod bibuły:</b></td>
+      <td>
+        <%= @sample.Code %>
+      </td>
+    </tr>
+    <tr>
+      <td><b>Instytucja:</b></td>
+      <td>
+        <%= @rsc.institution.name %>
+      </td>
+    </tr>
+    <tr>
+      <td><b>Przypisane badania:</b></td>
+      <td>
+        <%= @rsc.projects_names.join(",") %>
+      </td>
+    </tr>
+  </table>
+  <br>
+  <p>
+    Z poważaniem,<br><br>
+    <%= email_image_tag("logo_masdiag.png", width: "300px") %><br>
+    Dział IT<br>
+    Masdiag Sp. z o.o.<br>
+    ul. Stefana Żeromskiego 33<br>
+    01–882 Warszawa<br>
+    NIP: 522-299-64-68 REGON 146121549 KRS 0000420325<br>
+    Sąd Rejonowy dla Miasta Stołecznego Warszawy Wydział XIII KRS, kapitał 6 950 zł w pełni opłacony<br>
+  </p>
+  <p>
+    Wiadomość wygenerowana automatycznie.
+  </p>
+</body>
+
+</html>

@@ -26,7 +26,7 @@ private
 	end
 
   def meas_from_shop_orders_table
-  	pack_ids = ShopOrder.where(email: params[:email]).map(&:package_ids).flatten
+  	pack_ids = ShopOrder.where(email: params[:email]).map(&:snapshot_package_ids).flatten
   	codes = ReservedSampleCode.where(package_id: pack_ids).pluck(:Code)
   	Measurement.includes(sample: :patient).where(Status: 5).where(sample: {Code: codes}).where(sample: {Patients: {Pesel: params[:pesel]}}).pluck(:Id)
   end
