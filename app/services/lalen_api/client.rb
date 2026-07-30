@@ -6,10 +6,10 @@ module LalenApi
 	  private_class_method :new
 
 	  def initialize  	
-	  	@connection = Faraday.new(url: Rails.application.credentials.lalenportalapi.url) do |f|
-	  		# f.response :raise_error # raise Faraday::Error on status code 4xx or 5xx 		    
+	  	@connection = Faraday.new(url: Rails.application.credentials.dig(:lalenportalapi, :url)) do |f|
+	  		# f.response :raise_error # raise Faraday::Error on status code 4xx or 5xx
 	      f.request :json
-	      f.request :authorization, :basic, Rails.application.credentials.lalenportalapi.username, Rails.application.credentials.lalenportalapi.password
+	      f.request :authorization, :basic, Rails.application.credentials.dig(:lalenportalapi, :username), Rails.application.credentials.dig(:lalenportalapi, :password)
 	      f.response :json
 	      f.adapter :net_http_persistent
 	      f.response :logger, Rails.logger, headers: true, log_level: :debug  

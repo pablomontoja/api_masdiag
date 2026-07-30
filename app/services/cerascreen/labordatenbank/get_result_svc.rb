@@ -9,7 +9,7 @@ module Cerascreen
 			
 			def call
 				begin
-					resp = @connection.get("#{Rails.application.credentials.labordatenbank_api.url}/#{@sample_code}")
+					resp = @connection.get("#{Rails.application.credentials.dig(:labordatenbank_api, :url)}/#{@sample_code}")
 					j = resp.body
 					pp j
 					return nil if j == "null"

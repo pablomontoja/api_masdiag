@@ -8,13 +8,13 @@ module DiagnostykaPrecyzyjna
     end
 
     def perform(appointment)
-      uri_string = Rails.application.credentials.patient_portal_api[:url]
+      uri_string = Rails.application.credentials.dig(:patient_portal_api, :url)
 
       uri = URI.parse(uri_string)
       req = Net::HTTP::Post.new(uri, {'Content-Type': 'application/json'})
 
-      req.basic_auth Rails.application.credentials.patient_portal_api[:username],
-                     Rails.application.credentials.patient_portal_api[:password]
+      req.basic_auth Rails.application.credentials.dig(:patient_portal_api, :username),
+                     Rails.application.credentials.dig(:patient_portal_api, :password)
 
       req.body = { appointment: appointment }.to_json
 
