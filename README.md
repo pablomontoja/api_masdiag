@@ -1,3 +1,10 @@
+# DOCKER SWARM
+Przed pierwszym deployem musisz ręcznie utworzyć sekrety w Swarmie (jednorazowo, na hoście manager node):
+
+docker secret create masdiagapi_staging_rails_master_key config/environments/staging.key
+docker secret create masdiagapi_production_rails_master_key config/environments/production.key
+
+
 # API MASDIAG
 
 # RISKS FROM main -> staging MERGE REVIEW (2026-07-27) - to fix before production deploy
