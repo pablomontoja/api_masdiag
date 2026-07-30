@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+if [ -z "${RAILS_MASTER_KEY}" ] && [ -f "/run/secrets/rails_master_key" ]; then
+  export RAILS_MASTER_KEY="$(cat /run/secrets/rails_master_key)"
+fi
+
+exec ./bin/rails console
