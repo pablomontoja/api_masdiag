@@ -4,7 +4,7 @@ services:
   app:
     hostname: api-masdiag-production
     image: 127.0.0.1:5000/api-masdiag-production:latest
-    command: sh -c "./bin/rails s -p 3000 -b '0.0.0.0' -e production"
+    command: sh -c "export RAILS_MASTER_KEY=\"$(cat /run/secrets/rails_master_key)\"; ./bin/rails s -p 3000 -b '0.0.0.0' -e production"
     # volumes:
     #   - "/storage/rails/api-masdiag-production/log:/app2/log"
     environment:
@@ -51,7 +51,7 @@ services:
     secrets:
       - source: masdiagapi_production_rails_master_key
         target: rails_master_key
-    command: sh -c "bundle exec rake solid_queue:start"
+    command: sh -c "export RAILS_MASTER_KEY=\"$(cat /run/secrets/rails_master_key)\"; bundle exec rake solid_queue:start"
     # networks:
     #   - appnet
 
