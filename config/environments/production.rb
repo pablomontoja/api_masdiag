@@ -84,10 +84,10 @@ Rails.application.configure do
 
   ActionMailer::Base.delivery_method = :microsoft_graph
   ActionMailer::Base.microsoft_graph_settings = {
-    user_id: Rails.application.credentials.mailer[:user_id],
-    tenant: Rails.application.credentials.mailer[:tenant],
-    client_id: Rails.application.credentials.mailer[:client_id],
-    client_secret: Rails.application.credentials.mailer[:client_secret],
+    user_id: Rails.application.credentials.dig(:mailer, :user_id),
+    tenant: Rails.application.credentials.dig(:mailer, :tenant),
+    client_id: Rails.application.credentials.dig(:mailer, :client_id),
+    client_secret: Rails.application.credentials.dig(:mailer, :client_secret),
     azure_ad_endpoint: "https://login.microsoftonline.com",
     graph_endpoint: "https://graph.microsoft.com"
   }

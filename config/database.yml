@@ -19,16 +19,16 @@ development:
   primary:
     <<: *default
     database: LabSample
-    username: <%= Rails.application.credentials.db.username %>
-    password: <%= Rails.application.credentials.db.password %>
-    host: <%= Rails.application.credentials.db.host %>
+    username: <%= Rails.application.credentials.dig(:db, :username) %>
+    password: <%= Rails.application.credentials.dig(:db, :password) %>
+    host: <%= Rails.application.credentials.dig(:db, :host) %>
     port: 3307
   queue:
     <<: *default
     database: solid_queue_db
-    username: <%= Rails.application.credentials.db.username %>
-    password: <%= Rails.application.credentials.db.password %>
-    host: <%= Rails.application.credentials.db.host %>
+    username: <%= Rails.application.credentials.dig(:db, :username) %>
+    password: <%= Rails.application.credentials.dig(:db, :password) %>
+    host: <%= Rails.application.credentials.dig(:db, :host) %>
     migrations_paths: db/queue_migrate
     port: 3307
 
@@ -38,10 +38,10 @@ development:
 test:
   <<: *default
   database: api_masdiag_test
-  username: <%= Rails.application.credentials.db.username %>
-  password: <%= Rails.application.credentials.db.password %>
-  host: <%= Rails.application.credentials.db.host %>
-  port: <%= Rails.application.credentials.db.port %>
+  username: <%= Rails.application.credentials.dig(:db, :username) %>
+  password: <%= Rails.application.credentials.dig(:db, :password) %>
+  host: <%= Rails.application.credentials.dig(:db, :host) %>
+  port: <%= Rails.application.credentials.dig(:db, :port) %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -67,29 +67,29 @@ production:
   primary:
     <<: *default
     database: LabSample
-    username: <%= Rails.application.credentials.db.username %>
-    password: <%= Rails.application.credentials.db.password %>
-    host: <%= Rails.application.credentials.db.host %>
+    username: <%= Rails.application.credentials.dig(:db, :username) %>
+    password: <%= Rails.application.credentials.dig(:db, :password) %>
+    host: <%= Rails.application.credentials.dig(:db, :host) %>
   queue:
     <<: *default
     database: api_production_solid_queue_db
-    username: <%= Rails.application.credentials.db.username %>
-    password: <%= Rails.application.credentials.db.password %>
-    host: <%= Rails.application.credentials.db.host %>    
+    username: <%= Rails.application.credentials.dig(:db, :username) %>
+    password: <%= Rails.application.credentials.dig(:db, :password) %>
+    host: <%= Rails.application.credentials.dig(:db, :host) %>
     migrations_paths: db/queue_migrate
 
 staging:
   primary:
     <<: *default
     database: api_masdiag_staging
-    username: <%= Rails.application.credentials.db.username %>
-    password: <%= Rails.application.credentials.db.password %>
-    host: <%= Rails.application.credentials.db.host %>
+    username: <%= Rails.application.credentials.dig(:db, :username) %>
+    password: <%= Rails.application.credentials.dig(:db, :password) %>
+    host: <%= Rails.application.credentials.dig(:db, :host) %>
   queue:
     <<: *default
     database: solid_queue_db
-    username: <%= Rails.application.credentials.db.username %>
-    password: <%= Rails.application.credentials.db.password %>
-    host: <%= Rails.application.credentials.db.host %>    
+    username: <%= Rails.application.credentials.dig(:db, :username) %>
+    password: <%= Rails.application.credentials.dig(:db, :password) %>
+    host: <%= Rails.application.credentials.dig(:db, :host) %>
     migrations_paths: db/queue_migrate
 

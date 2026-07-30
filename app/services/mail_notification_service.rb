@@ -13,13 +13,13 @@ class MailNotificationService < ApplicationService
       return
       
       attempts ||= 1
-      uri_string = Rails.application.credentials.external_mailer[:url]
+      uri_string = Rails.application.credentials.dig(:external_mailer, :url)
       uri = URI.parse("#{uri_string}/#{@action}")
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true if uri.instance_of? URI::HTTPS
 
       req = Net::HTTP::Post.new(uri, {'Content-Type': 'application/json'})
-      req.basic_auth Rails.application.credentials.external_mailer[:name], Rails.application.credentials.external_mailer[:password]
+      req.basic_auth Rails.application.credentials.dig(:external_mailer, :name), Rails.application.credentials.dig(:external_mailer, :password)
 
       case @action
       when "send_notification_after_delayed_reg"

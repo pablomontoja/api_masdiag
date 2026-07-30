@@ -1,5 +1,5 @@
 class Regspec::RegspecSyncController < ApplicationController
-  http_basic_authenticate_with name: Rails.application.credentials.regspec[:name], password: Rails.application.credentials.regspec[:password]
+  http_basic_authenticate_with name: Rails.application.credentials.dig(:regspec, :name), password: Rails.application.credentials.dig(:regspec, :password)
 
   def push_sample
     @sample = Sample.find_by(Code: sample_params[:Code])
