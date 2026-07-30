@@ -73,7 +73,7 @@ production:
     port: <%= Rails.application.credentials.db.port %>
   queue:
     <<: *default
-    database: solid_queue_db
+    database: api_production_solid_queue_db
     username: <%= Rails.application.credentials.db.username %>
     password: <%= Rails.application.credentials.db.password %>
     host: <%= Rails.application.credentials.db.host %>

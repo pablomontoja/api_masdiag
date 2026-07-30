@@ -37,7 +37,7 @@ RSpec.describe Notifications::EventDispatcher do
   end
 
   it "skips without error when no recipient can be resolved" do
-    contractor = create(:contractor, institution: toxo_institution, are_notifications_enabled: false)
+    contractor = create(:contractor, institution: toxo_institution, email: "")
     patient = create(:patient, contractor: contractor, IsVirtual: false)
     sample = create(:sample, patient: patient)
 

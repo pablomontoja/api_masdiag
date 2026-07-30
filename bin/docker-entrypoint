@@ -1,7 +1,18 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+# Load RAILS_MASTER_KEY from a Docker/Swarm secret when present, so the
+# container doesn't need the key in a plaintext environment variable.
+if [ -z "${RAILS_MASTER_KEY}" ] && [ -f "/run/secrets/rails_master_key" ]; then
+  export RAILS_MASTER_KEY="$(cat /run/secrets/rails_master_key)"
+fi
+
+# If running the rails server or a solid_queue worker, create or migrate
+# the databases first. The command may arrive as separate argv entries
+# (./bin/rails server) or wrapped in a shell (sh -c "rails s ...",
+# sh -c "bundle exec rake solid_queue:start"), so match on the full
+# command line rather than positional args.
+cmd="$*"
+if [[ "${cmd}" == *"rails server"* ]] || [[ "${cmd}" == *"rails s "* ]] || [[ "${cmd}" == *"rails s'"* ]] || [[ "${cmd}" == *"solid_queue:start"* ]]; then
   ./bin/rails db:prepare
 fi
 

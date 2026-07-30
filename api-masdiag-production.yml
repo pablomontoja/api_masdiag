@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:
-  app:    
+  app:
     hostname: api-masdiag-production
     image: 127.0.0.1:5000/api-masdiag-production:latest
     # volumes:
@@ -10,6 +10,9 @@ services:
       RAILS_LOG_TO_STDOUT: 'true'
       RAILS_SERVE_STATIC_FILES: 'true'
       RAILS_ENV: production
+    secrets:
+      - source: masdiagapi_production_rails_master_key
+        target: rails_master_key
     networks:
       - traefik
     deploy:
@@ -39,18 +42,25 @@ services:
         constraints: 
           - node.role == worker
           - node.platform.arch == x86_64
-  solid_queue:    
+  solid_queue:
     image: 127.0.0.1:5000/api-masdiag-production:latest
     environment:
       RAILS_LOG_TO_STDOUT: 'true'
       RAILS_ENV: production
-    command: sh -c "bundle exec rake solid_queue:start"     
+    secrets:
+      - source: masdiagapi_production_rails_master_key
+        target: rails_master_key
+    command: sh -c "bundle exec rake solid_queue:start"
     # networks:
     #   - appnet
 
 networks:
   traefik:
     name: webgateway
+    external: true
+
+secrets:
+  masdiagapi_production_rails_master_key:
     external: true
 
 
