@@ -6,10 +6,10 @@ module Cerascreen
     private_class_method :new
 
     def initialize  	
-    	@connection = Faraday.new(url: Rails.application.credentials.labordatenbank_api.url) do |f|
-    		# f.response :raise_error # raise Faraday::Error on status code 4xx or 5xx 		    
+    	@connection = Faraday.new(url: Rails.application.credentials.dig(:labordatenbank_api, :url)) do |f|
+    		# f.response :raise_error # raise Faraday::Error on status code 4xx or 5xx
         f.request :json
-        f.request :authorization, :basic, Rails.application.credentials.labordatenbank_api.username, Rails.application.credentials.labordatenbank_api.password
+        f.request :authorization, :basic, Rails.application.credentials.dig(:labordatenbank_api, :username), Rails.application.credentials.dig(:labordatenbank_api, :password)
         f.response :json
         f.adapter :net_http_persistent
         f.response :logger, Rails.logger, headers: true, log_level: :debug  
@@ -28,7 +28,7 @@ module Cerascreen
     end
 
     def self.result_for(sample_code)
-    	@connection.get("#{Rails.application.credentials.labordatenbank_api.url}/#{sample_code}")  	
+    	@connection.get("#{Rails.application.credentials.dig(:labordatenbank_api, :url)}/#{sample_code}")
     end
   	
   end
