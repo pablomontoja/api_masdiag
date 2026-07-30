@@ -4,7 +4,7 @@ services:
   app:
     hostname: api-masdiag-staging
     image: 127.0.0.1:5000/api-masdiag-staging:latest
-    command: sh -c "rails s -p 3000 -b '0.0.0.0' -e staging"
+    command: sh -c "./bin/rails s -p 3000 -b '0.0.0.0' -e staging"
     # volumes:
     #   - "/storage/rails/api-masdiag-staging/log:/app2/log"
     environment:
