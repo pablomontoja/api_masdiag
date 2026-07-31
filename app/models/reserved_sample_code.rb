@@ -74,9 +74,7 @@ class ReservedSampleCode < ApplicationRecord
   end
 
   def shop_order
-    rsc = self.package_id
-    shop_order = ShopOrder.where("package_ids LIKE ?", "%#{rsc}%").limit(1).first if !rsc.nil?
-    shop_order
+    self.package&.shop_order
   end
 
   def retrieve_institution_tests

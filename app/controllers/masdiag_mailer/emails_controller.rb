@@ -3,7 +3,7 @@ module MasdiagMailer
     include MasdiagCheck
 
     # TODO all mailer endpoints in LabSample must be updated
-    # GET /masdiag_mailer/send_all_mails(.:format)  ---->  masdiag_mailer/emails#send_all
+    # POST /masdiag_mailer/send_all_mails(.:format)  ---->  masdiag_mailer/emails#send_all
     #                                                       
     # wykorzystywany przez LabSample do uruchomienia wysyłki wszystkich maili do zlecających i pacjentów
     def send_all
