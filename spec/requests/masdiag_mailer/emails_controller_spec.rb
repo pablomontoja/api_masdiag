@@ -3,7 +3,7 @@ require 'rspec/json_expectations'
 
 RSpec.describe MasdiagMailer::EmailsController, type: :request do
 
-  describe 'GET #send_all' do
+  describe 'POST #send_all' do
     let(:current_time) { Time.now }
     let!(:inst) { create(:institution, id: 1) }
     let!(:contractor) { create(:contractor, institution_id: inst.id) }
@@ -19,7 +19,7 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
       end
 
       it 'returns status 429 with an error message' do      	
-        get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
+        post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
         expect(response).to have_http_status(429)
         expect(response.body).to include_json(error: "too many requests, the use of this endpoint is limited to 1 request per 60 seconds")
       end
@@ -28,7 +28,7 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
         expect(MasdiagMailer::ContractorResultsNotifierJob).not_to receive(:perform_later)
         expect(MasdiagMailer::PatientResultsNotifierJob).not_to receive(:perform_later)
 
-        get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
+        post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
       end
     end
 
@@ -41,16 +41,16 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
         expect(MasdiagMailer::ContractorResultsNotifierJob).to receive(:perform_later)
         expect(MasdiagMailer::PatientResultsNotifierJob).to receive(:perform_later)
 
-        get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
+        post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
       end
 
       it 'updates last_use_of_send_all_mail to the current time' do
-        get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
+        post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
         expect(Rails.configuration.last_use_of_send_all_mail).to eq(current_time)
       end
 
       it 'returns status 200 with "OK" message' do
-        get '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
+        post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
         expect(response).to have_http_status(200)
         expect(response.body).to eq("OK")
       end
