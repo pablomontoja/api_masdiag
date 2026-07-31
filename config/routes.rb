@@ -171,6 +171,7 @@ Rails.application.routes.draw do
   ### MASDIAG MAILER
   #########################################################
   namespace :masdiag_mailer, defaults: {format: :json} do
+    get "send_all_mails", to: 'emails#send_all'
     post "send_all_mails", to: 'emails#send_all'
     
     # Samples    
