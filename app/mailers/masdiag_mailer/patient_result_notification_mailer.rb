@@ -25,7 +25,7 @@ module MasdiagMailer
       end
 
       if Rails.env.production?
-        deliver_with(@patient.contractor.institution.smtp_settings_name) unless @patient.contractor.institution.smtp_settings_name.nil?
+        # deliver_with(@patient.contractor.institution.smtp_settings_name) unless @patient.contractor.institution.smtp_settings_name.nil?
         delivery_mail = @patient.contractor.institution.smtp_email unless @patient.contractor.institution.smtp_settings_name.nil? && @patient.contractor.institution.smtp_email.nil?
       end
 
