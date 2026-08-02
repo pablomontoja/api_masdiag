@@ -30,6 +30,6 @@ RSpec.describe "POST /masdiag/result_available", type: :request do
     header = { "Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("other", "password"),
                }
     post "/masdiag/result_available", params: { sample_id: sample.Id }, headers: header
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 end

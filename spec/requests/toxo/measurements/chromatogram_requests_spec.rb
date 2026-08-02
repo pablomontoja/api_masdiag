@@ -115,7 +115,7 @@ RSpec.describe "Toxo::Measurements::ChromatogramRequestsController", type: :requ
 
         post "/toxo/measurements/#{measurement.Id}/chromatogram_requests", headers: bearer
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -125,7 +125,7 @@ RSpec.describe "Toxo::Measurements::ChromatogramRequestsController", type: :requ
 
         post "/toxo/measurements/#{measurement.Id}/chromatogram_requests", headers: bearer
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

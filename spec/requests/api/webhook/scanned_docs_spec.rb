@@ -104,7 +104,7 @@ RSpec.describe 'Api::Webhook::ScannedDocs', type: :request do
         post '/webhook/scanned_docs',
           params: valid_params.except(:page_checksum),
           headers: bearer_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -121,7 +121,7 @@ RSpec.describe 'Api::Webhook::ScannedDocs', type: :request do
         post '/webhook/scanned_docs',
           params: { file: non_pdf, page_checksum: 'abc123', source_filename: 'fake.pdf' },
           headers: bearer_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(json['error']).to eq('not a PDF')
       end
     end

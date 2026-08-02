@@ -81,13 +81,13 @@ RSpec.describe "Toxo::Samples::ExportsController", type: :request do
         params: { dispatch_date_from: "2026-07-31", dispatch_date_to: "2026-07-01" },
         headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "returns 422 when required params are missing" do
       get "/toxo/samples/exports", params: { dispatch_date_from: "2026-07-01" }, headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "only returns orders within the policy scope" do

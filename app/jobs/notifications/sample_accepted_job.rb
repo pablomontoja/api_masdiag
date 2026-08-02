@@ -1,6 +1,6 @@
 module Notifications
   class SampleAcceptedJob < ApplicationJob
-    retry_on StandardError, wait: :exponentially_longer, attempts: 5
+    retry_on StandardError, wait: :polynomially_longer, attempts: 5
 
     def perform(sample_id)
       sample = Sample.find_by(Id: sample_id)

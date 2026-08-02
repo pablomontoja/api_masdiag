@@ -4,17 +4,17 @@ class V1::SampleController < ApplicationController
     current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_params[:code])
 
     if current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_content)
       return
     end
 
     if current_rsc&.expiry_date < Time.zone.now
-      json_response({ message: "The DBS card is expired." }, :unprocessable_entity)
+      json_response({ message: "The DBS card is expired." }, :unprocessable_content)
       return
     end
 
     if current_rsc&.reserved_tests.count.zero?
-      json_response({ message: "The sample does not have assigned tests." }, :unprocessable_entity)
+      json_response({ message: "The sample does not have assigned tests." }, :unprocessable_content)
       return
     end
 
@@ -40,7 +40,7 @@ class V1::SampleController < ApplicationController
       end
       json_response(SampleResource.new(@sample), :created)
     else
-      json_response({message: @sample.errors}, :unprocessable_entity)
+      json_response({message: @sample.errors}, :unprocessable_content)
     end
   end
 
@@ -48,12 +48,12 @@ class V1::SampleController < ApplicationController
     rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_code)
     sample = Sample.where(AcceptanceDate: nil).find_by(Code: sample_code)
     if rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_content)
       return
     end
 
     if sample.nil?
-      json_response({ message: "This sample does not exist or cannot be deleted." }, :unprocessable_entity)
+      json_response({ message: "This sample does not exist or cannot be deleted." }, :unprocessable_content)
       return
     end
 

@@ -3,7 +3,7 @@ module Notifications
   # próbki w portalu Toxo. Błąd generowania PDF jest przechwytywany i raportowany
   # (Sentry w produkcji), aby nie wpłynąć na zakończoną już rejestrację.
   class SampleRegistrationConfirmationJob < ApplicationJob
-    retry_on StandardError, wait: :exponentially_longer, attempts: 5
+    retry_on StandardError, wait: :polynomially_longer, attempts: 5
 
     def perform(sample_id)
       sample = Sample.find_by(Id: sample_id)

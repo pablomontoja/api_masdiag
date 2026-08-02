@@ -27,7 +27,7 @@ RSpec.describe "Toxo registration → order confirmation notification", type: :r
   it "does NOT enqueue SampleRegistrationConfirmationJob when registration fails validation" do
     expect(Notifications::SampleRegistrationConfirmationJob).not_to receive(:perform_later)
     post "/toxo/samples/registrations", params: valid_params.merge(project_ids: []), headers: bearer
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 
   it "returns 401 and does not enqueue when the Bearer token is missing/invalid" do

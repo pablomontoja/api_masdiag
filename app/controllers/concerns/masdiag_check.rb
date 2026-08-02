@@ -9,7 +9,7 @@ module MasdiagCheck
 
   def only_masdiag_access
     if Current.api_account.institution.id != 1
-      json_response({ message: "You do not have access to this part of Masdiag API." }, :unprocessable_entity)
+      json_response({ message: "You do not have access to this part of Masdiag API." }, :unprocessable_content)
     end
   end
 

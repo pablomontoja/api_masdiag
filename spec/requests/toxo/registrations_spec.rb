@@ -83,7 +83,7 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
            params: valid_params.merge(Code: ""),
            headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(json["errors"]).to have_key("Code")
     end
 
@@ -92,7 +92,7 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
            params: valid_params.merge(project_ids: []),
            headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "returns 403 when contractor cannot add samples" do
@@ -115,7 +115,7 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
            params: valid_params.merge(sample_collection_date: 1.day.from_now.to_date.to_s),
            headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(json["errors"]).to have_key("sample_collection_date")
     end
 
