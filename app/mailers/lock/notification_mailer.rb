@@ -5,7 +5,7 @@ module Lock
  		def locked_kit_appeared_in_lab(note)
  			return nil if note.nil?
  			@note = note
- 			mail(to: ["dariusz.kolodynski@masdiag.pl", "maryia.vasiutsina@masdiag.pl", "renata.halak@masdiag.pl", "pawel.swider@masdiag.pl"], subject: 'Kit Lock Alert')
+ 			mail(to: ["maryia.vasiutsina@masdiag.pl", "renata.halak@masdiag.pl", "pawel.swider@masdiag.pl"], subject: 'Kit Lock Alert')
  		end
 
 	end

@@ -40,11 +40,11 @@ default: &default
     queue: background
     args: []
     schedule: "0 1 * * *"
-  daily_ceracreen_performance_statistic:
-    class: MasdiagRecurring::Daily::CerascreenPerformanceStatisticJob
-    queue: background
-    args: []
-    schedule: "45 6 * * *"
+  # daily_ceracreen_performance_statistic:
+  #   class: MasdiagRecurring::Daily::CerascreenPerformanceStatisticJob
+  #   queue: background
+  #   args: []
+  #   schedule: "45 6 * * *"
   daily_ceracreen_dao_declaration:
     class: MasdiagRecurring::Daily::CerascreenDaoDeclarationJob
     queue: background
@@ -70,11 +70,11 @@ default: &default
     queue: background
     args: []
     schedule: "0 17 * * *"
-  daily_local_contractors_year_report:
-    class: MasdiagRecurring::Daily::LocalContractorsYearRaportJob
-    queue: background
-    args: []
-    schedule: "15 5 * * *"
+  # daily_local_contractors_year_report:
+  #   class: MasdiagRecurring::Daily::LocalContractorsYearRaportJob
+  #   queue: background
+  #   args: []
+  #   schedule: "15 5 * * *"
   daily_toxo_registration_reminder_final:
     class: Notifications::RegistrationReminderFinalJob
     queue: background
@@ -89,17 +89,17 @@ default: &default
     class: Hl7MinioScannerJob
     queue: background
     args: []
-    schedule: every 5 minutes
+    schedule: every 60 minutes
   hl7_link_pending:
     class: Hl7LinkPendingJob
     queue: background
     args: []
-    schedule: every 15 minutes
+    schedule: every 95 minutes
   hl7_retry_failed:
     class: Hl7RetryFailedJob
     queue: background
     args: []
-    schedule: every 30 minutes
+    schedule: every 100 minutes
 
 development:
  <<: *default
