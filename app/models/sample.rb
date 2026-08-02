@@ -54,6 +54,7 @@ class Sample < ApplicationRecord
   accepts_nested_attributes_for :patient
   has_many :test_transactions # in labpanel here is has_one used
   has_many :notes, as: :subject
+  has_many :answers, foreign_key: "Sample_id", dependent: :destroy, inverse_of: :sample
 
   enum :MaterialType, MaterialTypes::MODEL_HASH, instance_methods: false
 

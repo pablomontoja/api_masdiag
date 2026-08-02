@@ -7,7 +7,7 @@ module MasdiagRecurring
 
       return if @measurement_summaries.size.zero?
 
-      mail(to: ['anna.kolodynska@masdiag.pl','webadmin@masdiag.pl', 'anna.grabowska@masdiag.pl', 'renata.halak@masdiag.pl', 'tomasz.bienkowski@masdiag.pl', 'dariusz.kolodynski@masdiag.pl', 'lalen.dogan@masdiag.pl'], subject: 'Zestawienie wykonanych próbek dostarczonych z zagranicy')
+      mail(to: ['webadmin@masdiag.pl', 'anna.grabowska@masdiag.pl', 'renata.halak@masdiag.pl', 'tomasz.bienkowski@masdiag.pl', 'lalen.dogan@masdiag.pl'], subject: 'Zestawienie wykonanych próbek dostarczonych z zagranicy')
     end
 
   end

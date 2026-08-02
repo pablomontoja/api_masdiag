@@ -29,9 +29,9 @@ module MasdiagMailer
 	  def send_mail_to_dziopa(sample_id)
 	    @sample = Sample.find(sample_id)
 	    @rsc = ReservedSampleCode.find_by(Code: @sample.Code)
-	    @info = "Wysłano informację do Darka Kołodyńskiego o anulowanej próbce."
-	    @recipient = "Dariusz Kołodyński"
-	    @email_address = "dariusz.kolodynski@masdiag.pl"
+	    @info = "Wysłano informację dla Logistyki Masdiag o anulowanej próbce."
+	    @recipient = "Logistyka Masdiag"
+	    @email_address = "logistyka@masdiag.pl"
 
 	    @mail = mail(to: @email_address, bcc: "webadmin@masdiag.pl", subject: 'Laboratorium Masdiag - powiadomienie o anulowaniu próbki')
 	  end
