@@ -6,7 +6,7 @@ module MasdiagRecurring
       csv_path = MasdiagRecurring::CeraStatisticCreator.call(2).payload
       attachments["cerascreen-witd-#{Date.today}.csv"] = File.read(csv_path)
 
-      mail(to: 'renata.halak@masdiag.pl', cc: 'dariusz.kolodynski@masdiag.pl', subject: 'Cerascreen Performance')
+      mail(to: 'renata.halak@masdiag.pl', subject: 'Cerascreen Performance')
     end
 
   end

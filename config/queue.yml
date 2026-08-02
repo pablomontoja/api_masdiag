@@ -9,7 +9,7 @@ default: &default
       polling_interval: 1  
     - queues: "*"
       threads: 1
-      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
+      processes: <%= ENV.fetch("JOB_CONCURRENCY", 2) %>
       polling_interval: 0.5
     
     

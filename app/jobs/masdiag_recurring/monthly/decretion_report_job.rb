@@ -265,7 +265,7 @@ module MasdiagRecurring
         date_end = (Time.now - 1.month).at_end_of_month
         total = Measurement.includes(sample: {patient: :contractor}).where(Status: 5, ProjectId: 21).where(sample: {patient: {Contractors: {institution_id: 33}}}).pluck(:SampleId).uniq.count
         last_month = Measurement.includes(sample: {patient: :contractor}).where(Status: 5, ProjectId: 21, AuthorizedAt: date_start..date_end).where(sample: {patient: {Contractors: {institution_id: 33}}}).pluck(:SampleId).uniq.count
-        last_month_codes = Measurement.includes(sample: {patient: :contractor}).where(Status: 5, ProjectId: 21, AuthorizedAt: date_start..date_end).where(sample: {patient: {Contractors: {institution_id: 33}}}).pluck("Samples.Code").uniq.join(", ")
+        last_month_codes = Measurement.includes(sample: {patient: :contractor}).where(Status: 5, ProjectId: 21, AuthorizedAt: date_start..date_end).where(sample: {patient: {Contractors: {institution_id: 33}}}).pluck("sample.Code").uniq.join(", ")
         @omega_samples << OpenStruct.new(total: total, last_month: last_month, last_month_codes: last_month_codes)
       end
 
