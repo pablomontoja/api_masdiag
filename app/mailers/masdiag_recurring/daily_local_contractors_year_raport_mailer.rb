@@ -22,7 +22,7 @@ module MasdiagRecurring
       stream = package.to_stream
       attachments["klienci-krajowi-#{Date.today}.xlsx"] = stream.read
 
-      mail(to: 'dariusz.kolodynski@masdiag.pl', subject: 'Klienci krajowy - raport z przyjęcia próbek')
+      mail(to: 'logistyka@masdiag.pl', subject: 'Klienci krajowy - raport z przyjęcia próbek')
     end
 
 
