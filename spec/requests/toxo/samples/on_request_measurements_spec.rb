@@ -90,7 +90,7 @@ RSpec.describe "Toxo::Samples::OnRequestMeasurementsController", type: :request 
 
       post "/toxo/samples/on_request_measurements", params: { sample_id: sample.Id, note: "Kolejna próba" }, headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(sample.measurements.where(ProjectId: 42).count).to eq(1)
     end
 
@@ -100,7 +100,7 @@ RSpec.describe "Toxo::Samples::OnRequestMeasurementsController", type: :request 
 
       post "/toxo/samples/on_request_measurements", params: { sample_id: sample.Id, note: "" }, headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(sample.measurements.where(ProjectId: 42)).to be_empty
     end
 

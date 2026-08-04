@@ -1,6 +1,6 @@
 module LalenApi
   class AssignKitTestsJob < ApplicationJob
-    retry_on StandardError, wait: :exponentially_longer, attempts: 10 do |job, error|
+    retry_on StandardError, wait: :polynomially_longer, attempts: 10 do |job, error|
       Sentry.capture_exception(error)
     end
 

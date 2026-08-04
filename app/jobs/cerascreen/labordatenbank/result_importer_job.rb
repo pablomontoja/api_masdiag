@@ -1,7 +1,7 @@
 module Cerascreen
 	module Labordatenbank
 		class ResultImporterJob < ApplicationJob
-			retry_on StandardError, wait: :exponentially_longer, attempts: 5 do |job, error|
+			retry_on StandardError, wait: :polynomially_longer, attempts: 5 do |job, error|
 		    Sentry.capture_exception(error)
 		  end
 

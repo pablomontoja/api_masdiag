@@ -24,7 +24,7 @@ class Regspec::SamplesController < ApplicationController
 		puts "--------------------------------------------"
 		
 		if db_sample.present?
-			json_response({ message: "Sample already exist" }, :unprocessable_entity)
+			json_response({ message: "Sample already exist" }, :unprocessable_content)
 			return
 		end
 
@@ -37,7 +37,7 @@ class Regspec::SamplesController < ApplicationController
       json_response({ sample_id: @sample.Id, patient_id: @sample.PatientId }, :created)
     else
     	pp @sample.errors
-      json_response({ message: @sample.errors }, :unprocessable_entity)
+      json_response({ message: @sample.errors }, :unprocessable_content)
     end		
 	end
 
@@ -54,7 +54,7 @@ class Regspec::SamplesController < ApplicationController
 			json_response({ })
 		else
 			pp @sample.errors
-			json_response({ message: @sample.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			json_response({ message: @sample.errors.map(&:message).join(", ") }, :unprocessable_content)
 		end
 	end
 

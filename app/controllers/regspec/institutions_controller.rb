@@ -7,7 +7,7 @@ class Regspec::InstitutionsController < ApplicationController
 		if inst.save
 			json_response({ institution_id: inst.id }, :created)
 		else
-			json_response({ message: inst.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			json_response({ message: inst.errors.map(&:message).join(", ") }, :unprocessable_content)
 		end		
 	end
 
@@ -18,7 +18,7 @@ class Regspec::InstitutionsController < ApplicationController
 		if inst.update(update_params)
 			json_response({})
 		else
-			json_response({ message: inst.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			json_response({ message: inst.errors.map(&:message).join(", ") }, :unprocessable_content)
 		end
 	end
 

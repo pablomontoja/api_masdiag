@@ -1,5 +1,5 @@
 class Notification::SendResultJob < ApplicationJob
-  retry_on StandardError, wait: :exponentially_longer, attempts: 3 do |job, error|
+  retry_on StandardError, wait: :polynomially_longer, attempts: 3 do |job, error|
     Sentry.capture_exception(error)
   end
 

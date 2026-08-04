@@ -5,7 +5,7 @@ class Lalen::TriggerController < ApplicationController
 
   def send_result
     if Current.api_account.result_post_endpoint.blank?
-      json_response({message: "current_result_post_endpoint_url is not set, please use POST /v1/setup/set_result_post_endpoint_url to setup your endpoint"}, :unprocessable_entity)
+      json_response({message: "current_result_post_endpoint_url is not set, please use POST /v1/setup/set_result_post_endpoint_url to setup your endpoint"}, :unprocessable_content)
       return
     end
 

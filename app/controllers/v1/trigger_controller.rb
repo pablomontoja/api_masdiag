@@ -2,7 +2,7 @@ class V1::TriggerController < ApplicationController
 
   def send_result
     if Current.api_account.result_post_endpoint.blank?
-      json_response({message: "current_result_post_endpoint_url is not set, please use POST /v1/setup/set_result_post_endpoint_url to setup your endpoint"}, :unprocessable_entity)
+      json_response({message: "current_result_post_endpoint_url is not set, please use POST /v1/setup/set_result_post_endpoint_url to setup your endpoint"}, :unprocessable_content)
       return
     end
 
@@ -10,12 +10,12 @@ class V1::TriggerController < ApplicationController
     sample = Sample.find_by(Code: sample_code)
 
     if current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_content)
       return
     end
 
     if sample.nil?
-      json_response({ message: "Unknown sample code or sample does not exist." }, :unprocessable_entity)
+      json_response({ message: "Unknown sample code or sample does not exist." }, :unprocessable_content)
       return
     end
 

@@ -7,16 +7,16 @@ class Toxo::Samples::OnRequestMeasurementsController < Toxo::SamplesController
 
     if @sample.measurements.exists?(ProjectId: 42)
       return render json: { errors: { base: [ "Badanie na zlecenie już istnieje dla tej próbki" ] } },
-                    status: :unprocessable_entity
+                    status: :unprocessable_content
     end
 
     note = params[:note].to_s.strip
     if note.blank?
-      return render json: { errors: { note: [ "nie może być puste" ] } }, status: :unprocessable_entity
+      return render json: { errors: { note: [ "nie może być puste" ] } }, status: :unprocessable_content
     end
 
     ActiveRecord::Base.transaction do
-      @sample.update_column(:Comment, append_comment(@sample.Comment, note))
+      @sample.append_comment(note, current_contractor)
       @measurement = Measurement.create!(
         SampleId:     @sample.Id,
         ProjectId:    42,
@@ -33,14 +33,6 @@ class Toxo::Samples::OnRequestMeasurementsController < Toxo::SamplesController
     render json: { error: "Not found" }, status: :not_found
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.as_json, error_full_messages: e.record.errors.full_messages },
-           status: :unprocessable_entity
-  end
-
-  private
-
-  def append_comment(existing, note)
-    timestamp = Time.zone.now.strftime("%d.%m.%Y %H:%M")
-    entry = "[#{timestamp}, #{current_contractor.fullname}] #{note}"
-    existing.present? ? "#{existing}\n#{entry}" : entry
+           status: :unprocessable_content
   end
 end

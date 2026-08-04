@@ -9,7 +9,7 @@ class V1::KitController < ApplicationController
 
     if @current_rsc.nil?
       response_hash[:message] = "A such sample code was not found for your institution"
-      json_response(response_hash, :unprocessable_entity)
+      json_response(response_hash, :unprocessable_content)
       return
     end
 
@@ -25,32 +25,32 @@ class V1::KitController < ApplicationController
     @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: assignment_params[:code])
 
     if @current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_content)
       return
     end
 
     @sample = Sample.find_by(Code: assignment_params[:code])
 
     if @sample.present? && @sample&.IsWrongRegistration == false
-      json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_entity)
+      json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_content)
       return
     end
 
     requested_test_ids = assignment_params[:test_ids].map(&:to_i)
 
     if requested_test_ids.include?(26) && @current_rsc.reserved_tests.exists?
-      json_response({ message: "Tests for this sample collection card have already been assigned and cannot be changed" }, :unprocessable_entity)
+      json_response({ message: "Tests for this sample collection card have already been assigned and cannot be changed" }, :unprocessable_content)
       return
     end
 
     if requested_test_ids.include?(26) && !@current_rsc.dbs_i4?
-      json_response({ message: "Test 26 can only be assigned to a dbs_i4 material handler" }, :unprocessable_entity)
+      json_response({ message: "Test 26 can only be assigned to a dbs_i4 material handler" }, :unprocessable_content)
       return
     end
 
     assignment = validate_assignment(assignment_params[:test_ids])
     if assignment.invalid
-      json_response({message: assignment.errors.join("; ")}, :unprocessable_entity)
+      json_response({message: assignment.errors.join("; ")}, :unprocessable_content)
       return
     end
 

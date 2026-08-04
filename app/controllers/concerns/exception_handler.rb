@@ -9,7 +9,7 @@ module ExceptionHandler
 
     rescue_from ActiveRecord::RecordInvalid do |e|
       Sentry.capture_exception(e)
-      json_response({ message: e.message }, :unprocessable_entity)
+      json_response({ message: e.message }, :unprocessable_content)
     end
   end
 

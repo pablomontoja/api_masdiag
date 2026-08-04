@@ -13,7 +13,7 @@ class Toxo::Measurements::ChromatogramRequestsController < Toxo::BaseController
 
     unless measurement.ProjectId.in?([ 39, 41 ]) && (measurement.Status == 5 || measurement.AuthorizedAt.present?)
       return render json: { errors: { base: [ "Measurement is not eligible for a chromatogram request" ] } },
-                    status: :unprocessable_entity
+                    status: :unprocessable_content
     end
 
     note = measurement.notes.find_by(key: NOTE_KEY)

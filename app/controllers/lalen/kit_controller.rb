@@ -14,14 +14,14 @@ class Lalen::KitController < Fv1::KitController
   def qns
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: qns_params[:code])
     if @current_rsc.nil?
-      json_response({ message: "A such barcode was not found for your institution" }, :unprocessable_entity)
+      json_response({ message: "A such barcode was not found for your institution" }, :unprocessable_content)
       return
     end
 
     @sample = Sample.find_by(Code: qns_params[:code])
 
     if @sample&.AcceptanceDate.present? && @sample.SampleStatus != 4
-      json_response({ message: "This sample cannot be mark as QNS" }, :unprocessable_entity)
+      json_response({ message: "This sample cannot be mark as QNS" }, :unprocessable_content)
       return
     end
 
@@ -44,7 +44,7 @@ class Lalen::KitController < Fv1::KitController
     if success
       head :created
     else
-      json_response({ message: "There were problems with marking the sample as QNS" }, :unprocessable_entity)
+      json_response({ message: "There were problems with marking the sample as QNS" }, :unprocessable_content)
     end
   end
 
@@ -57,7 +57,7 @@ class Lalen::KitController < Fv1::KitController
 
     if @current_rsc.nil?
       response_hash[:message] = "A such sample code was not found for your institution"
-      json_response(response_hash, :unprocessable_entity)
+      json_response(response_hash, :unprocessable_content)
       return
     end
 
@@ -76,7 +76,7 @@ class Lalen::KitController < Fv1::KitController
 
     rescue StandardError => e
       Sentry.capture_exception(e)
-      json_response({ message: e.message }, :unprocessable_entity)
+      json_response({ message: e.message }, :unprocessable_content)
   end
 
   # {data: {code: "ASDFG", test_ids: [1,2]}}
@@ -84,20 +84,20 @@ class Lalen::KitController < Fv1::KitController
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: assignment_params[:code])
 
     if @current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_content)
       return
     end
 
     @sample = Sample.find_by(Code: assignment_params[:code])
 
     if @sample.present?
-      json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_entity)
+      json_response({ message: "Tests for this sample cannot be assigned" }, :unprocessable_content)
       return
     end
 
     assignment = validate_assignment(assignment_params[:test_ids])
     if assignment.invalid
-      json_response({message: assignment.errors.join("; ")}, :unprocessable_entity)
+      json_response({message: assignment.errors.join("; ")}, :unprocessable_content)
       return
     end
 
@@ -125,7 +125,7 @@ class Lalen::KitController < Fv1::KitController
 
     assignment = validate_assignment(declare_params[:test_ids])
     if assignment.invalid
-      json_response({message: assignment.errors.join("; ")}, :unprocessable_entity)
+      json_response({message: assignment.errors.join("; ")}, :unprocessable_content)
       return
     end
 
@@ -154,7 +154,7 @@ class Lalen::KitController < Fv1::KitController
 
     rescue StandardError => e
       Sentry.capture_exception(e)
-      json_response({ message: e.message }, :unprocessable_entity)
+      json_response({ message: e.message }, :unprocessable_content)
   end
 
   # POST /kits/declare/generic
@@ -186,7 +186,7 @@ class Lalen::KitController < Fv1::KitController
 
     rescue StandardError => e
       Sentry.capture_exception(e)
-      json_response({ message: e.message }, :unprocessable_entity)
+      json_response({ message: e.message }, :unprocessable_content)
   end
 
   # DELETE /kits/remove/declared/:code
@@ -195,13 +195,13 @@ class Lalen::KitController < Fv1::KitController
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: code_params)
 
     if @current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution" }, :unprocessable_content)
       return
     end
 
     @sample = Sample.find_by(Code: code_params)
     if @sample.present? && @sample&.IsWrongRegistration == false
-      json_response({ message: "This kit declaration cannot be removed" }, :unprocessable_entity)
+      json_response({ message: "This kit declaration cannot be removed" }, :unprocessable_content)
       return
     end
 
@@ -211,7 +211,7 @@ class Lalen::KitController < Fv1::KitController
 
     rescue StandardError => e
       Sentry.capture_exception(e)
-      json_response({ message: e.message }, :unprocessable_entity)
+      json_response({ message: e.message }, :unprocessable_content)
   end
 
 private

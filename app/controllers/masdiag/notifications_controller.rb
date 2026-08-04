@@ -45,7 +45,7 @@ module Masdiag
     end
 
     def render_sample_not_found
-      json_response({ error: "sample not found" }, :unprocessable_entity)
+      json_response({ error: "sample not found" }, :unprocessable_content)
     end
   end
 end

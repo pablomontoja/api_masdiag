@@ -3,7 +3,7 @@ module Notifications
   # (Id) lub jej kod (Code), bo dostarczona, niezarejestrowana próbka może być
   # znana LabSample tylko po kodzie.
   class RegistrationReminderJob < ApplicationJob
-    retry_on StandardError, wait: :exponentially_longer, attempts: 5
+    retry_on StandardError, wait: :polynomially_longer, attempts: 5
 
     def perform(id_or_code)
       sample = find_sample(id_or_code)
