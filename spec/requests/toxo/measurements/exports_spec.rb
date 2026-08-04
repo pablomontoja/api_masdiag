@@ -71,13 +71,13 @@ RSpec.describe "Toxo::Measurements::ExportsController", type: :request do
         params: { authorized_at_from: "2026-07-31", authorized_at_to: "2026-07-01" },
         headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "returns 422 when required params are missing" do
       get "/toxo/measurements/exports", params: { authorized_at_from: "2026-07-01" }, headers: bearer
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "only returns measurements within the policy scope" do

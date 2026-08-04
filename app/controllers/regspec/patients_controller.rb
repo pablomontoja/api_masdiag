@@ -8,7 +8,7 @@ class Regspec::PatientsController < ApplicationController
 	# 	if patient.save
 	# 		json_response({ patient_id: patient.id }, :created)
 	# 	else
-	# 		json_response({ message: patient.errors.map(&:message).join(", ") }, :unprocessable_entity)
+	# 		json_response({ message: patient.errors.map(&:message).join(", ") }, :unprocessable_content)
 	# 	end		
 	# end
 
@@ -20,7 +20,7 @@ class Regspec::PatientsController < ApplicationController
 			json_response({})
 		else
 			pp patient.errors
-			json_response({ message: patient.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			json_response({ message: patient.errors.map(&:message).join(", ") }, :unprocessable_content)
 		end
 	end
 

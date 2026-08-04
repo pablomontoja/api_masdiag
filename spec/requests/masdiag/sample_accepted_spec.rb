@@ -24,6 +24,6 @@ RSpec.describe "POST /masdiag/sample_accepted", type: :request do
     create(:api_account, username: "other", password: "password", contractor_id: other_contractor.Id)
     header = { "Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("other", "password") }
     post "/masdiag/sample_accepted", params: { sample_id: sample.Id }, headers: header
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:unprocessable_content)
   end
 end

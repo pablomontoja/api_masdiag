@@ -3,7 +3,8 @@ class Toxo::SamplePolicy < ApplicationPolicy
   def show?    = owner_or_super?
   def new?     = user.can_add_samples?
   def create?  = user.can_add_samples?
-  def destroy? = record.deletable? && owner?
+  def update?  = user.can_add_samples? && owner_or_super?
+  def destroy? = record.deletable? && owner_or_super?
   def create_on_request_measurement? = user.can_add_samples? && owner_or_super?
 
   class Scope < ApplicationPolicy::Scope

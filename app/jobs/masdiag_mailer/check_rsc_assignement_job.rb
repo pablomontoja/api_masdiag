@@ -3,7 +3,7 @@ module MasdiagMailer
   # Jeśli próbka została przyjęta w labie to powinna mieć przypisane badania.
   # Jeśli nie to należy wysłać alert.
   class CheckRscAssignementJob < ApplicationJob
-    retry_on StandardError, wait: :exponentially_longer, attempts: 5 do |job, error|
+    retry_on StandardError, wait: :polynomially_longer, attempts: 5 do |job, error|
       Sentry.capture_exception(error)
     end
 

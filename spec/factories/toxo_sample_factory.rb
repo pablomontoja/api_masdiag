@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :toxo_sample, class: Toxo::Sample do
     sequence(:Code) { |n| "TX#{n.to_s.rjust(3, '0')}A" }
+    Lot { "LOT001" }
     MaterialType { :dbs }
     SampleState { 1 }
     SampleStatus { 1 }

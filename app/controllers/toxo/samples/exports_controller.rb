@@ -5,12 +5,12 @@ class Toxo::Samples::ExportsController < Toxo::BaseController
     to   = parse_date(params[:dispatch_date_to])
 
     if from.nil? || to.nil?
-      render json: { error: "dispatch_date_from and dispatch_date_to are required" }, status: :unprocessable_entity
+      render json: { error: "dispatch_date_from and dispatch_date_to are required" }, status: :unprocessable_content
       return
     end
 
     if from > to
-      render json: { error: "dispatch_date_from must be before or equal to dispatch_date_to" }, status: :unprocessable_entity
+      render json: { error: "dispatch_date_from must be before or equal to dispatch_date_to" }, status: :unprocessable_content
       return
     end
 

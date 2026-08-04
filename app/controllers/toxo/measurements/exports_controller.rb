@@ -7,12 +7,12 @@ class Toxo::Measurements::ExportsController < Toxo::BaseController
     to   = parse_date(params[:authorized_at_to])
 
     if from.nil? || to.nil?
-      render json: { error: "authorized_at_from and authorized_at_to are required" }, status: :unprocessable_entity
+      render json: { error: "authorized_at_from and authorized_at_to are required" }, status: :unprocessable_content
       return
     end
 
     if from > to
-      render json: { error: "authorized_at_from must be before or equal to authorized_at_to" }, status: :unprocessable_entity
+      render json: { error: "authorized_at_from must be before or equal to authorized_at_to" }, status: :unprocessable_content
       return
     end
 

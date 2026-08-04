@@ -10,7 +10,7 @@ class Nume::KitController < Fv1::KitController
 
     if @current_rsc.nil?
       response_hash[:message] = "A such sample code was not found for your institution"
-      json_response(response_hash, :unprocessable_entity)
+      json_response(response_hash, :unprocessable_content)
       return
     end
 

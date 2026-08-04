@@ -18,7 +18,7 @@ class Regspec::ContractorsController < ApplicationController
 		if contractor.save
 			json_response({ contractor_id: contractor.id }, :created)
 		else
-			json_response({ message: contractor.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			json_response({ message: contractor.errors.map(&:message).join(", ") }, :unprocessable_content)
 		end		
 	end
 
@@ -30,7 +30,7 @@ class Regspec::ContractorsController < ApplicationController
 			json_response({})
 		else
 			pp contractor.errors
-			json_response({ message: contractor.errors.map(&:message).join(", ") }, :unprocessable_entity)
+			json_response({ message: contractor.errors.map(&:message).join(", ") }, :unprocessable_content)
 		end
 	end
 

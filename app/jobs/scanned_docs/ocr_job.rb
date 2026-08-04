@@ -2,7 +2,7 @@ module ScannedDocs
   class OcrJob < ApplicationJob
     queue_as :ocr
 
-    retry_on StandardError, wait: :exponentially_longer, attempts: 5
+    retry_on StandardError, wait: :polynomially_longer, attempts: 5
 
     def perform(scanned_doc_id)
       doc = ScannedDoc.find(scanned_doc_id)

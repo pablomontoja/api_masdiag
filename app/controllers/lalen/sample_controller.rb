@@ -5,12 +5,12 @@ class Lalen::SampleController < ApplicationController
 
   def create
     if @current_rsc&.expiry_date < Time.zone.now
-      json_response({ message: "The DBS card is expired." }, :unprocessable_entity)
+      json_response({ message: "The DBS card is expired." }, :unprocessable_content)
       return
     end
 
     if @current_rsc&.reserved_tests.count.zero?
-      json_response({ message: "The sample does not have assigned tests." }, :unprocessable_entity)
+      json_response({ message: "The sample does not have assigned tests." }, :unprocessable_content)
       return
     end
 
@@ -40,7 +40,7 @@ class Lalen::SampleController < ApplicationController
       end
       json_response(SampleResource.new(@sample), :created)
     else
-      json_response({message: @sample.errors}, :unprocessable_entity)
+      json_response({message: @sample.errors}, :unprocessable_content)
     end
   end
 
@@ -54,7 +54,7 @@ class Lalen::SampleController < ApplicationController
     if @sample.update(update_params)
       json_response(SampleResource.new(@sample))
     else
-      json_response({ message: @sample.errors }, :unprocessable_entity)
+      json_response({ message: @sample.errors }, :unprocessable_content)
     end
   end
 
@@ -64,7 +64,7 @@ class Lalen::SampleController < ApplicationController
 
     v = validate_confirmation_test_request(sample)
     if v.invalid
-      json_response({message: v.errors.join("; ")}, :unprocessable_entity)
+      json_response({message: v.errors.join("; ")}, :unprocessable_content)
       return
     end
 
@@ -90,7 +90,7 @@ class Lalen::SampleController < ApplicationController
     @current_rsc = ReservedSampleCode.where(InstitutionId: V1::Common::LALEN_INSTITUTION_IDS).find_by(Code: code)
 
     if @current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_content)
     end
   end
 
@@ -98,7 +98,7 @@ class Lalen::SampleController < ApplicationController
     @sample = Sample.where(AcceptanceDate: nil).find_by(Code: @current_rsc.Code)
 
     if @sample.nil?
-      json_response({ message: "This sample does not exist or cannot be modified." }, :unprocessable_entity)
+      json_response({ message: "This sample does not exist or cannot be modified." }, :unprocessable_content)
     end
   end
 

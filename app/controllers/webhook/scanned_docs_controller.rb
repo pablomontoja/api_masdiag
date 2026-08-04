@@ -12,7 +12,7 @@ module Webhook
         if result.success?
           json_response({ status: result.status, id: result.scanned_doc_id }, :accepted)
         else
-          json_response({ error: result.error }, :unprocessable_entity)
+          json_response({ error: result.error }, :unprocessable_content)
         end
       end
 

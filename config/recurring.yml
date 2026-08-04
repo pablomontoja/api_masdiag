@@ -65,11 +65,11 @@ default: &default
     queue: background
     args: []
     schedule: "30 5 * * *"
-  daily_lalen_incoming_samples:
-    class: MasdiagRecurring::Daily::LalenIncomingSamplesJob
-    queue: background
-    args: []
-    schedule: "0 17 * * *"
+  # daily_lalen_incoming_samples:
+  #   class: MasdiagRecurring::Daily::LalenIncomingSamplesJob
+  #   queue: background
+  #   args: []
+  #   schedule: "0 17 * * *"
   # daily_local_contractors_year_report:
   #   class: MasdiagRecurring::Daily::LocalContractorsYearRaportJob
   #   queue: background

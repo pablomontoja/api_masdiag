@@ -12,7 +12,7 @@ class Fv1::ResultController < ApplicationController
     @current_rsc = ReservedSampleCode.where(InstitutionId: Current.api_account.institution.id).find_by(Code: sample_code)
 
     if @current_rsc.nil?
-      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_entity)
+      json_response({ message: "A such sample code was not found for your institution." }, :unprocessable_content)
     end
   end
 
@@ -20,7 +20,7 @@ class Fv1::ResultController < ApplicationController
     @sample = Sample.find_by(Code: sample_code)
 
     if @sample.nil?
-      json_response({ message: "Unknown sample code or sample does not exist." }, :unprocessable_entity)
+      json_response({ message: "Unknown sample code or sample does not exist." }, :unprocessable_content)
     end
   end
 

@@ -14,7 +14,7 @@ class Toxo::SamplesController < Toxo::BaseController
 
   SEARCHABLE_COLUMNS = %w[Samples.Code Samples.Lot].freeze
 
-  before_action :set_sample, only: %i[show destroy]
+  before_action :set_sample, only: %i[show update destroy]
 
   # GET /toxo/samples
   def index
@@ -27,6 +27,20 @@ class Toxo::SamplesController < Toxo::BaseController
   def show
     authorize @sample
     render json: serialize_sample(@sample)
+  end
+
+  # PUT /toxo/samples/:id
+  def update
+    authorize @sample
+
+    form = Toxo::SampleEditForm.new(sample: @sample, contractor: current_contractor, **sample_update_params)
+
+    if form.save
+      render json: serialize_sample(@sample.reload)
+    else
+      render json: { errors: form.errors.as_json, error_full_messages: form.errors.full_messages },
+             status: :unprocessable_content
+    end
   end
 
   # DELETE /toxo/samples/:id
@@ -44,11 +58,13 @@ class Toxo::SamplesController < Toxo::BaseController
   private
 
   def set_sample
-    @sample = Toxo::Sample.joins(:measurements)
-                          .where(measurements: { ProjectId: Toxo::Constants::TOXO_PROJECT_IDS })
-                          .find(params[:id])
+    @sample = Toxo::Sample.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Not found" }, status: :not_found
+  end
+
+  def sample_update_params
+    params.permit(:Lot, :Level, :sample_collection_date, :dispatch_date, :note).to_h.symbolize_keys
   end
 
   def serialize_sample(sample)
