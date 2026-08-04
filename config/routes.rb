@@ -131,7 +131,7 @@ Rails.application.routes.draw do
       resources :exports, only: %i[index]
     end
 
-    resources :samples, only: %i[index show destroy]
+    resources :samples, only: %i[index show update destroy]
 
     resources :patients,              only: %i[index show]
     resources :projects,              only: %i[index]

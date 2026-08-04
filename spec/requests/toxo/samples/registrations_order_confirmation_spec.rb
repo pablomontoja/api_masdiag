@@ -12,7 +12,7 @@ RSpec.describe "Toxo registration → order confirmation notification", type: :r
 
   let(:valid_params) do
     {
-      Code: "TX001A", MaterialType: 0, dispatch_date: Date.today.to_s,
+      Code: "TX001A", MaterialType: 0, Lot: "LOT001", dispatch_date: Date.today.to_s,
       sample_collection_date: Date.today.to_s, post_examination_procedure: 0,
       infectious_risk: 0, execution_mode: 0, project_ids: [39]
     }

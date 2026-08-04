@@ -16,7 +16,7 @@ class Toxo::Samples::OnRequestMeasurementsController < Toxo::SamplesController
     end
 
     ActiveRecord::Base.transaction do
-      @sample.update_column(:Comment, append_comment(@sample.Comment, note))
+      @sample.append_comment(note, current_contractor)
       @measurement = Measurement.create!(
         SampleId:     @sample.Id,
         ProjectId:    42,
@@ -34,13 +34,5 @@ class Toxo::Samples::OnRequestMeasurementsController < Toxo::SamplesController
   rescue ActiveRecord::RecordInvalid => e
     render json: { errors: e.record.errors.as_json, error_full_messages: e.record.errors.full_messages },
            status: :unprocessable_content
-  end
-
-  private
-
-  def append_comment(existing, note)
-    timestamp = Time.zone.now.strftime("%d.%m.%Y %H:%M")
-    entry = "[#{timestamp}, #{current_contractor.fullname}] #{note}"
-    existing.present? ? "#{existing}\n#{entry}" : entry
   end
 end

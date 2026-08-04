@@ -73,6 +73,9 @@ class Toxo::Sample < ApplicationRecord
   validates :post_examination_procedure, presence: true
   validates :infectious_risk, presence: true
   validates :execution_mode, presence: true
+  validates :Lot, presence: true, length: { maximum: 20 }
+  validates :Level, length: { maximum: 20 }, allow_blank: true
+  validates :dispatch_date, presence: true, on: :update
 
   validate :code_must_belong_to_contractor_institution
   validate :code_must_not_be_already_registered
@@ -93,6 +96,27 @@ class Toxo::Sample < ApplicationRecord
 
   def rsc
     self.reserved_sample_code
+  end
+
+  def append_comment(note, contractor)
+    timestamp = Time.zone.now.strftime("%d.%m.%Y %H:%M")
+    entry = "[#{timestamp}, #{contractor.fullname}] #{note}"
+    new_comment = self.Comment.present? ? "#{self.Comment}\n#{entry}" : entry
+    update_column(:Comment, new_comment)
+  end
+
+  def lot_level_editable?
+    !measurements.exists?(Status: 5)
+  end
+
+  def sample_collection_date_editable?(new_date)
+    return false if self.sample_collection_date.present?
+    upper_bound = self.AcceptanceDate&.to_date || Date.current
+    new_date.present? && new_date <= upper_bound
+  end
+
+  def dispatch_date_editable?
+    self.AcceptanceDate.nil?
   end
 
   private

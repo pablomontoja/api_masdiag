@@ -10,7 +10,12 @@ RSpec.describe "Toxo::SamplesController", type: :request do
 
   def create_registered_sample(code: "TX001A", patient: toxo_patient)
     project = create(:toxo_project_igg)
-    sample = create(:toxo_sample, Code: code, patient: patient)
+    ReservedSampleCode.find_or_create_by!(Code: code, InstitutionId: patient.contractor.institution_id) do |rsc|
+      rsc.IsRetailSale = true
+      rsc.CreatedAt = Time.now
+      rsc.expiry_date = 1.year.since
+    end
+    sample = create(:toxo_sample, Code: code, patient: patient, dispatch_date: Date.today)
     Measurement.create!(SampleId: sample.Id, ProjectId: project.Id, Status: 1, MaterialType: 0, IsRepeat: false)
     sample
   end
@@ -69,6 +74,236 @@ RSpec.describe "Toxo::SamplesController", type: :request do
     it "returns 404 for non-existent sample" do
       get "/toxo/samples/999999", headers: bearer
       expect(response).to have_http_status(:not_found)
+    end
+
+    it "is reachable even when the sample has no measurement in the TOXO project set (matches index visibility)" do
+      ReservedSampleCode.find_or_create_by!(Code: "TX003A", InstitutionId: institution.id) do |rsc|
+        rsc.IsRetailSale = true
+        rsc.CreatedAt = Time.now
+        rsc.expiry_date = 1.year.since
+      end
+      sample = create(:toxo_sample, Code: "TX003A", patient: toxo_patient, dispatch_date: Date.today)
+      # No measurements created — mirrors a sample visible via GET /toxo/samples (policy_scope only checks ownership)
+      # but previously invisible to GET /toxo/samples/:id due to an extra ProjectId join in set_sample.
+
+      get "/toxo/samples/#{sample.Id}", headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      expect(json["Id"]).to eq(sample.Id)
+    end
+  end
+
+  # ───── PUT /toxo/samples/:id ─────────────────────────────────────────────────
+
+  describe "PUT /toxo/samples/:id" do
+    def edit_params(sample, overrides = {})
+      { Lot: sample.Lot, Level: sample.Level, dispatch_date: sample.dispatch_date&.to_date&.to_s }.merge(overrides)
+    end
+
+    it "updates Lot, Level, sample_collection_date, dispatch_date, and appends a note" do
+      sample = create_registered_sample
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample,
+        Lot: "NEWLOT01",
+        Level: "NEWLVL",
+        sample_collection_date: 2.days.ago.to_date.to_s,
+        dispatch_date: 1.day.ago.to_date.to_s,
+        note: "Updated via edit form"
+      ), headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      expect(json["Lot"]).to eq("NEWLOT01")
+      expect(json["Level"]).to eq("NEWLVL")
+      expect(json["Comment"]).to include("Updated via edit form")
+    end
+
+    it "leaves fields outside the allowed 5 unchanged" do
+      sample = create_registered_sample
+      original_code          = sample.Code
+      original_material_type = sample.MaterialType_before_type_cast
+      original_status        = sample.SampleStatus
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "NEWLOT01"), headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      sample.reload
+      expect(sample.Code).to eq(original_code)
+      expect(sample.MaterialType_before_type_cast).to eq(original_material_type)
+      expect(sample.SampleStatus).to eq(original_status)
+    end
+
+    it "silently ignores unpermitted fields in the payload" do
+      sample = create_registered_sample
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample,
+        Lot: "NEWLOT01",
+        Code: "HACKED1",
+        SampleStatus: 3
+      ), headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      sample.reload
+      expect(sample.Code).not_to eq("HACKED1")
+      expect(sample.SampleStatus).not_to eq(3)
+    end
+
+    it "returns 422 when Lot is blank" do
+      sample = create_registered_sample
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: ""), headers: bearer
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json["errors"]).to have_key("Lot")
+      expect(json["error_full_messages"]).to be_an(Array)
+    end
+
+    it "returns 422 when dispatch_date is blank" do
+      sample = create_registered_sample
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, dispatch_date: ""), headers: bearer
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json["errors"]).to have_key("dispatch_date")
+    end
+
+    it "returns 422 when Lot exceeds 20 characters" do
+      sample = create_registered_sample
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "L" * 21), headers: bearer
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json["errors"]).to have_key("Lot")
+    end
+
+    it "returns 422 when Level exceeds 20 characters" do
+      sample = create_registered_sample
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Level: "L" * 21), headers: bearer
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(json["errors"]).to have_key("Level")
+    end
+
+    it "returns 403 when sample belongs to another contractor" do
+      other_contractor = create(:contractor, institution_id: institution.id)
+      other_patient    = create(:toxo_patient, contractor: other_contractor)
+      other_sample     = create_registered_sample(code: "TX002A", patient: other_patient)
+
+      put "/toxo/samples/#{other_sample.Id}", params: edit_params(other_sample, Lot: "NEWLOT01"), headers: bearer
+
+      expect(response).to have_http_status(:forbidden)
+      expect(other_sample.reload.Lot).not_to eq("NEWLOT01")
+    end
+
+    it "remains editable while on hold but not yet accepted" do
+      sample = create_registered_sample
+      sample.update_column(:SampleStatus, 3)
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "NEWLOT01"), headers: bearer
+
+      expect(response).to have_http_status(:ok)
+      expect(sample.reload.Lot).to eq("NEWLOT01")
+    end
+
+    context "when the sample has already been accepted in lab" do
+      it "still allows editing Lot/Level (accepted status alone does not lock them)" do
+        sample = create_registered_sample
+        sample.update_column(:AcceptanceDate, Time.current)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "NEWLOT01"), headers: bearer
+
+        expect(response).to have_http_status(:ok)
+        expect(sample.reload.Lot).to eq("NEWLOT01")
+      end
+
+      it "rejects a dispatch_date change" do
+        sample = create_registered_sample
+        sample.update_column(:AcceptanceDate, Time.current)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, dispatch_date: 3.days.ago.to_date.to_s), headers: bearer
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json["errors"]).to have_key("dispatch_date")
+      end
+
+      it "always allows appending a note, and saves it even when dispatch_date is rejected" do
+        sample = create_registered_sample
+        sample.update_column(:AcceptanceDate, Time.current)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, dispatch_date: 3.days.ago.to_date.to_s, note: "lab note"), headers: bearer
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(sample.reload.Comment).to include("lab note")
+      end
+    end
+
+    context "when a measurement has an authorized result (Status: 5)" do
+      it "rejects Lot/Level changes" do
+        sample = create_registered_sample
+        sample.measurements.first.update_column(:Status, 5)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "NEWLOT01"), headers: bearer
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json["errors"]).to have_key("Lot")
+        expect(sample.reload.Lot).not_to eq("NEWLOT01")
+      end
+
+      it "still allows appending a note" do
+        sample = create_registered_sample
+        sample.measurements.first.update_column(:Status, 5)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, note: "post-authorization note"), headers: bearer
+
+        expect(response).to have_http_status(:ok)
+        expect(sample.reload.Comment).to include("post-authorization note")
+      end
+    end
+
+    context "sample_collection_date" do
+      it "can be set once when previously blank and within bounds" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, nil)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: Date.today.to_s), headers: bearer
+
+        expect(response).to have_http_status(:ok)
+        expect(sample.reload.sample_collection_date.to_date).to eq(Date.today)
+      end
+
+      it "rejects being changed once already set" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, 2.days.ago)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: Date.today.to_s), headers: bearer
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json["errors"]).to have_key("sample_collection_date")
+      end
+
+      it "rejects a date after AcceptanceDate" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, nil)
+        sample.update_column(:AcceptanceDate, 2.days.ago)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: Date.today.to_s), headers: bearer
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json["errors"]).to have_key("sample_collection_date")
+      end
+    end
+
+    it "partial save: saves the note even when Lot is rejected" do
+      sample = create_registered_sample
+      sample.measurements.first.update_column(:Status, 5)
+      original_lot = sample.Lot
+
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "NEWLOT01", note: "kept despite Lot rejection"), headers: bearer
+
+      expect(response).to have_http_status(:unprocessable_content)
+      sample.reload
+      expect(sample.Lot).to eq(original_lot)
+      expect(sample.Comment).to include("kept despite Lot rejection")
     end
   end
 

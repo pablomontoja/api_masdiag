@@ -50,6 +50,7 @@ RSpec.describe "Toxo::Samples::RegistrationsController", type: :request do
       {
         Code:                       "TX001A",
         MaterialType:               0,
+        Lot:                        "LOT001",
         dispatch_date:              Date.today.to_s,
         sample_collection_date:     Date.today.to_s,
         post_examination_procedure: 0,
