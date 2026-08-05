@@ -8,11 +8,12 @@ class Toxo::SampleEditForm
   attribute :dispatch_date, :date
   attribute :note, :string
 
-  attr_reader :sample, :contractor
+  attr_reader :sample, :contractor, :saved_fields
 
   def initialize(sample:, contractor:, **attrs)
     @sample = sample
     @contractor = contractor
+    @saved_fields = []
     super(attrs)
   end
 
@@ -21,6 +22,7 @@ class Toxo::SampleEditForm
   # each field has an independent editability window (see spec Clarifications).
   def save
     errors.clear
+    @saved_fields = []
     save_lot_and_level
     save_sample_collection_date
     save_dispatch_date
@@ -53,6 +55,7 @@ class Toxo::SampleEditForm
     end
 
     sample.update_columns(Lot: self.Lot, Level: self.Level)
+    @saved_fields += [ :Lot, :Level ]
   end
 
   def save_sample_collection_date
@@ -60,11 +63,12 @@ class Toxo::SampleEditForm
 
     unless sample.sample_collection_date_editable?(sample_collection_date)
       errors.add(:sample_collection_date, :locked,
-        message: "can only be set once and must not be after the acceptance date")
+        message: "cannot be changed: once the sample is accepted, it can only be set once, before any result has been authorized")
       return
     end
 
     sample.update_column(:sample_collection_date, sample_collection_date)
+    @saved_fields << :sample_collection_date
   end
 
   def save_dispatch_date
@@ -81,11 +85,13 @@ class Toxo::SampleEditForm
     end
 
     sample.update_column(:dispatch_date, dispatch_date)
+    @saved_fields << :dispatch_date
   end
 
   def save_note
     return if note.blank?
 
     sample.append_comment(note, contractor)
+    @saved_fields << :note
   end
 end

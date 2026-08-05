@@ -34,12 +34,16 @@ class Toxo::SamplesController < Toxo::BaseController
     authorize @sample
 
     form = Toxo::SampleEditForm.new(sample: @sample, contractor: current_contractor, **sample_update_params)
+    success = form.save
 
-    if form.save
-      render json: serialize_sample(@sample.reload)
+    if success
+      render json: serialize_sample(@sample.reload).merge(saved_fields: form.saved_fields)
     else
-      render json: { errors: form.errors.as_json, error_full_messages: form.errors.full_messages },
-             status: :unprocessable_content
+      render json: serialize_sample(@sample.reload).merge(
+        saved_fields:         form.saved_fields,
+        errors:               form.errors.as_json,
+        error_full_messages:  form.errors.full_messages
+      ), status: :unprocessable_content
     end
   end
 
