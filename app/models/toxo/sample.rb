@@ -110,9 +110,11 @@ class Toxo::Sample < ApplicationRecord
   end
 
   def sample_collection_date_editable?(new_date)
+    return new_date.present? && new_date <= Date.current if self.AcceptanceDate.nil?
+
     return false if self.sample_collection_date.present?
-    upper_bound = self.AcceptanceDate&.to_date || Date.current
-    new_date.present? && new_date <= upper_bound
+    return false if measurements.exists?(Status: 5)
+    new_date.present? && new_date <= self.AcceptanceDate.to_date
   end
 
   def dispatch_date_editable?

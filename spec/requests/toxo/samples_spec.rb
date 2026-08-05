@@ -115,6 +115,7 @@ RSpec.describe "Toxo::SamplesController", type: :request do
       expect(json["Lot"]).to eq("NEWLOT01")
       expect(json["Level"]).to eq("NEWLVL")
       expect(json["Comment"]).to include("Updated via edit form")
+      expect(json["saved_fields"]).to match_array(%w[Lot Level sample_collection_date dispatch_date note])
     end
 
     it "leaves fields outside the allowed 5 unchanged" do
@@ -261,7 +262,7 @@ RSpec.describe "Toxo::SamplesController", type: :request do
     end
 
     context "sample_collection_date" do
-      it "can be set once when previously blank and within bounds" do
+      it "can be set when previously blank and no result has been authorized" do
         sample = create_registered_sample
         sample.update_column(:sample_collection_date, nil)
 
@@ -269,13 +270,59 @@ RSpec.describe "Toxo::SamplesController", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(sample.reload.sample_collection_date.to_date).to eq(Date.today)
+        expect(json["saved_fields"]).to include("sample_collection_date")
       end
 
-      it "rejects being changed once already set" do
+      it "can still be set after the sample has been accepted, as long as no result is authorized" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, nil)
+        sample.update_column(:AcceptanceDate, 1.day.ago)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: 2.days.ago.to_date.to_s), headers: bearer
+
+        expect(response).to have_http_status(:ok)
+        expect(sample.reload.sample_collection_date.to_date).to eq(2.days.ago.to_date)
+      end
+
+      it "allows changing an already-set date while the sample has not been accepted" do
         sample = create_registered_sample
         sample.update_column(:sample_collection_date, 2.days.ago)
 
         put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: Date.today.to_s), headers: bearer
+
+        expect(response).to have_http_status(:ok)
+        expect(sample.reload.sample_collection_date.to_date).to eq(Date.today)
+      end
+
+      it "allows changing it repeatedly even once a measurement has an authorized result, as long as not yet accepted" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, 2.days.ago)
+        sample.measurements.first.update_column(:Status, 5)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: Date.today.to_s), headers: bearer
+
+        expect(response).to have_http_status(:ok)
+        expect(sample.reload.sample_collection_date.to_date).to eq(Date.today)
+      end
+
+      it "rejects being changed once already set, after acceptance" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, 3.days.ago)
+        sample.update_column(:AcceptanceDate, 2.days.ago)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: Date.today.to_s), headers: bearer
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json["errors"]).to have_key("sample_collection_date")
+      end
+
+      it "rejects being set once a measurement has an authorized result, after acceptance" do
+        sample = create_registered_sample
+        sample.update_column(:sample_collection_date, nil)
+        sample.update_column(:AcceptanceDate, 2.days.ago)
+        sample.measurements.first.update_column(:Status, 5)
+
+        put "/toxo/samples/#{sample.Id}", params: edit_params(sample, sample_collection_date: 3.days.ago.to_date.to_s), headers: bearer
 
         expect(response).to have_http_status(:unprocessable_content)
         expect(json["errors"]).to have_key("sample_collection_date")
@@ -304,6 +351,8 @@ RSpec.describe "Toxo::SamplesController", type: :request do
       sample.reload
       expect(sample.Lot).to eq(original_lot)
       expect(sample.Comment).to include("kept despite Lot rejection")
+      expect(json["saved_fields"]).to eq([ "note" ])
+      expect(json["errors"]).to have_key("Lot")
     end
   end
 
