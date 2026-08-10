@@ -12,7 +12,7 @@ module MasdiagRecurring
           exp_hours = 192
           exp_hours = 72 if project.Id == 2
           exp_hours = 72 if project.Id == 22
-          exp_hours = 696 if [16, 17].include?(project.Id)
+          exp_hours = 696 if [14, 16, 17].include?(project.Id)
           exp_hours = 360 if [3, 15, 21, 25].include?(project.Id)
           exp_hours = 240 if project.Id == 18 # Inga chciała żeby Acylokarnityny przychodził wcześniej, po zmianie z 7 na 10 dni roboczych ustawiono 240 godzin, czyli 4 dni przed terminem
           expiration_date = exp_hours.hours.ago
