@@ -19,7 +19,7 @@ module MasdiagRecurring
       
       write_pdfs()
 
-      attachments["Zestawienie #{ get_initials(@institution.name) } #{ 1.day.ago.strftime("%F") } #{ SecureRandom.alphanumeric(3) }.zip"] = File.read(@zip_file_path)
+      attachments["Zestawienie #{ get_initials(@institution.id) } #{ 1.day.ago.strftime("%F") } #{ SecureRandom.alphanumeric(3) }.zip"] = File.read(@zip_file_path)
 
       mail(to: @recipients, subject: "Zestawienie próbek wykonanych w poprzednim dniu dla #{reduce_string(@institution.name)}")
     end
@@ -48,8 +48,13 @@ module MasdiagRecurring
       end
     end
 
-    def get_initials(string)
-      reduce_string(string).split(" ").map { |word| word[0].upcase }.join
+    def get_initials(institution_id)
+      institution = Institution.find(institution_id)
+      if institution.short_name.blank?
+        "#{reduce_string(institution.name).split(" ").map { |word| word[0].upcase }.join} (#{institution.city})"
+      else
+        "#{institution.short_name} (#{institution.city})"
+      end
     end
 
     def reduce_string(str)
