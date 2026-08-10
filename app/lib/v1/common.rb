@@ -19,7 +19,7 @@ module V1::Common
   # szablonu laboratoryjnego (patrz Notifications::TemplateResolver).
   # TODO uzupełnić właściwymi id instytucji Toxo z konfiguracji puli kodów;
   # TODO lista instytucji Toxo nie powinna docelowo być w kodzie aplikacji
-  TOXO_INSTITUTION_IDS = [141, 142, 143, 144, 145].freeze
+  TOXO_INSTITUTION_IDS = [133, 141, 142, 143, 144, 145].freeze
 
   # Adres portalu partnerskiego Toxo (używany w treści powiadomień C, D, F).
   TOXO_PARTNER_PORTAL_URL = "toxo.masdiag.pl"
