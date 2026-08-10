@@ -59,7 +59,7 @@ default: &default
     class: MasdiagRecurring::Daily::FftbReportSenderJob
     queue: background
     args: []
-    schedule: "45 5 * * *"
+    schedule: "45 17 * * *"
   daily_hospital_samples_zipper:
     class: MasdiagRecurring::Daily::HospitalsSamplesZipperJob
     queue: background
