@@ -106,8 +106,8 @@ class Lalen::KitController < Fv1::KitController
 
     ActiveRecord::Base.transaction do
       @current_rsc.reserved_tests.destroy_all
-      assignment_params[:test_ids].uniq.each do |test|        
-        @current_rsc.reserved_tests.create!(project_id: test)
+      assignment_params[:test_ids].uniq.each do |test|
+        @current_rsc.reserved_tests.create!(project_id: remap_project_id(test.to_i, inst_id))
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: inst_id, reserved_by_contractor_id: get_lalen_contractor_id(inst_id) )
     end
@@ -144,8 +144,8 @@ class Lalen::KitController < Fv1::KitController
                                 material_handler: masdiag_material_handler[declare_params[:material_handler].to_sym],
                                 reserved_by_contractor_id: get_lalen_contractor_id(inst_id)
                               )
-      declare_params[:test_ids].uniq.each do |test|        
-        rsc.reserved_tests.create!(project_id: test)
+      declare_params[:test_ids].uniq.each do |test|
+        rsc.reserved_tests.create!(project_id: remap_project_id(test.to_i, inst_id))
       end
     end
 
