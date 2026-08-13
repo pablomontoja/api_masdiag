@@ -130,6 +130,53 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
       end
     end
 
+    context 'omega acids remap for institutions 83 and 95' do
+      let!(:project_omega_acids) { create(:project, Id: 21) }
+      let!(:project_omega3_index) { create(:project, Id: 34) }
+      let!(:product) { create(:product) }
+      let!(:package) { create(:package, product: product) }
+      let!(:contractor) { create(:contractor, institution_id: inst.id) }
+      let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
+      let!(:rsc) { create(:reserved_sample_code, package_id: package.id, InstitutionId: inst.id, IsRetailSale: true, material_handler: :dbs_i4) }
+      let(:assign_params) { { data: { code: rsc.Code, test_ids: [21] } } }
+
+      context 'institution 83 (FFTB)' do
+        let!(:inst) { create(:institution, id: 83, name: "Food for the brain") }
+
+        it 'persists project 34 instead of the requested 21' do
+          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+          expect(response).to have_http_status(204)
+          expect(rsc.reload.project_ids).to contain_exactly(34)
+        end
+
+        it 'still pushes the Lalen job using the original omega-3-basic key for project 21' do
+          expect(LalenApi::AssignKitTestsJob).to receive(:perform_later).with(rsc.Code, ["omega-3-basic"])
+          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+          expect(response).to have_http_status(204)
+        end
+      end
+
+      context 'institution 95' do
+        let!(:inst) { create(:institution, id: 95, name: "Institution 95") }
+
+        it 'persists project 34 instead of the requested 21' do
+          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+          expect(response).to have_http_status(204)
+          expect(rsc.reload.project_ids).to contain_exactly(34)
+        end
+      end
+
+      context 'other institutions' do
+        let!(:inst) { create(:institution, name: "Nume") }
+
+        it 'persists the requested project 21 unchanged' do
+          post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
+          expect(response).to have_http_status(204)
+          expect(rsc.reload.project_ids).to contain_exactly(21)
+        end
+      end
+    end
+
     context 'with invalid params' do
       # let!(:valid_sample) { FactoryBot.create(:sample) }
       let!(:product) { create(:product) }

@@ -38,8 +38,8 @@ class Fv1::KitController < V1::KitController
 
     ActiveRecord::Base.transaction do
       @current_rsc.reserved_tests.destroy_all
-      assignment_params[:test_ids].each do |test|        
-        @current_rsc.reserved_tests.create!(project_id: test)
+      assignment_params[:test_ids].each do |test|
+        @current_rsc.reserved_tests.create!(project_id: remap_project_id(test.to_i, Current.api_account.institution.id))
       end
       @current_rsc.update!(IsRetailSale: true, InstitutionId: Current.api_account.institution.id, reserved_by_contractor_id: Current.api_account.institution.api_contractor_id)
       assign_tests_in_lalen_api
@@ -49,6 +49,15 @@ class Fv1::KitController < V1::KitController
   end
 
 private
+
+  OMEGA_ACIDS_PROJECT_ID = 21
+  OMEGA3_INDEX_PROJECT_ID = 34
+  OMEGA3_INDEX_INSTITUTION_IDS = [83, 95]
+
+  def remap_project_id(project_id, institution_id)
+    return OMEGA3_INDEX_PROJECT_ID if OMEGA3_INDEX_INSTITUTION_IDS.include?(institution_id) && project_id == OMEGA_ACIDS_PROJECT_ID
+    project_id
+  end
 
   def assign_tests_in_lalen_api
     return if Current.api_account.institution.id != 83 # FFTB
