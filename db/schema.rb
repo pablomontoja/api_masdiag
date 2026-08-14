@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_13_100128) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_14_102700) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -38,7 +38,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_13_100128) do
     t.index ["Result_MeasurementId"], name: "IX_Result_MeasurementId"
   end
 
-  create_table "Analytes", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
+  create_table "Analytes", primary_key: "Id", id: :integer, charset: "utf8", collation: "utf8_polish_ci", options: "ENGINE=InnoDB ROW_FORMAT=COMPACT", force: :cascade do |t|
     t.text "Name", size: :long, null: false, collation: "utf8_general_ci"
     t.integer "ProjectId", null: false
     t.boolean "IsCalculatedFromOthers", null: false
