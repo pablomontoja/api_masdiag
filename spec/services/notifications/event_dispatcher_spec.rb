@@ -66,6 +66,18 @@ RSpec.describe Notifications::EventDispatcher do
     expect(Note.where(subject: sample, key: "sample-accepted-email")).to be_empty
   end
 
+  it "skips (no mail) for a non-toxo sample when the contractor disabled sample_registration_confirmation" do
+    contractor = create(:contractor, institution: lab_institution,
+                                     email: "lab@example.com", are_notifications_enabled: true,
+                                     allow_sample_registration_notifications: false)
+    patient = create(:patient, contractor: contractor, IsVirtual: false)
+    sample = create(:sample, patient: patient)
+
+    expect(MasdiagMailer::IndMailer).not_to receive(:after_sample_registration)
+    result = described_class.call(event: :sample_registration_confirmation, sample: sample)
+    expect(result.status).to eq(:skipped)
+  end
+
   # FR-021: physical-only procedures (return / archive / dispose) must produce NO email.
   it "exposes only the six defined notification events and none for physical procedures" do
     expect(described_class::KNOWN_EVENTS).to contain_exactly(
