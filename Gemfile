@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.3.7"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.5", ">= 7.1.5.1"
+gem "rails", "~> 7.2.3"
 
 # Standard library components that application code requires directly.
 # These stopped being Ruby default gems in 3.4, so they must be declared
@@ -73,8 +73,9 @@ end
 gem 'faraday'
 gem 'faraday-net_http_persistent', '~> 2.0'
 gem 'pundit'
-# Lockbox >= 2.2 refuses to load on Active Record 7.1
-gem "lockbox", "~> 1.2.0"
+# Lockbox 2.2 requires Active Record >= 7.2 and raises below it, so this
+# version is tied to the Rails version and the two must move together.
+gem "lockbox", "~> 2.2.0"
 # gem 'composite_primary_keys', '=14.0.6'
 gem "solid_queue"
 gem "mission_control-jobs"
