@@ -1,22 +1,37 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 → 1.1.0
-Bump rationale: MINOR — new principle added (VI. Layered Architecture & Abstraction Thresholds),
-  canonical directory structure section added, anti-patterns section added.
-Modified principles:
-  II. Service-Object Architecture — expanded with layer responsibility table and abstraction signals
-Added sections:
-  VI. Layered Architecture & Abstraction Thresholds
-  Canonical Directory Structure
-  Anti-Patterns (prohibited)
+Version change: 1.1.0 → 1.1.1
+Bump rationale: PATCH — corrects factually wrong guidance without changing any principle's
+  intent or adding/removing governance rules. Two items in Development Workflow mandated
+  behaviour that is impossible or untrue as written:
+    (a) `wait: :exponentially_longer` was deprecated in Rails 7.1 and REMOVED in 7.2. The
+        constitution required an API that no longer exists in the framework the project now
+        runs on; following it verbatim would raise. All 16 jobs already use the supported
+        `:polynomially_longer`, so the codebase was right and the document was wrong.
+    (b) "CI gates on green tests" described a control that does not exist — no CI is
+        configured in this repository. A governance rule nothing enforces is worse than an
+        honest statement of the gap.
+  Also relaxes the rigid `attempts: 5` to a documented default with a rationale requirement,
+  because 5 of 16 jobs legitimately deviate (network-bound partner calls use 10; fast
+  notification jobs use 3) and Rails' own documentation recommends 10 for timeout-prone work.
+Modified sections:
+  Development Workflow item 3 — CI claim corrected to state the actual local-verification gate
+  Development Workflow item 4 — retry pattern corrected; attempts guidance made a default
+Modified principles: None (principles I–VI unchanged in wording and intent)
+Added sections: None
 Removed sections: None
 Templates requiring updates:
-  ✅ plan-template.md — Constitution Check now covers principles I–VI
+  ✅ plan-template.md — Constitution Check unaffected (principles unchanged)
   ✅ spec-template.md — no changes needed
   ✅ tasks-template.md — no changes needed
   ✅ commands/*.md — no commands dir present
+Runtime guidance:
+  ✅ CLAUDE.md — retry pattern already corrected in commit 468db87
 Deferred TODOs: None
+Evidence: verified against activejob-7.2.3 (`:exponentially_longer` absent from lib/;
+  `:polynomially_longer` documented at lib/active_job/exceptions.rb:30) and against
+  `grep -rn retry_on app/jobs/` on 2026-08-17.
 -->
 
 # api_masdiag Constitution
@@ -168,9 +183,29 @@ The following patterns are explicitly prohibited and MUST be flagged in code rev
 
 1. Create a feature branch via `/speckit-git-feature` before any implementation.
 2. Write a spec (`/speckit-specify`) before writing code.
-3. Run `bundle exec rspec` locally before every commit; CI gates on green tests.
-4. Solid Queue (not Sidekiq) handles background jobs. Jobs MUST be idempotent and use
-   `retry_on StandardError, wait: :exponentially_longer, attempts: 5`.
+3. Run `bundle exec rspec` locally before every commit. This local run is currently the
+   **only** gate — no CI is configured in this repository, so a green suite is asserted by
+   the committer rather than enforced by tooling. Introducing CI is an open improvement.
+4. Solid Queue (not Sidekiq) handles background jobs. Jobs MUST be idempotent and MUST
+   declare a retry policy:
+
+   ```ruby
+   retry_on StandardError, wait: :polynomially_longer, attempts: 5
+   ```
+
+   `:polynomially_longer` is required. `:exponentially_longer` was deprecated in Rails 7.1
+   and removed in 7.2 — it no longer exists in the framework and MUST NOT be used.
+
+   `attempts: 5` is the default, not a fixed rule. Deviations are permitted where the
+   workload justifies them and SHOULD carry a brief comment or commit rationale:
+   network-bound calls to external partners warrant more attempts (Rails' own guidance
+   suggests 10 for timeout-prone work), while fast-failing notification jobs warrant fewer.
+
+   Jobs that notify an external system MUST NOT be enqueued on the basis of a database
+   write that has not committed. Since Rails 7.2 with `load_defaults 7.2` this is enforced
+   by `active_job.enqueue_after_transaction_commit`, but callers MUST NOT rely on that
+   default alone where the ordering is essential to correctness — make it explicit at the
+   call site, so the intent survives a defaults change.
 5. Serialization uses Alba — `app/resources/*Resource`. JBuilder and AMS are prohibited.
 6. Database migrations MUST be reversible. Run `db:migrate` for both development and test
    environments after schema changes.
@@ -192,4 +227,4 @@ in the Complexity Tracking table of the plan.
 Versioning policy: MAJOR for principle removals or redefinitions; MINOR for new principles or
 material guidance additions; PATCH for clarifications and wording improvements.
 
-**Version**: 1.1.0 | **Ratified**: 2023-03-02 | **Last Amended**: 2026-05-26
+**Version**: 1.1.1 | **Ratified**: 2023-03-02 | **Last Amended**: 2026-08-17
