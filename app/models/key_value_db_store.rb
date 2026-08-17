@@ -2,7 +2,7 @@ class KeyValueDbStore < ApplicationRecord
   self.table_name = "config_entries"
   self.primary_key = "id"
 
-  serialize :json, ::ActiveRecord::Coders::JSON
+  serialize :json, coder: ::ActiveRecord::Coders::JSON
 
 
   def self.metanephrine_settled_samples

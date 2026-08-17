@@ -68,8 +68,16 @@ module MasdiagMailer
     # używany przez indclients2 do wysyłania powiadomień po rejestracji próbki
     def after_sample_registration
       begin
+        sample = Sample.find_by(Id: params[:sample_id])
+        contractor = sample&.patient&.contractor
+
+        if contractor.present? && !contractor.allow_sample_registration_notifications
+          render plain: "OK", status: 200
+          return
+        end
+
         if Measurement.where(SampleId: params[:sample_id], ProjectId: 25).any?
-          MasdiagMailer::ThreeMethylDopaMailer.after_sample_registration(params[:sample_id]).deliver_later     
+          MasdiagMailer::ThreeMethylDopaMailer.after_sample_registration(params[:sample_id]).deliver_later
         else
           MasdiagMailer::IndMailer.after_sample_registration(params[:sample_id]).deliver_later
         end

@@ -31,3 +31,11 @@
 /config/credentials/staging.key
 
 /config/credentials/production.key
+
+# Ignore environment files containing secrets.
+.env
+.env.*
+!.env.example
+
+# Ignore bundled gems installed into the project.
+/vendor/bundle

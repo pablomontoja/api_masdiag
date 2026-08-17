@@ -20,6 +20,8 @@ module MasdiagMailer
 
     def after_sample_registration(sample_id)
     	@sample = Sample.find(sample_id)
+      return if @sample.patient&.email.blank?
+
       mail(to: @sample.patient.email, subject: "Rejestracja Próbki - Masdiag Sp. z o.o.")
     end
 

@@ -24,5 +24,5 @@ class Test < ApplicationRecord
 
   validates :project, uniqueness: {scope: :material_type}
 
-  enum material_type: MaterialTypes::MODEL_HASH
+  enum :material_type, MaterialTypes::MODEL_HASH
 end
