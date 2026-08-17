@@ -6,6 +6,12 @@ ruby "3.3.7"
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 
+# Standard library components that application code requires directly.
+# These stopped being Ruby default gems in 3.4, so they must be declared
+# explicitly rather than relied upon as part of the runtime.
+gem "csv"     # required by MasdiagRecurring mailers and CeraStatisticCreator
+gem "base64"  # required by ScannedDocs::OcrClient
+
 # Use mysql as the database for Active Record
 gem "mysql2", "~> 0.5"
 
