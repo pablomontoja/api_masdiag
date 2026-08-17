@@ -1,6 +1,8 @@
 # syntax = docker/dockerfile:1
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+# Keep RUBY_VERSION in sync with .ruby-version, the Gemfile ruby directive,
+# and the RUBY VERSION stanza in Gemfile.lock. A divergence here builds an
+# image on a different runtime than the one the app was tested against.
 ARG RUBY_VERSION=3.4.10
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 

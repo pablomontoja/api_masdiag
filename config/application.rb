@@ -50,7 +50,6 @@ module ApiMasdiag
 
     config.solid_queue.use_skip_locked = false
     config.last_use_of_send_all_mail = Time.now
-    config.solid_queue.use_skip_locked = false
     config.active_record.default_column_serializer = YAML
     config.mission_control.jobs.http_basic_auth_enabled = false
     config.mission_control.jobs.base_controller_class = "AdminController"
