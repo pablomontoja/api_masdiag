@@ -9,8 +9,9 @@ gem "rails", "~> 7.2.3"
 # Standard library components that application code requires directly.
 # These stopped being Ruby default gems in 3.4, so they must be declared
 # explicitly rather than relied upon as part of the runtime.
-gem "csv"     # required by MasdiagRecurring mailers and CeraStatisticCreator
-gem "base64"  # required by ScannedDocs::OcrClient
+gem "csv"      # required by MasdiagRecurring mailers and CeraStatisticCreator
+gem "base64"   # required by ScannedDocs::OcrClient
+gem "observer" # required by factory_bot 4.11; removable once factory_bot moves past 4.x
 
 # Use mysql as the database for Active Record
 gem "mysql2", "~> 0.5"
