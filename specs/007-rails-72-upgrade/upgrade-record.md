@@ -10,9 +10,9 @@ Written so another developer can act on this without reading the diff.
 ## What changed
 
 `api_masdiag` moved from **Rails 7.1.6 to 7.2.3**, on Ruby 3.3.7 (unchanged), with
-`config.load_defaults` deliberately left at **7.1**.
+`config.load_defaults` also raised to **7.2**.
 
-Four commits, each independently revertible:
+Six commits, each independently revertible:
 
 | Commit | What | Ships alone? |
 |--------|------|--------------|
@@ -20,9 +20,12 @@ Four commits, each independently revertible:
 | `b6b5826` | Notify Lalen partner only after the assignment commits | ✅ yes |
 | `aff1ed2` | Add `regspec` smoke checks | ✅ yes |
 | `dc77b4b` | Upgrade Rails 7.1.6 → 7.2.3 (+ Lockbox 2.2.0, deprecation cleanup) | depends on the above |
+| `468db87` | Verification records + stale retry-docs fix | ✅ yes |
+| `51028d4` | Adopt `load_defaults 7.2` | revertible alone |
 
 The first three landed **on Rails 7.1** and fix real problems regardless of whether
-the upgrade proceeds.
+the upgrade proceeds. The last is separable: reverting it leaves a supported
+Rails 7.2 + 7.1-defaults configuration without touching the framework version.
 
 ### Two defects fixed along the way
 
@@ -85,18 +88,33 @@ actual guard is `if ar_version < 7.2 → raise`, meaning **2.2.0 requires AR ≥
 The two versions have disjoint supported ranges, so Rails and Lockbox had to move in
 one commit. The misleading comment has been corrected.
 
-### 2. Transaction-aware enqueuing is NOT active — and that is why the code fix mattered
+### 2. Transaction-aware enqueuing needed BOTH the code fix and the defaults change
 
 Rails 7.2's `enqueue_after_transaction_commit` is gated behind `load_defaults 7.2`.
-With defaults at 7.1 it reads `:never`. Verified against the real Solid Queue adapter:
+Immediately after the version bump — defaults still at 7.1 — it read `:never`, and the
+real Solid Queue adapter confirmed a job enqueued inside a rolled-back transaction
+still persisted:
 
 ```
+# with load_defaults 7.1
 fixed arrangement, rollback -> 0 job(s)
-old arrangement,   rollback -> 1 job(s)   ← the bug, still reproducible on 7.2.3
+old arrangement,   rollback -> 1 job(s)   ← the bug, reproducible on 7.2.3
 ```
 
-**Had the fix been left to the framework default, the defect would still be live.**
-It only activates when someone adopts `load_defaults 7.2` (deferred, optional).
+After adopting `load_defaults 7.2` (`51028d4`), Solid Queue's adapter opts in and the
+framework defers enqueueing app-wide:
+
+```
+# with load_defaults 7.2
+mid-txn rows:   0
+after rollback: 0
+after commit:   1
+```
+
+**Both layers matter and neither is redundant.** The code fix held the Lalen case
+during the window between the bump and the defaults change, and still holds if the
+defaults commit is ever reverted. The default protects every *other* enqueue site,
+including ones added later by developers unaware of the constraint.
 
 ### 3. A bare `bundle update` would have wrecked the upgrade
 
@@ -113,7 +131,6 @@ bundle lock --conservative --update rails lockbox
 
 | Item | Why | Revisit when |
 |------|-----|--------------|
-| **`load_defaults` → 7.2** | Highest behaviour-change risk per line; an app on 7.2 with 7.1 defaults is supported and shippable | Own increment. Note this is what activates transaction-aware enqueuing framework-wide |
 | **Ruby 3.4** | One variable at a time; 3.3 supported well past this work | Separate spec. `csv`/`base64` already handled; `observer` (via `factory_bot`) still outstanding |
 | **`patient_portal` verification** | Dormant, 2 read-only endpoints, implementation expected to change | If it returns to active use |
 | **Extracting `kit_controller#assign_tests` to a service object** | Exceeds the 15-line controller threshold (Constitution II/VI), but refactoring a partner-facing endpoint inside an upgrade would destroy attribution | Own spec, after 7.2 is stable |

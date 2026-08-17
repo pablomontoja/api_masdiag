@@ -166,13 +166,13 @@ description: "Task list for Rails 7.2 upgrade"
 
 **Deferrable**: An application on 7.2 with 7.1 defaults is supported and shippable. This phase may be postponed without blocking anything above.
 
-- [ ] T052 [US5] Run `bin/rails app:update` and review every hunk individually. Accept nothing blindly — this generates a full-stack scaffold diff against an API-only application
-- [ ] T053 [US5] Explicitly decline the full-stack additions and record the decision in `specs/007-rails-72-upgrade/defaults-decisions.md`: browser-version guard (`allow_browser`), PWA scaffolding (`app/views/pwa/`), and DevContainer configuration (FR-027, SC-014)
-- [ ] T054 [US5] Enumerate each new 7.2 framework default from the generated `config/initializers/new_framework_defaults_7_2.rb` and record an adopt-or-override decision with rationale for each, per the E5 schema in `data-model.md` (FR-029, SC-013)
-- [ ] T055 [US5] Change `config.load_defaults 7.1` to `7.2` in `config/application.rb:24`
-- [ ] T056 [US5] Run `bundle exec rspec` and confirm zero failures
-- [ ] T057 [US5] Re-run the namespace equivalence comparison from T037; if any default alters externally visible API behaviour, either override it explicitly with a comment or record it as an intentional documented change (FR-030, FR-031)
-- [ ] T058 [US5] Commit the defaults adoption separately from the version bump, so the two can be reverted independently
+- [X] T052 [US5] Run `bin/rails app:update` and review every hunk individually. Accept nothing blindly — this generates a full-stack scaffold diff against an API-only application
+- [X] T053 [US5] Explicitly decline the full-stack additions and record the decision in `specs/007-rails-72-upgrade/defaults-decisions.md`: browser-version guard (`allow_browser`), PWA scaffolding (`app/views/pwa/`), and DevContainer configuration (FR-027, SC-014)
+- [X] T054 [US5] Enumerate each new 7.2 framework default from the generated `config/initializers/new_framework_defaults_7_2.rb` and record an adopt-or-override decision with rationale for each, per the E5 schema in `data-model.md` (FR-029, SC-013)
+- [X] T055 [US5] Change `config.load_defaults 7.1` to `7.2` in `config/application.rb:24`
+- [X] T056 [US5] Run `bundle exec rspec` and confirm zero failures
+- [X] T057 [US5] Re-run the namespace equivalence comparison from T037; if any default alters externally visible API behaviour, either override it explicitly with a comment or record it as an intentional documented change (FR-030, FR-031)
+- [X] T058 [US5] Commit the defaults adoption separately from the version bump, so the two can be reverted independently
 
 ---
 
