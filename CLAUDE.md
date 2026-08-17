@@ -105,8 +105,11 @@ Order confirmation (event A) fires from the toxo portal's `Toxo::Samples::Regist
 **Solid Queue** (not Sidekiq). Jobs in `app/jobs/`. Pattern:
 
 ```ruby
-retry_on StandardError, wait: :exponentially_longer, attempts: 5
+retry_on StandardError, wait: :polynomially_longer, attempts: 5
 ```
+
+`:exponentially_longer` was deprecated in Rails 7.1 and removed in 7.2 — use
+`:polynomially_longer`, which all existing jobs already do.
 
 Key jobs: `Notification::SendResultJob`, `MasdiagMailer::ContractorResultsNotifierJob`, `MasdiagMailer::PatientResultsNotifierJob`, `LalenApi::RegisterKitJob`, `Cerascreen::LabOrdatenbank::GetResultsJob`.
 
@@ -150,5 +153,5 @@ No fixtures — use factories exclusively.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/005-toxo-notification-system/plan.md`.
+at `specs/007-rails-72-upgrade/plan.md`.
 <!-- SPECKIT END -->
