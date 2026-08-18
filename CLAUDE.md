@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`api_masdiag` is a Rails 7 API-only application serving as a multi-tenant laboratory management system for diagnostic samples. It handles medical testing workflows (kits, samples, results, patient records) across multiple partner institutions.
+`api_masdiag` is a Rails 8 API-only application serving as a multi-tenant laboratory management system for diagnostic samples. It handles medical testing workflows (kits, samples, results, patient records) across multiple partner institutions.
 
 ## Commands
 
@@ -19,17 +19,17 @@ bundle exec rspec spec/requests/v1_sample_create_spec.rb
 bundle exec rspec spec/requests/v1_sample_create_spec.rb:42
 
 # Start the server
-rvm use 3.1.2 && bin/rails s
+rvm use 3.4.10 && bin/rails s
 
 # Rails console
-rvm use 3.1.2 && bin/rails c
+rvm use 3.4.10 && bin/rails c
 
 # Run background jobs (Solid Queue)
-rvm use 3.1.2 && bin/rails solid_queue:start
+rvm use 3.4.10 && bin/rails solid_queue:start
 
 # Database
-rvm use 3.1.2 && bin/rails db:migrate
-rvm use 3.1.2 && bin/rails db:migrate RAILS_ENV=test
+rvm use 3.4.10 && bin/rails db:migrate
+rvm use 3.4.10 && bin/rails db:migrate RAILS_ENV=test
 ```
 
 ## Architecture
