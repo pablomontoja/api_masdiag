@@ -44,11 +44,15 @@ The API is versioned by namespace, each serving a different client type:
 | `fv1/` | Foreign institutions (confirmation test activation) |
 | `nume/` | NUME lab system |
 | `lalen/` | Lalen partner (Australia/EU) — kit-focused operations |
+| `toxo/` | Toxo portal (samples, measurements, registrations) |
 | `masdiag/` | Internal Masdiag operations (notifications, setup) |
 | `masdiag_mailer/` | Email notification endpoints |
-| `patient_portal/` | Patient-facing endpoints (results, samples) |
+| `patient_portal/` | Patient-facing endpoints (results, samples) — currently unused |
 | `regspec/` | REGSPEC system (institutions, contractors, patients) |
+| `diagnostyka_precyzyjna/` | Diagnostyka Precyzyjna integration (shop orders) |
 | `webhook/` | Machine-to-machine webhooks (Bearer token auth, no ApiAccount) |
+
+Eleven namespaces — `config/routes.rb` is authoritative if this table drifts.
 
 ### Authentication
 

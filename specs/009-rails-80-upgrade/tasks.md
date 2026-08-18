@@ -164,24 +164,24 @@ rolled-back one produces none — observed against a real worker.
 
 ### Encryption
 
-- [ ] T031 [US3] Verify field-level encryption round-trips across the upgrade by loading the probe record created in **T005b** (identifier recorded in `baseline.md`), confirming its `settings` value decrypts to what was written on Rails 7.2.3 and that the ciphertext contains no plaintext (FR-015, SC-010)
+- [X] T031 [US3] Verify field-level encryption round-trips across the upgrade by loading the probe record created in **T005b** (identifier recorded in `baseline.md`), confirming its `settings` value decrypts to what was written on Rails 7.2.3 and that the ciphertext contains no plaintext (FR-015, SC-010)
 
 ### Partner notification — the irreversible one
 
-- [ ] T032 [US3] Start a real worker with `bin/rails solid_queue:start` — the test adapter cannot prove this, since `use_transactional_fixtures` makes the controller transaction a savepoint (FR-013, research.md R6)
-- [ ] T033 [US3] Exercise the FFTB kit-assignment flow through `app/controllers/fv1/kit_controller.rb` twice — once committing, once forcing a rollback — and confirm exactly 1 partner notification on commit and 0 on rollback (FR-013, SC-008)
-- [ ] T034 [US3] Confirm `spec/requests/fv1/kit_assignment_rollback_spec.rb` still passes with unmodified assertions, verifying the spec 007 structural guard survived the framework change (FR-013, FR-009)
-- [ ] T035 [US3] Verify background jobs are enqueued, picked up, and retried as before under the real worker; confirm all 48 jobs in `app/jobs/` still declare `wait: :polynomially_longer` or an explicit duration (FR-016, constitution Development Workflow item 4)
+- [X] T032 [US3] Start a real worker with `bin/rails solid_queue:start` — the test adapter cannot prove this, since `use_transactional_fixtures` makes the controller transaction a savepoint (FR-013, research.md R6)
+- [X] T033 [US3] Exercise the FFTB kit-assignment flow through `app/controllers/fv1/kit_controller.rb` twice — once committing, once forcing a rollback — and confirm exactly 1 partner notification on commit and 0 on rollback (FR-013, SC-008)
+- [X] T034 [US3] Confirm `spec/requests/fv1/kit_assignment_rollback_spec.rb` still passes with unmodified assertions, verifying the spec 007 structural guard survived the framework change (FR-013, FR-009)
+- [X] T035 [US3] Verify background jobs are enqueued, picked up, and retried as before under the real worker; confirm all 48 jobs in `app/jobs/` still declare `wait: :polynomially_longer` or an explicit duration (FR-016, constitution Development Workflow item 4)
 
 ### The dashboard — the least obvious risk
 
-- [ ] T036 [US3] Start the server and open `http://localhost:3000/jobs` **in a browser**, confirming the page renders with styling applied and scripts loaded, and that the network tab shows zero failed asset requests — HTTP 200 alone is insufficient, since a broken stylesheet still returns 200 (FR-008a, SC-013b, research.md R5)
-- [ ] T037 [US3] Verify `AdminController` authentication still admits valid credentials, refuses invalid ones, and that `/jobs` is never reachable unauthenticated (FR-008b, SC-013b)
+- [X] T036 [US3] Start the server and open `http://localhost:3000/jobs` **in a browser**, confirming the page renders with styling applied and scripts loaded, and that the network tab shows zero failed asset requests — HTTP 200 alone is insufficient, since a broken stylesheet still returns 200 (FR-008a, SC-013b, research.md R5)
+- [X] T037 [US3] Verify `AdminController` authentication still admits valid credentials, refuses invalid ones, and that `/jobs` is never reachable unauthenticated (FR-008b, SC-013b)
 
 ### Container
 
-- [ ] T038 [US3] Run `docker compose build` and confirm the image builds against `ruby:3.4.10-slim`, whose toolchain differs from the workstation's (FR-008, SC-013)
-- [ ] T039 [US3] Run `docker compose run --rm app bin/rails runner 'puts Rails.version'` and confirm the application boots inside the container; if it fails with `Expected name: to be a String, got NilClass` at `admin_controller.rb`, that is the known `RAILS_MASTER_KEY`-at-runtime gap in `docker-compose.yml`, not an upgrade regression (FR-008, SC-013)
+- [X] T038 [US3] Run `docker compose build` and confirm the image builds against `ruby:3.4.10-slim`, whose toolchain differs from the workstation's (FR-008, SC-013)
+- [X] T039 [US3] Run `docker compose run --rm app bin/rails runner 'puts Rails.version'` and confirm the application boots inside the container; if it fails with `Expected name: to be a String, got NilClass` at `admin_controller.rb`, that is the known `RAILS_MASTER_KEY`-at-runtime gap in `docker-compose.yml`, not an upgrade regression (FR-008, SC-013)
 
 **Checkpoint**: partner guarantee verified, encryption intact, dashboard renders, container boots.
 
@@ -199,23 +199,23 @@ from a bump-induced one.
 
 ### Adoption
 
-- [ ] T040 [US4] Change `config.load_defaults 7.2` to `config.load_defaults 8.0` in `config/application.rb` (FR-018, SC-013a)
-- [ ] T041 [US4] Add an explicit `config.active_job.enqueue_after_transaction_commit` setting to `config/application.rb` with a comment citing constitution Development Workflow item 4 — ordering-critical enqueue intent must survive a defaults change, and this upgrade is that change (FR-014, SC-009, research.md R6)
-- [ ] T042 [US4] Review `config/initializers/new_framework_defaults_8_0.rb` line by line, recording each default's decision and reason in `specs/009-rails-80-upgrade/defaults-decisions.md` (FR-006, FR-019, SC-015)
+- [X] T040 [US4] Change `config.load_defaults 7.2` to `config.load_defaults 8.0` in `config/application.rb` (FR-018, SC-013a)
+- [X] T041 [US4] Add an explicit `config.active_job.enqueue_after_transaction_commit` setting to `config/application.rb` with a comment citing constitution Development Workflow item 4 — ordering-critical enqueue intent must survive a defaults change, and this upgrade is that change (FR-014, SC-009, research.md R6)
+- [X] T042 [US4] Review `config/initializers/new_framework_defaults_8_0.rb` line by line, recording each default's decision and reason in `specs/009-rails-80-upgrade/defaults-decisions.md` (FR-006, FR-019, SC-015)
 
 ### Re-verification
 
-- [ ] T043 [US4] Run `bundle exec rspec` and confirm the same results as before adoption — zero failures, no example-count reduction (FR-018, SC-004, SC-013a)
-- [ ] T044 [US4] Re-run all 10 per-namespace spec commands from `contracts/namespace-equivalence.md` and append the second-pass results to `equivalence-report.md` (FR-009, SC-013a)
-- [ ] T045 [US4] Confirm `git diff spec/` is still empty after adoption (FR-009, invariant I3)
-- [ ] T046 [US4] Verify the enqueue setting now reads from explicit configuration rather than an inherited default via `bin/rails runner 'puts ActiveJob::Base.enqueue_after_transaction_commit.inspect'` (FR-014, SC-009)
-- [ ] T047 [US4] Repeat the commit/rollback exercise from T033 under the adopted defaults, confirming 1 notification on commit and 0 on rollback — this is what proves the guarantee survived the defaults change (FR-013, FR-014, SC-008)
+- [X] T043 [US4] Run `bundle exec rspec` and confirm the same results as before adoption — zero failures, no example-count reduction (FR-018, SC-004, SC-013a)
+- [X] T044 [US4] Re-run all 10 per-namespace spec commands from `contracts/namespace-equivalence.md` and append the second-pass results to `equivalence-report.md` (FR-009, SC-013a)
+- [X] T045 [US4] Confirm `git diff spec/` is still empty after adoption (FR-009, invariant I3)
+- [X] T046 [US4] Verify the enqueue setting now reads from explicit configuration rather than an inherited default via `bin/rails runner 'puts ActiveJob::Base.enqueue_after_transaction_commit.inspect'` (FR-014, SC-009)
+- [X] T047 [US4] Repeat the commit/rollback exercise from T033 under the adopted defaults, confirming 1 notification on commit and 0 on rollback — this is what proves the guarantee survived the defaults change (FR-013, FR-014, SC-008)
 
 ### Regex timeout
 
-- [ ] T048 [US4] Verify `LalenApi::RegisterKit::EMAIL_REGEXP` in `app/models/lalen_api/register_kit.rb` reaches identical verdicts under the new `Regexp.timeout` for valid, invalid, empty, and unusually long inputs, with zero `Regexp::TimeoutError` — this is the one regex applied to partner-supplied input (FR-017, SC-011, research.md R7)
-- [ ] T049 [US4] [P] Verify the remaining 5 regex sites, including `app/services/masdiag/reserved_sample_codes_creator.rb:43`, reach identical verdicts with zero timeouts (FR-017, SC-011)
-- [ ] T050 [US4] Confirm `git diff db/schema.rb` is still empty after adopting the 8.0 defaults, which change schema-dump column ordering; do **not** run `db:schema:dump` (FR-020, SC-014, research.md R8)
+- [X] T048 [US4] Verify `LalenApi::RegisterKit::EMAIL_REGEXP` in `app/models/lalen_api/register_kit.rb` reaches identical verdicts under the new `Regexp.timeout` for valid, invalid, empty, and unusually long inputs, with zero `Regexp::TimeoutError` — this is the one regex applied to partner-supplied input (FR-017, SC-011, research.md R7)
+- [X] T049 [US4] [P] Verify the remaining 5 regex sites, including `app/services/masdiag/reserved_sample_codes_creator.rb:43`, reach identical verdicts with zero timeouts (FR-017, SC-011)
+- [X] T050 [US4] Confirm `git diff db/schema.rb` is still empty after adopting the 8.0 defaults, which change schema-dump column ordering; do **not** run `db:schema:dump` (FR-020, SC-014, research.md R8)
 
 **Checkpoint**: 8.0 defaults active, everything verified a second time, regex sites clear.
 
@@ -230,11 +230,11 @@ from the record alone.
 
 **Depends on**: US1–US4 (there is nothing to record until the work is done).
 
-- [ ] T051 [US5] Run `bundle exec rspec 2>&1 | grep -iE "warning|deprecat" | sort -u` and record each warning as resolved or deliberately accepted with a rationale in `specs/009-rails-80-upgrade/deprecations.md` (FR-023, SC-015)
-- [ ] T052 [US5] Finalise `specs/009-rails-80-upgrade/equivalence-report.md` with both verification passes and the per-namespace coverage assessment (FR-009a, SC-005)
-- [ ] T053 [US5] Write `specs/009-rails-80-upgrade/upgrade-record.md` covering: framework version before and after, every dependency that moved and why, every default adopted and why, the annotation-regeneration decision, and every deferred item with its reason (FR-024, SC-017)
-- [ ] T054 [US5] Document the revert procedure in `upgrade-record.md`, specifying that `Gemfile`, `Gemfile.lock`, `config/application.rb` and `config/initializers/new_framework_defaults_8_0.rb` revert **together** — spec 007 reverted only the lockfile, left newer code in place, and produced 13 failures that masked the real state (FR-025, SC-016)
-- [ ] T055 [US5] Verify the documented revert procedure actually reproduces the T002 baseline, then restore the upgraded state (FR-025, SC-016)
+- [X] T051 [US5] Run `bundle exec rspec 2>&1 | grep -iE "warning|deprecat" | sort -u` and record each warning as resolved or deliberately accepted with a rationale in `specs/009-rails-80-upgrade/deprecations.md` (FR-023, SC-015)
+- [X] T052 [US5] Finalise `specs/009-rails-80-upgrade/equivalence-report.md` with both verification passes and the per-namespace coverage assessment (FR-009a, SC-005)
+- [X] T053 [US5] Write `specs/009-rails-80-upgrade/upgrade-record.md` covering: framework version before and after, every dependency that moved and why, every default adopted and why, the annotation-regeneration decision, and every deferred item with its reason (FR-024, SC-017)
+- [X] T054 [US5] Document the revert procedure in `upgrade-record.md`, specifying that `Gemfile`, `Gemfile.lock`, `config/application.rb` and `config/initializers/new_framework_defaults_8_0.rb` revert **together** — spec 007 reverted only the lockfile, left newer code in place, and produced 13 failures that masked the real state (FR-025, SC-016)
+- [X] T055 [US5] Verify the documented revert procedure actually reproduces the T002 baseline, then restore the upgraded state (FR-025, SC-016)
 
 **Checkpoint**: the upgrade is documented, reversible, and verified reversible.
 
@@ -242,9 +242,9 @@ from the record alone.
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T056 [P] Correct the namespace table in `CLAUDE.md`, which lists nine namespaces and omits `toxo` and `diagnostyka_precyzyjna`; `config/routes.rb` declares eleven and is authoritative (research.md R9)
-- [ ] T057 [P] Record in `upgrade-record.md` that Rails 8.1 is available (8.1.3.1) and is a candidate for a future spec 010, deliberately excluded here to avoid conflating two sets of breaking changes (research.md R1, R10)
-- [ ] T058 [P] Record in `upgrade-record.md` that the `factory_bot` 4.11 → 6.x upgrade remains deferred and is still the change that would retire the `observer` declaration in `Gemfile` (research.md R10)
+- [X] T056 [P] Correct the namespace table in `CLAUDE.md`, which lists nine namespaces and omits `toxo` and `diagnostyka_precyzyjna`; `config/routes.rb` declares eleven and is authoritative (research.md R9)
+- [X] T057 [P] Record in `upgrade-record.md` that Rails 8.1 is available (8.1.3.1) and is a candidate for a future spec 010, deliberately excluded here to avoid conflating two sets of breaking changes (research.md R1, R10)
+- [X] T058 [P] Record in `upgrade-record.md` that the `factory_bot` 4.11 → 6.x upgrade remains deferred and is still the change that would retire the `observer` declaration in `Gemfile` (research.md R10)
 - [ ] T059 Run the full completion checklist in `quickstart.md` and confirm every item is satisfied
 
 ---

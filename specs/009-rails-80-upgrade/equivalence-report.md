@@ -30,7 +30,27 @@ Evidence for FR-009/FR-009a: every namespace's request specs pass after the fram
 
 ## Pass 2 — after adopting `load_defaults 8.0`
 
-*Pending Phase 6 (T044).*
+| Namespace | Pass 1 | Pass 2 | Result |
+|---|---:|---:|---|
+| `toxo` | 130 | 130 | ✅ identical |
+| `fv1` | 85 | 85 | ✅ identical |
+| `v1` | 84 | 84 | ✅ identical |
+| `nume` | 55 | 55 | ✅ identical |
+| `masdiag_mailer` | 28 | 28 | ✅ identical |
+| `regspec` | 14 | 14 | ✅ identical |
+| `masdiag` | 13 | 13 | ✅ identical |
+| `webhook` | 12 | 12 | ✅ identical |
+| `lalen` | 8 | 8 | ✅ identical |
+| `diagnostyka_precyzyjna` | 7 | 7 | ✅ identical |
+| **Total** | **436** | **436** | **0 failures both passes** |
+
+Full suite after adoption: **758 examples, 0 failures** — the same figure recorded on Rails 7.2.3
+before any change, and again after the bump with defaults still at 7.2.
+
+Verifying twice is what makes a defaults-induced failure distinguishable from a bump-induced one
+(SC-013a). Neither pass produced one.
+
+`git diff spec/` remained empty across both passes.
 
 ## The load-bearing verification: assertions were not touched
 
