@@ -245,7 +245,7 @@ from the record alone.
 - [X] T056 [P] Correct the namespace table in `CLAUDE.md`, which lists nine namespaces and omits `toxo` and `diagnostyka_precyzyjna`; `config/routes.rb` declares eleven and is authoritative (research.md R9)
 - [X] T057 [P] Record in `upgrade-record.md` that Rails 8.1 is available (8.1.3.1) and is a candidate for a future spec 010, deliberately excluded here to avoid conflating two sets of breaking changes (research.md R1, R10)
 - [X] T058 [P] Record in `upgrade-record.md` that the `factory_bot` 4.11 → 6.x upgrade remains deferred and is still the change that would retire the `observer` declaration in `Gemfile` (research.md R10)
-- [ ] T059 Run the full completion checklist in `quickstart.md` and confirm every item is satisfied
+- [X] T059 Run the full completion checklist in `quickstart.md` and confirm every item is satisfied
 
 ---
 
