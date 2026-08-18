@@ -246,9 +246,28 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
 
       it 'returns 500 status with error message' do
         post '/masdiag_mailer/after_sample_registration', params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
-        
+
         expect(response).to have_http_status(500)
         expect(JSON.parse(response.body)).to eq({ 'error' => 'Something went wrong' })
+      end
+    end
+
+    context 'when the contractor disabled sample registration notifications' do
+      let!(:sample) { create(:sample, patient: create(:patient, contractor: contractor)) }
+      let(:sample_id) { sample.Id }
+
+      before do
+        contractor.update_column(:allow_sample_registration_notifications, false)
+      end
+
+      it 'does not send any mail and returns 200 OK' do
+        expect(MasdiagMailer::IndMailer).not_to receive(:after_sample_registration)
+        expect(MasdiagMailer::ThreeMethylDopaMailer).not_to receive(:after_sample_registration)
+
+        post '/masdiag_mailer/after_sample_registration', params: { sample_id: sample_id }.to_json, headers: http_auth_header_with_json_content_type
+
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq('OK')
       end
     end
   end

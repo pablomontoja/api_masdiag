@@ -21,7 +21,7 @@ Bundler.require(*Rails.groups)
 module ApiMasdiag
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 7.2
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -50,7 +50,6 @@ module ApiMasdiag
 
     config.solid_queue.use_skip_locked = false
     config.last_use_of_send_all_mail = Time.now
-    config.solid_queue.use_skip_locked = false
     config.active_record.default_column_serializer = YAML
     config.mission_control.jobs.http_basic_auth_enabled = false
     config.mission_control.jobs.base_controller_class = "AdminController"

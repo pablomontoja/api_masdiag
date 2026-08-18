@@ -226,12 +226,14 @@ class ToxicologyQuantProject < ActiveRecord::Migration[7.0]
   end
 
   def reset_auto_increment(table_name, column: "id")
-    result = ActiveRecord::Base.connection.execute(
-      "SELECT COALESCE(MAX(#{column}), 0) + 1 AS next_id FROM #{table_name}"
-    )
-    next_id = result.first.first
-    ActiveRecord::Base.connection.execute(
-      "ALTER TABLE #{table_name} AUTO_INCREMENT = #{next_id}"
-    )
+    ActiveRecord::Base.with_connection do |conn|
+      result = conn.execute(
+        "SELECT COALESCE(MAX(#{column}), 0) + 1 AS next_id FROM #{table_name}"
+      )
+      next_id = result.first.first
+      conn.execute(
+        "ALTER TABLE #{table_name} AUTO_INCREMENT = #{next_id}"
+      )
+    end
   end
 end

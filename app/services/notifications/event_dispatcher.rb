@@ -56,6 +56,8 @@ module Notifications
       when :sample_rejected
         MasdiagMailer::SendCancellationNotificationsJob.perform_later([@sample.Id])
       when :sample_registration_confirmation
+        return Sender::Result.new(status: :skipped) unless registration_notifications_allowed?
+
         MasdiagMailer::IndMailer.after_sample_registration(@sample.Id).deliver_later
       when :registration_reminder, :registration_reminder_final
         # brak odpowiednika laboratoryjnego — pomijamy dla instytucji nie-Toxo
@@ -63,6 +65,11 @@ module Notifications
       end
 
       Sender::Result.new(status: :sent)
+    end
+
+    def registration_notifications_allowed?
+      contractor = @sample.patient&.contractor
+      contractor.present? && contractor.allow_sample_registration_notifications
     end
 
     def lab_result_file_ids

@@ -54,9 +54,11 @@ RSpec.describe Hl7::MeasurementImporter do
   end
 
   let(:instrument) do
-    ActiveRecord::Base.connection.execute(
-      "INSERT IGNORE INTO instruments (id, name, short_name) VALUES (15, 'NutriPATH', 'NP')"
-    )
+    ActiveRecord::Base.with_connection do |conn|
+      conn.execute(
+        "INSERT IGNORE INTO instruments (id, name, short_name) VALUES (15, 'NutriPATH', 'NP')"
+      )
+    end
     Struct.new(:id).new(15)
   end
 
