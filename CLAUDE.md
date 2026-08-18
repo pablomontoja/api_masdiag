@@ -153,5 +153,5 @@ No fixtures — use factories exclusively.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/008-ruby-34-upgrade/plan.md`.
+at `specs/009-rails-80-upgrade/plan.md`.
 <!-- SPECKIT END -->

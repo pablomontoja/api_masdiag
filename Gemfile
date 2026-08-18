@@ -51,7 +51,11 @@ group :development, :test do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   gem 'byebug'
   gem 'rspec-json_expectations'
-  gem 'annotate'
+  # Maintained fork of `annotate`, whose final release (3.2.0) caps activerecord < 8.0.
+  # Left as `annotate`, Bundler does not fail on Rails 8 — it silently resolves back to
+  # 2.6.5 (released 2014), which declares no upper bound. A quiet decade-old downgrade is
+  # worse than a loud failure, so the gem is replaced rather than pinned.
+  gem 'annotaterb'
 end
 
 gem 'activepesel'
