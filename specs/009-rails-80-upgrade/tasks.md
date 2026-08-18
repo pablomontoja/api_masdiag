@@ -93,14 +93,14 @@ not independently clearable.
 
 ### Blocker 2 — the annotation gem
 
-- [ ] T011 [US1] Replace `gem 'annotate'` with `gem "annotaterb"` in the `:development, :test` group of `Gemfile`, adding a comment recording that `annotate` 3.2.0 is its final release and caps `activerecord < 8.0` (FR-003, research.md R3)
-- [ ] T012 [US1] Run `bundle lock` and verify via `git diff Gemfile.lock` that `annotate` was removed, `annotaterb` added, and nothing else moved (FR-003, FR-004)
-- [ ] T013 [US1] Generate annotations into a scratch state, inspect `git diff --stat` against the 39 currently-annotated models, and record the decision in `specs/009-rails-80-upgrade/annotation-assessment.md`: commit the regeneration only if blocks are semantically equivalent, otherwise `git checkout app/models/` and defer (FR-003, SC-002, research.md R3)
+- [X] T011 [US1] Replace `gem 'annotate'` with `gem "annotaterb"` in the `:development, :test` group of `Gemfile`, adding a comment recording that `annotate` 3.2.0 is its final release and caps `activerecord < 8.0` (FR-003, research.md R3)
+- [X] T012 [US1] Run `bundle lock` and verify via `git diff Gemfile.lock` that `annotate` was removed, `annotaterb` added, and nothing else moved (FR-003, FR-004)
+- [X] T013 [US1] Generate annotations into a scratch state, inspect `git diff --stat` against the 39 currently-annotated models, and record the decision in `specs/009-rails-80-upgrade/annotation-assessment.md`: commit the regeneration only if blocks are semantically equivalent, otherwise `git checkout app/models/` and defer (FR-003, SC-002, research.md R3)
 
 ### Verification and delivery
 
-- [ ] T014 [US1] Run `bundle exec rspec` and confirm it reproduces the T002 baseline exactly — same example count, zero failures (FR-021, FR-022)
-- [ ] T015 [US1] Commit Phase 1 blockers as a standalone change that ships on Rails 7.2.3 independently of the framework bump
+- [X] T014 [US1] Run `bundle exec rspec` and confirm it reproduces the T002 baseline exactly — same example count, zero failures (FR-021, FR-022)
+- [X] T015 [US1] Commit Phase 1 blockers as a standalone change that ships on Rails 7.2.3 independently of the framework bump
 
 **Checkpoint**: the annotation blocker is cleared, suite reproduces baseline, still on Rails 7.2.3.
 The locale blocker is deferred to Phase 4 by necessity, not choice.
@@ -119,33 +119,33 @@ modified** — `git diff spec/` must be empty.
 
 ### The bump
 
-- [ ] T016 [US2] Confirm the latest available 8.0.x patch via `gem list -r -e rails --all`; planning assumed 8.0.5.1 — if a newer 8.0.x has published, take it and record the difference and reason in `baseline.md`. Do **not** take 8.1 (FR-005, research.md R1)
-- [ ] T017 [US2] Set `gem "rails", "~> 8.0.5"` in `Gemfile` (FR-005)
-- [ ] T017a [US2] Pin `gem "rails-i18n", "~> 8.0"` in `Gemfile` **in the same edit as T017** — `rails-i18n` 8.x requires `railties >= 8.0.0`, so the two are an atomic pair and neither resolves without the other (FR-002, baseline.md)
-- [ ] T017b [US2] Run `bundle lock --conservative --update rails rails-i18n` — both gems named together, since updating either alone fails resolution (FR-002, FR-005, FR-004)
-- [ ] T017c [US2] Verify both locales resolve after the pair moves: run the `I18n.t` probe from quickstart.md across `errors.messages.{blank,taken,invalid,required}`, `number.format.separator` and `date.formats.default`; confirm zero `__MISSING__` results and that Polish strings are Polish (FR-002, SC-012)
-- [ ] T018 [US2] Inspect `git diff Gemfile.lock` and confirm only framework gems and gems Rails itself forces have moved; stop and investigate if `rspec-rails`, `sentry-*`, `alba`, `oj` or any other unrelated gem shifted (FR-004, SC-003)
-- [ ] T019 [US2] Run `bundle install` and verify `bin/rails runner 'puts Rails.version'` reports the target 8.0.5.x version; confirm resolution completed with zero conflicts and that the resolved version matches the latest 8.0.x confirmed in T016 (FR-005, FR-007, SC-001)
+- [X] T016 [US2] Confirm the latest available 8.0.x patch via `gem list -r -e rails --all`; planning assumed 8.0.5.1 — if a newer 8.0.x has published, take it and record the difference and reason in `baseline.md`. Do **not** take 8.1 (FR-005, research.md R1)
+- [X] T017 [US2] Set `gem "rails", "~> 8.0.5"` in `Gemfile` (FR-005)
+- [X] T017a [US2] Pin `gem "rails-i18n", "~> 8.0"` in `Gemfile` **in the same edit as T017** — `rails-i18n` 8.x requires `railties >= 8.0.0`, so the two are an atomic pair and neither resolves without the other (FR-002, baseline.md)
+- [X] T017b [US2] Run `bundle lock --conservative --update rails rails-i18n` — both gems named together, since updating either alone fails resolution (FR-002, FR-005, FR-004)
+- [X] T017c [US2] Verify both locales resolve after the pair moves: run the `I18n.t` probe from quickstart.md across `errors.messages.{blank,taken,invalid,required}`, `number.format.separator` and `date.formats.default`; confirm zero `__MISSING__` results and that Polish strings are Polish (FR-002, SC-012)
+- [X] T018 [US2] Inspect `git diff Gemfile.lock` and confirm only framework gems and gems Rails itself forces have moved; stop and investigate if `rspec-rails`, `sentry-*`, `alba`, `oj` or any other unrelated gem shifted (FR-004, SC-003)
+- [X] T019 [US2] Run `bundle install` and verify `bin/rails runner 'puts Rails.version'` reports the target 8.0.5.x version; confirm resolution completed with zero conflicts and that the resolved version matches the latest 8.0.x confirmed in T016 (FR-005, FR-007, SC-001)
 
 ### Configuration review
 
-- [ ] T020 [US2] Run `bin/rails app:update` and review **every** proposed hunk individually via `git diff`, applying or rejecting each with a recorded reason in `specs/009-rails-80-upgrade/app-update-review.md`; bulk acceptance is forbidden (FR-006)
-- [ ] T021 [US2] Verify `config/application.rb` retained its deliberate settings after `app:update`: `api_only`, `autoload_lib`, `solid_queue.use_skip_locked`, `active_record.default_column_serializer`, `mission_control.jobs.*`, and the `i18n` locale configuration (FR-006, FR-007)
-- [ ] T022 [US2] Verify `config/environments/{development,test,staging,production}.rb` retained their deliberate settings after `app:update` (FR-006, FR-007)
-- [ ] T023 [US2] Confirm `config/initializers/new_framework_defaults_8_0.rb` was created and that **every line remains commented out** — defaults are adopted in US4, not here (FR-018, plan.md Phase Sequencing)
+- [X] T020 [US2] Run `bin/rails app:update` and review **every** proposed hunk individually via `git diff`, applying or rejecting each with a recorded reason in `specs/009-rails-80-upgrade/app-update-review.md`; bulk acceptance is forbidden (FR-006)
+- [X] T021 [US2] Verify `config/application.rb` retained its deliberate settings after `app:update`: `api_only`, `autoload_lib`, `solid_queue.use_skip_locked`, `active_record.default_column_serializer`, `mission_control.jobs.*`, and the `i18n` locale configuration (FR-006, FR-007)
+- [X] T022 [US2] Verify `config/environments/{development,test,staging,production}.rb` retained their deliberate settings after `app:update` (FR-006, FR-007)
+- [X] T023 [US2] Confirm `config/initializers/new_framework_defaults_8_0.rb` was created and that **every line remains commented out** — defaults are adopted in US4, not here (FR-018, plan.md Phase Sequencing)
 
 ### Contract verification
 
-- [ ] T024 [US2] Verify the application boots in development and test configurations via `bin/rails runner` and `RAILS_ENV=test bin/rails runner` (FR-007, SC-013)
-- [ ] T025 [US2] Run `bundle exec rspec` and confirm zero failures with no reduction in example count against the T002 baseline (FR-022, SC-004)
-- [ ] T026 [US2] Confirm `git diff db/schema.rb` is empty — a framework upgrade must not alter the schema (FR-020, SC-014, invariant I1)
-- [ ] T027 [US2] Run the 10 per-namespace spec commands from `contracts/namespace-equivalence.md` and record pass/fail per namespace in `specs/009-rails-80-upgrade/equivalence-report.md` (FR-009, SC-005)
-- [ ] T028 [US2] Confirm `git diff spec/` is empty — **any assertion modified to make a spec pass is a contract change, not a test fix**; escalate and explain the underlying behavioural difference before touching any spec (FR-009, SC-005, invariant I3)
-- [ ] T029 [US2] Verify `patient_portal` structurally: routes load and the namespace is mounted, and confirm it is not reachable without authentication (FR-010, contracts/namespace-equivalence.md)
-- [ ] T029a [US2] Verify authentication outcomes across all 11 namespaces: valid credentials admitted and invalid refused, confirmed by the auth-related examples in the per-namespace runs; and confirm no endpoint became newly reachable by diffing `bin/rails routes` against the **T005a** snapshot at `/tmp/baseline-009-routes.txt`, which must show no added routes (FR-010, SC-006, invariant I8)
-- [ ] T029b [US2] Verify validation-failure responses are unchanged in structure, status code, and field naming by confirming the error-path examples in `spec/requests/` pass with unmodified assertions across the 11 namespaces (FR-011, SC-007)
-- [ ] T029c [US2] Verify parameter handling still rejects the same malformed and missing-parameter requests with the same status codes, and confirm the 25 `params.require` sites are unmodified via `git diff app/controllers/` — the newer `params.expect` style is explicitly out of scope (FR-012, SC-007)
-- [ ] T030 [US2] Record in `equivalence-report.md` the coverage assessment per namespace, explicitly naming the thin-coverage namespaces — `lalen` (2 files, partner-facing), `masdiag_mailer` (1), `webhook` (1), `diagnostyka_precyzyjna` (1), `patient_portal` (0) — and stating that the equivalence claim is correspondingly weaker there (FR-009a, SC-005)
+- [X] T024 [US2] Verify the application boots in development and test configurations via `bin/rails runner` and `RAILS_ENV=test bin/rails runner` (FR-007, SC-013)
+- [X] T025 [US2] Run `bundle exec rspec` and confirm zero failures with no reduction in example count against the T002 baseline (FR-022, SC-004)
+- [X] T026 [US2] Confirm `git diff db/schema.rb` is empty — a framework upgrade must not alter the schema (FR-020, SC-014, invariant I1)
+- [X] T027 [US2] Run the 10 per-namespace spec commands from `contracts/namespace-equivalence.md` and record pass/fail per namespace in `specs/009-rails-80-upgrade/equivalence-report.md` (FR-009, SC-005)
+- [X] T028 [US2] Confirm `git diff spec/` is empty — **any assertion modified to make a spec pass is a contract change, not a test fix**; escalate and explain the underlying behavioural difference before touching any spec (FR-009, SC-005, invariant I3)
+- [X] T029 [US2] Verify `patient_portal` structurally: routes load and the namespace is mounted, and confirm it is not reachable without authentication (FR-010, contracts/namespace-equivalence.md)
+- [X] T029a [US2] Verify authentication outcomes across all 11 namespaces: valid credentials admitted and invalid refused, confirmed by the auth-related examples in the per-namespace runs; and confirm no endpoint became newly reachable by diffing `bin/rails routes` against the **T005a** snapshot at `/tmp/baseline-009-routes.txt`, which must show no added routes (FR-010, SC-006, invariant I8)
+- [X] T029b [US2] Verify validation-failure responses are unchanged in structure, status code, and field naming by confirming the error-path examples in `spec/requests/` pass with unmodified assertions across the 11 namespaces (FR-011, SC-007)
+- [X] T029c [US2] Verify parameter handling still rejects the same malformed and missing-parameter requests with the same status codes, and confirm the 25 `params.require` sites are unmodified via `git diff app/controllers/` — the newer `params.expect` style is explicitly out of scope (FR-012, SC-007)
+- [X] T030 [US2] Record in `equivalence-report.md` the coverage assessment per namespace, explicitly naming the thin-coverage namespaces — `lalen` (2 files, partner-facing), `masdiag_mailer` (1), `webhook` (1), `diagnostyka_precyzyjna` (1), `patient_portal` (0) — and stating that the equivalence claim is correspondingly weaker there (FR-009a, SC-005)
 
 **Checkpoint**: Rails 8.0.5.x installed, suite green, all 11 namespaces verified, schema untouched,
 zero assertions modified.
