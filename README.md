@@ -1,487 +1,72 @@
-# DOCKER SWARM
-Przed pierwszym deployem musisz ręcznie utworzyć sekrety w Swarmie (jednorazowo, na hoście manager node):
+# api_masdiag
 
-docker secret create masdiagapi_staging_rails_master_key config/environments/staging.key
-docker secret create masdiagapi_production_rails_master_key config/environments/production.key
+Rails 8 API-only — centralne API ekosystemu Masdiag (laboratorium diagnostyczne).
+Multi-tenant, 11 namespace'ów, współdzielona baza LabSample.
 
+## Szybki start
 
-# API MASDIAG
+```bash
+rvm use 3.4.10
+bundle install
+bin/rails db:migrate
+bin/rails db:migrate RAILS_ENV=test
 
----
-
-# MariaDB 10.11 + Rails 8.0 — co zsynchronizować z upgradem bazy na produkcji
-
-Kontekst: lokalnie Rails 7.2.3 → 8.0.5.1 (gałąź `009-rails-80-upgrade`), równolegle MariaDB 10.x → 10.11.
-Sprawdzone na `10.11.18-MariaDB-ubu2204`, mysql2 0.5.7, klient 3.3.17.
-
-## ⚠️ Wymaga MariaDB ≥ 10.6 na produkcji — NIE włączać wcześniej
-
-**`config.solid_queue.use_skip_locked`** (`config/application.rb`) — obecnie `false`,
-wyłączone w commicie `b0f2e39` pod starszą MariaDB. Domyślna wartość gemu to `true`.
-`FOR UPDATE SKIP LOCKED` istnieje od MariaDB 10.6.
-
-Pomiar na dwóch równoległych wątkach sięgających po ten sam wiersz kolejki:
-
-| ustawienie | t1 | t2 | czas oczekiwania t2 |
-|---|---|---|---|
-| `false` (obecnie) | `[3]` | `[3]` | **1.28 s** — blokuje się, pobiera ten sam wiersz |
-| `true` | `[3]` | `[4]` | **0.02 s** — pomija zablokowany, bierze następny |
-
-W `config/queue.yml` działa min. 3 procesy (`JOB_CONCURRENCY=2` + worker `mailers`), więc
-obecnie serializują się na blokadach.
-
-**Kolejność na produkcji:**
-1. `SELECT VERSION();` **na bazie `solid_queue_db`** (nie na `LabSample` — to osobna baza)
-2. dopiero gdy ≥ 10.6 → `config.solid_queue.use_skip_locked = true` (albo usunąć linię, `true` jest domyślne)
-3. restart workerów
-
-Włączenie przy starszej MariaDB wywali workery przy pobieraniu zadań.
-
-## Zweryfikowane — działa bez zmian
-
-- pełny suite **758 examples, 0 failures**
-- `mariadb?` = true, `database_version` = 10.11.18 wykrywane poprawnie
-- INSERT zwraca id, rollback działa, composite PK (`AnalyteResult`) OK
-- polskie znaki i znaki 4-bajtowe (emoji) round-trip poprawnie
-- `db/schema.rb` bez zmian, brak pending migrations
-
-## Nowość w 10.11: `INSERT ... RETURNING`
-
-`supports_insert_returning?` = **true** (MariaDB ≥ 10.5). Rails używa `INSERT ... RETURNING`
-zamiast `last_insert_id()`. Dotyczy modeli z nietypowym PK:
-
-- `AnalyteResult` — composite `["ResultId", "AnalyteId"]`
-- `Result`, `PlateMeasurement`, `OnlineFile` — PK bez auto_increment
-
-Sprawdzone: `auto_populated?` = `nil` dla non-autoincrement, Rails nie próbuje ich odczytywać.
-Działa poprawnie, ale **to jedyne miejsce wchodzące w inną ścieżkę kodu niż starsze 10.x** —
-tam szukać, gdyby coś się posypało po deployu.
-
-## Kolacje — stan zastany, NIE regresja po upgradzie
-
-```
-utf8mb3_polish_ci   172 kolumny
-utf8mb3_general_ci  151 kolumn
-utf8mb4_general_ci    5 kolumn
+bundle exec rspec        # 758 examples, 0 failures
+bin/rails s
 ```
 
-Skutek — `ORDER BY LastName` na `Patients` (kolumna `utf8mb3_general_ci`) nie sortuje po polsku:
+Kolejka zadań (osobny proces):
 
-```
-general_ci:  Żaba, Zbigniew, Zenon     ← Ż przed Z
-polish_ci:   Zbigniew, Zenon, Żaba     ← poprawnie
-```
-
-To pozostałość po C#-owym LabSample — `db/schema.rb` sprzed upgradu ma te same kolacje.
-Upgrade 10.11 tego nie zmienił. `database.yml` deklaruje `encoding: utf8mb4` przy bazie
-`utf8mb3` — działa, ale znaki 4-bajtowe mogą zostać odrzucone przez kolumny `utf8mb3`.
-
-## Do sprawdzenia na produkcji przed deployem
-
-```sql
-SELECT VERSION();                     -- osobno na LabSample i solid_queue_db
-SHOW VARIABLES WHERE Variable_name IN ('sql_mode','collation_server','collation_database');
+```bash
+bin/rails solid_queue:start
 ```
 
-Lokalnie `sql_mode` zawiera `STRICT_TRANS_TABLES,STRICT_ALL_TABLES` — jeśli produkcja ma inny,
-walidacje mogą zachować się inaczej. Nie sprawdzano wydajności: 10.11 zmienił optymalizator,
-więc ciężkie raporty (`MasdiagRecurring::Monthly::*`) mogą mieć inne plany zapytań.
+## Stack
 
-## Pozostałe z upgradu Rails 8.0 (nie związane z bazą)
+| | |
+|---|---|
+| Ruby | 3.4.10 (+YJIT +PRISM) |
+| Rails | 8.0.5.1 (API-only) |
+| Baza | MariaDB 10.11 — `LabSample` (primary) + `solid_queue_db` (queue) |
+| Kolejki | Solid Queue (nie Sidekiq) |
+| Serializacja | Alba (`app/resources/*Resource`) |
+| Szyfrowanie | Lockbox (pola wrażliwe) |
+| Pliki | MinIO / Active Storage |
+| Testy | RSpec + FactoryBot (bez fixtures) |
 
-- **`docker-compose.yml`** — brakuje `RAILS_MASTER_KEY` w sekcji `environment` (jest tylko
-  w `build.args`). Kontener nie wstaje: `admin_controller.rb:4 — Expected name: to be a String,
-  got NilClass`. Błąd **sprzed** upgradu, nie regresja
-- **`annotate` → `annotaterb`** — `annotate` 3.2.0 to ostatnie wydanie i blokuje Rails 8.
-  Uwaga: Bundler **nie** zgłasza błędu, tylko po cichu schodzi do `annotate` 2.6.5 (z 2014).
-  Konfiguracja w `.annotaterb.yml`, `skip_on_db_migrate: true` — po zmianie schematu
-  odpalać `bundle exec annotaterb models` ręcznie
-- **`enqueue_after_transaction_commit`** — globalny config jest deprecated w 8.0 i usunięty
-  w 8.1; ustawiony per-job na `LalenApi::AssignKitTestsJob` i `RegisterKitJob`
+## Dokumentacja
 
-Pełna dokumentacja: `specs/009-rails-80-upgrade/upgrade-record.md`
+| Temat | Plik |
+|---|---|
+| Deployment, Docker Swarm, YJIT | [docs/deployment.md](docs/deployment.md) |
+| **Upgrade MariaDB 10.11 + Rails 8.0** | [docs/upgrades/2026-08-mariadb-rails8.md](docs/upgrades/2026-08-mariadb-rails8.md) |
+| Baza: test DB, migracje, problemy | [docs/runbooks/database.md](docs/runbooks/database.md) |
+| Operacje na próbkach (LALEN, QNS, transfery) | [docs/runbooks/samples.md](docs/runbooks/samples.md) |
+| Raporty i eksporty, walidacja LSI | [docs/runbooks/reports.md](docs/runbooks/reports.md) |
+| Workflow dla partnerów API | [docs/api/partner-workflow.md](docs/api/partner-workflow.md) |
+| Namespace `masdiag` | [docs/masdiag/README.md](docs/masdiag/README.md) |
+| Namespace `masdiag_mailer` | [docs/masdiag_mailer/README.md](docs/masdiag_mailer/README.md) |
+| Architektura, konwencje, zasady pracy | [CLAUDE.md](CLAUDE.md) |
+| Specyfikacje zmian (spec-kit) | `specs/` |
 
-## Nadal otwarte (zweryfikowane w kodzie 2026-08-18)
+## ⚠️ Przed deployem na produkcję
 
-Pozostałości z review 2026-07-27, które sprawdziłem i **wciąż obowiązują**:
+1. **`use_skip_locked` czeka na potwierdzenie wersji MariaDB.** Wymaga ≥ 10.6; obecnie wyłączone.
+   Sprawdź `SELECT VERSION()` **na bazie `solid_queue_db`**, nie na `LabSample`.
+   → [szczegóły i pomiar](docs/upgrades/2026-08-mariadb-rails8.md)
 
-- **Brak unique indexu na `notes`** — idempotencja `Notifications::Sender` opiera się wyłącznie
-  na walidacji aplikacyjnej. W `db/schema.rb` są tylko indeksy `["key"]` i
-  `["subject_type","subject_id"]`, żaden nie jest `unique` → wyścig dwóch równoległych jobów
-  nadal może wysłać ten sam e-mail dwa razy
-- **`Dockerfile7.0`** wciąż leży obok głównego `Dockerfile` — obraz Ruby 3.1.2/Rails 7.0,
-  niekompatybilny z obecnym `Gemfile.lock` (wymaga 3.4.10). Ryzyko przypadkowego użycia
-- **`StockRoomItem belongs_to :stock_room`** bez `optional: true` — zapis bez `stock_room_id`
-  kończy się błędem walidacji (422)
-- **`delayed_job_active_record`** nadal w Gemfile jako drugi system kolejek obok Solid Queue,
-  tylko dla `DelayedJobsMonitoringJob`
-- **`hl7_imports`** ma `utf8mb3/utf8mb3_polish_ci` — poza BMP dane HL7 mogą być obcinane
-  (patrz sekcja o kolacjach wyżej)
-- **`composite_primary_keys`** zakomentowany w Gemfile — działa, bo Rails 7.1+ ma natywne
-  wsparcie (`AnalyteResult` używa `self.primary_key = ["ResultId","AnalyteId"]`)
-- **Migracja `20260718184044`** ma timestamp 2026 zamiast 2025 — kosmetyka, psuje chronologię
+2. **`docker-compose.yml` nie podaje `RAILS_MASTER_KEY` w `environment`** — kontener nie wstaje.
+   → [opis i poprawka](docs/deployment.md#znany-problem-kontener-nie-wstaje)
 
-Nieaktualne z tamtego review: `validate_confirmation_test_request` **nie jest** martwym kodem —
-wywoływane w `fv1/sample_controller.rb:60` i `lalen/sample_controller.rb:65`.
+3. **Brak unique indexu na `notes`** — wyścig dwóch jobów może wysłać ten sam e-mail dwa razy.
+   → [lista otwartych kwestii](docs/upgrades/2026-08-mariadb-rails8.md#nadal-otwarte-zweryfikowane-w-kodzie-2026-08-18)
 
----
+4. Pełna checklista kroków deployu → [docs/deployment.md](docs/deployment.md#kroki-deployu-na-produkcję)
 
-# NEW MAILER MIGRATION - MasdiagMailer/MasdiagRecurring Notes
+## TODO
 
-List of tasks to do during deployment on production
-1. perhaps Dockerfile7.1 should be used for deploy in production 
-2. `rails db:prepare`    ---- it is needed for solid_queue migration if first task is not proceeded
-3. if "Specified key was too long max key length is 767 bytes" problem occurs go to Masdiag Obsidian and find solution
-4. `rails db:migrate:queue`  ---- applying solid_queue DB changes
-5. enabling YJIT in production and verification, see "Enabling ruby YJIT" below
-
-Comments:
-1. patient_portal doesn't work properly, see what happen when appiontment request is sent (DiagnostykaPrecyzyjna::AppointmentBuilderService)
-
----
-
-# TODO in README.md
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_contractor
 - new layout for /rails/mailers/cancellation_notification_mailer/send_mail_to_patient
 - new layout for /rails/mailers/cancellation_notification_mailer/standard_cancellation_notification
 - new layout for /rails/mailers/result_notification_mailer/contractor_result_notification_mailer
 - new layout for /rails/mailers/result_notification_mailer/patient_result_notification_mailer_lekam
-
----
-
-# LSI validation
-
-As part of the validation of the LSI Masdiag software in accordance with IEC 62304, it is necessary to prepare a software configuration report with each software release.
-A script has been created that prepares the data needed to prepare the report.
-
-To run validation script please use the following command:
-```bash
-rails runner LSI_validation.rb
-```
-
-### PROMPTS
-
-`git log --pretty=format:"%h - %an, %cd : %s" b2079cbfecd32fc1b1702f040bc399d43e5eca46..6ef70b987fd7c4847ba6166988edd3508d6994e3
-List all commits from dd68a0a9afb614e9bf484af6d848121379752c1d to d18c53fadbc8f40e1209f1cf72e9524bed3944d1.
-Check all above git commits and gather info about changes across all commits between the specified range.
-Finally create a table with a git hash (including the commit date in the same column beow the hash), a description of the changes, the category of changes (minor correction, security correction, backend change, frontend change, hotfixes, and so on), and the impact of the changes on patient safety (in the context of EN 62304)? Please use markdown format and translate content to Polish language. Order by by commit date, ascending.`
-
----
-
-# Typical workflow for API samples
-
-1. You must declare to us which sample codes you will use. At the moment, it is not possible to do this via the API. When we get the list of codes, we check that the declared sample codes are not already in our database. This is to ensure uniqueness. We recommend using at least eight-character alphanumeric codes (a good solution is not to use the letter O and the number 0).
-2. The next step is to assign the test to the sample code - MasdiagAPI - POST /fv1/kits/assign_tests
-You will get a list of the tests you will be dealing with in the next week. You will also get a list of sample codes to test the API in a sandbox environment.
-The test assignment step can be done at the previous point if you know in advance that the kits produced will be for a specific test.
-3. The sample/kit must then be registered via the API. MasdiagAPI - POST /fv1/sample
-To some extent, the data provided in this step can be anonymised. We do not need to know the first and last name, but it would be good to know the patient's real gender and date of birth, as this is often needed to issue a correct analysis result.
-4. The next step is to communicate that the sample has arrived at the laboratory, to communicate that the sample has been cancelled and to communicate the result.
-MasdiagAPI - GET /fv1/result/get/:code  or we send JSON to configured webhook
-I'm deliberately writing about this in one paragraph, because the information is transmitted in the same way via a single API endpoint, or sent to a configured Webhook, but there is always a similar JSON just containing different information. Please refer to the attached documentation for details.
-
----
-
-# LALEN FAL cheats
-```ruby
-ReservedSampleCode.find_by(Code: "GB81I5PM").assign_tests_in_lalen_api
-
-Sample.find_by(Code: "GB81I5PM").register_in_lalen_api
-
-
-codes = %w[]
-ReservedSampleCode.where(Code: codes).each do |rsc|
-	rsc.assign_tests_in_lalen_api
-end
-
-Sample.where(Code: codes).each do |s|
-	s.register_in_lalen_api
-end
-```
-
-
----
-
-# Test DB preparation
-
-```bash
-rails db:schema:dump
-rails tmp:clear
-RAILS_ENV=test rails db:drop db:create db:schema:load
-```
-
----
-
-# Database schema reload during migration
-
-```ruby
-Test.reset_column_information
-```
-
----
-
-# Enabling ruby YJIT
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env
-rustc --version
-
-rvm reinstall 3.4.10 --reconfigure --enable-yjit
-ruby --yjit -e "p RubyVM::YJIT.enabled?" 
-```
-
-
-
-
-# Checking not included in measurement summaries
-```ruby
-Measurement.includes(sample: { patient: { contractor: :institution }}).where(sample: { patient: { contractor: { institutions: { kind: ["Hospital", "ForeignInstitution"] }}}}).where(Status: 5, AuthorizedAt: Date.parse("2025-07-01")..Date.parse("2025-09-01")).where.not(
-  Id: MeasurementSummaryItem.where(created_at: Date.parse("2025-06-01")..nil).select(:measurement_id)
-).pluck("sample.Code")
-
-
-
-Measurement.includes(sample: { patient: { contractor: :institution }}).where(sample: { patient: { contractor: { institutions: { kind: ["ForeignInstitution"] }}}}).where(Status: 4, MeasureDate: Date.parse("2025-07-01")..Date.parse("2025-09-01")).where.not(
-  Id: MeasurementSummaryItem.where(created_at: Date.parse("2025-06-01")..nil).select(:measurement_id)
-).pluck("sample.Code")
-```
-
-# Run migrations from rails console
-```ruby
-require Rails.root.join('db/migrate/20260311113835_toxicology_quant_project')
-ToxicologyQuantProject.new.change
-```
-
-
-# Undamage plate
-```ruby
-plate_id = 21394
-
-plate = Plate.find(plate_id)
-
-plate.measurements.each do |m|
-	meas = m.sample.measurements.includes(:sample).where(Samples: { IsControlSample: false }).find_by(ProjectId: plate.ProjectId, Status: 1)
-	meas.destroy unless meas.nil?
-	m.update(Status: 2)
-end
-
-plate.update(IsValid: false)
-
-```
-
-
-# Export results by Institution and Project
-```ruby
-require "csv"
-INST_ID = 128 # ORKLA
-PROJECTID = 34
-
-def extract_result_row(res)
-	res.analyte_results.sort_by{|ar| ar.AnalyteId}.map { |ar| ar.Value  }
-end
-
-def sex(gender)
-	return "M" if gender == 0
-	return "K" if gender == 1
-end
-
-codes = ReservedSampleCode.where(InstitutionId: INST_ID).pluck(:Code)
-
-r_ids = Result.includes(:measurement).includes(measurement: :sample).where(measurement: {Samples: {IsControlSample: false, Code: codes}}).where(Measurements: { ProjectId: PROJECTID, Status: [4, 5] }).order(MeasurementId: :desc).limit(10000).pluck(:MeasurementId)
-
-
-CSV.open("tmp/aa-result-export-2.csv", "wb") do |csv|
-	header = []
-	header << "Kod"
-	header << "Imię"
-	header << "Nazwisko"
-	header << "PESEL"
-	header << "Płeć"
-	header << "Data wydania"
-	header << "Data urodzenia"
-	header << "Data pobrania"
-	header << "Wyjście z magazynu"
-
-	header = header + Result.includes(:analyte_results).where(MeasurementId: r_ids).first.analyte_results.sort_by{|ar| ar.AnalyteId}.map { |ar| ar.analyte.Name  }
-
-	pp header
-
-	csv << header
-
-	Result.includes(:analyte_results).includes(measurement: {sample: :patient}).where(MeasurementId: r_ids).find_in_batches(batch_size: 1000) do |group|	  
-	  group.each do |res|
-	  	pat = res.measurement.sample.patient 
-	  	csv << [res.measurement.sample.Code, pat.FirstName, pat.LastName, pat.Pesel, sex(pat.Gender), res.measurement.AuthorizedAt&.strftime("%F"), pat.BirthDate&.strftime("%F"), res.measurement.sample.sample_collection_date&.strftime("%F"), res.measurement.sample.rsc&.package&.stock_room_item&.date_out&.strftime("%F")] + extract_result_row(res)
-	  end
-	end
-
-end
-
-
-
-```
-
-# QNS sample after acceptance in Lab
-```ruby
-codes = %w[AUREWFTG AUU7TIHQ AUCD5TE7 AUB45H9C AUIW2BC9 AUJNFBL4 AUIXWNTX]
-reason = %q(
-Hi Lalen
-
-We have received 5 DBS cards from you for measuring glutathione levels. Unfortunately, these cards have expired. We have tested these samples, but the glutathione levels were found to be low. We must cancel these samples and mark them as QNS. Please send new cards to the customer. Below is a list of these samples with their production and expiry dates.
-
-AUUYSNGE - EXP 11-01-2025 - MANUFACTURED 10-2024
-AUREWFTG - EXP 20-12-2025 - MANUFACTURED 12-2024
-AUU7TIHQ - EXP 20-12-2025 - MANUFACTURED 12-2024
-AUCD5TE7 - EXP 20-12-2025 - MANUFACTURED 12-2024
-AUB45H9C - EXP 20-12-2025 - MANUFACTURED 12-2024
-
-We have also received three DBS cards from you for vitamins A, E and Q10. These have also expired. We are unable to issue results for them.
-The codes for these samples are listed below.
-
-AUIW2BC9, AUJNFBL4, AUIXWNTX
-
-Best regards,
-
-Renata
-
-Renata Halak
-Diagnostic laboratory manager
-)
-
-user = User.find_by(email: "pawelswider@gmail.com")
-
-Measurement.includes(:sample).where(Samples: { Code: codes }).destroy_all
-Sample.where(Code: codes).each do |sample|
-	sample.update(Comment: reason, SampleStatus: 4, CancelledById: user.Id, CancellationDate: DateTime.now)
-	#Notification::LalenSampleResultSender.perform_later(sample)
-end
-
-```
-
-
-# Transfer EU barcodes to AU
-```ruby
-# in MASDIAG.COM database
-accs = ["Age Well 360",                                         
- "Balgowlah Family Practice",                            
- "Botanica Medica Wellness Centre",                      
- "Cassandra Lawless",                                    
- "Chi Longevity"]
-ids = HcpAccount.where(business_name: accs).pluck(:id)
-Kit.where(account_id: ids).pluck(:code).join(" ")
-
-# place all printed in cli codes in sample.txt file and transfer all codes to AU in LabSample DB
-codes = []
-
-File.open('sample.txt', 'r') do |file|
-  file.each_line do |line|
-    codes.concat(line.strip.split)
-  end
-end
-
-# codes = %w[EUAC829920]
-ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 85)
-
-Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
-	puts "------------------------------------------------------------------"
-	puts "#{sample.patient.FirstName} #{sample.patient.LastName}"
-	if sample.patient.FirstName == "FAKE"
-		puts "FAKE"
-		sample.update_columns(PatientId: 340608)
-		next
-	else
-		next if sample.patient.IsVirtual == true
-		sample.patient.update_columns(ContractorId: 754)
-		puts "REAL PATIENT"
-	end
-	nil
-end
-
-
-
-#---------------------------------------------------------
-# transfer all codes to EU
-#---------------------------------------------------------
-# in MASDIAG.COM database
-accs = ["Arctic Health AB",
-"Beps Biopharm",
-"ICTAN-CSIC",
-"Nutilab",
-"Wellness Innovations BV"]
-ids = HcpAccount.where(business_name: accs).pluck(:id)
-codes = %w[EUAC829920]
-Kit.where(account_id: ids).pluck(:code).join(" ")
-#---------------------------------------------------------
-# in LabSampleDB
-ReservedSampleCode.where(Code: codes).update_all(InstitutionId: 89)
-
-Sample.includes(patient: :contractor).where(Code: codes).each do |sample|
-	puts "------------------------------------------------------------------"
-	puts "#{sample.patient.FirstName} #{sample.patient.LastName}"
-	if sample.patient.FirstName == "FAKE"
-		puts "FAKE"
-		sample.update(PatientId: 384093)
-		next
-	else
-		next if sample.patient.IsVirtual == true
-		sample.patient.update_columns(ContractorId: 786)
-		puts "REAL PATIENT"
-	end
-	nil
-end
-#---------------------------------------------------------
-
-```
-
-
-# PROBLEMS
-
----
-
-## Specified key was too long; max key length is 767 bytes
-
-Open my.ini and add this lines(if they already exist just edit everything after =) right after [mysqld]:
-```
-innodb_file_format = Barracuda
-innodb_file_per_table = on
-innodb_default_row_format = dynamic
-innodb_large_prefix = 1
-innodb_file_format_max = Barracuda
-```
-
-OR
-
-Autenticate to mysql:
-```
-mysql -h localhost -u root
-```
-or use phpmyadmin.
-
-Once you're authenticated run this queries(one at a time):
-```
-SET GLOBAL innodb_file_format = Barracuda;
-SET GLOBAL innodb_file_per_table = on;
-SET GLOBAL innodb_default_row_format = dynamic;
-SET GLOBAL innodb_large_prefix = 1;
-SET GLOBAL innodb_file_format_max = Barracuda;
-```
-
-
-
-
-
-
-Things you may want to cover:
-
-* Ruby version
-* System dependencies
-* Configuration
-* Database creation
-* Database initialization
-* How to run the test suite
-* Services (job queues, cache servers, search engines, etc.)
-* Deployment instructions
-* ...
-
-
-
