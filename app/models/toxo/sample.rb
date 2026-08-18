@@ -38,9 +38,9 @@
 #  clinical_info              :text(65535)
 #  reserved_sample_code_id    :integer
 #  dispatch_date              :datetime
-#  post_examination_procedure :integer          default("immediate_return"), not null
-#  infectious_risk            :integer          default("no_information"), not null
-#  execution_mode             :integer          default("standard"), not null
+#  post_examination_procedure :integer          default(0), not null
+#  infectious_risk            :integer          default(0), not null
+#  execution_mode             :integer          default(0), not null
 #
 class Toxo::Sample < ApplicationRecord
   self.table_name = "Samples"

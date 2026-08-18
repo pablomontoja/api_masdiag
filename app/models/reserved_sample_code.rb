@@ -20,8 +20,8 @@
 #  parent_id                 :integer
 #  comment                   :text(65535)
 #  assignment_date           :datetime
-#  MaterialType              :integer          default("dbs"), not null
-#  material_handler          :integer          default("dbs_t4"), not null
+#  MaterialType              :integer          default(0), not null
+#  material_handler          :integer          default(0), not null
 #
 class ReservedSampleCode < ApplicationRecord
   self.table_name = "ReservedSampleCodes"

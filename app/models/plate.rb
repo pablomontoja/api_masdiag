@@ -16,6 +16,7 @@
 #  IsPartOfMultiplex  :boolean          not null
 #  MultiplexId        :integer
 #  Suffix             :integer          not null
+#  qc_report_file     :binary(429496729
 #
 class Plate < ApplicationRecord
 	self.table_name = "Plates"
