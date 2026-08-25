@@ -18,7 +18,7 @@ module MasdiagRecurring
       end    
 
       @email = 'Laborteam@cerascreen.de'    
-      attachments["new-masdiag-qr-codes-#{Date.today.to_s(:db)}.csv"] = File.read(csv_file_path)
+      attachments["new-masdiag-qr-codes-#{Date.today.to_fs(:db)}.csv"] = File.read(csv_file_path)
 
       mail(to: @email, bcc: 'pawel.swider@masdiag.pl', reply_to: "pawel.swider@masdiag.pl", subject: 'Masdiag QR Codes declaration')
     end
