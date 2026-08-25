@@ -14,7 +14,7 @@ module MasdiagRecurring
 
       csv_file_path = "tmp/#{SecureRandom.uuid}.csv"
       gen_csv_file(summary_samples, csv_file_path)
-      attachments["incoming-eu-samples-#{Date.today.to_s(:db)}.csv"] = File.read(csv_file_path)
+      attachments["incoming-eu-samples-#{Date.today.to_fs(:db)}.csv"] = File.read(csv_file_path)
 
       mail(to: 'lalen.dogan@masdiag.pl', bcc: 'pawel.swider@masdiag.pl', subject: 'Masdiag Lab - EU Incoming Samples')
     end
