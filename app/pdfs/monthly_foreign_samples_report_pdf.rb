@@ -51,7 +51,7 @@ class MonthlyForeignSamplesReportPdf < Prawn::Document
     end
 
     gap(10)
-    table [["Data raportu: #{Date.today.to_s(:db)}"]], position: :left, :cell_style => normal_style
+    table [["Data raportu: #{Date.today.to_fs(:db)}"]], position: :left, :cell_style => normal_style
   end
 
   def main_table

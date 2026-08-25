@@ -12,7 +12,7 @@ module MasdiagRecurring
         jobs = Delayed::Job.where("attempts > 3")
 
         if jobs.count > 0
-          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_s(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji rejestracja"}
+          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_fs(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji rejestracja"}
           jobs.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
@@ -27,7 +27,7 @@ module MasdiagRecurring
         Delayed::Backend::ActiveRecord::Job.table_name = "delayed_jobs"
 
         if jobs_rej2.count > 0
-          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_s(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji rejestracja2"}
+          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_fs(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji rejestracja2"}
           jobs_rej2.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
@@ -42,7 +42,7 @@ module MasdiagRecurring
         Delayed::Backend::ActiveRecord::Job.table_name = "delayed_jobs"
 
         if jobs_order_panel.count > 0
-          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_s(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji order_panel"}
+          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_fs(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji order_panel"}
           jobs_order_panel.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end
@@ -57,7 +57,7 @@ module MasdiagRecurring
         Delayed::Backend::ActiveRecord::Job.table_name = "delayed_jobs"
 
         if jobs_storage.count > 0
-          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_s(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji storage"}
+          result_hash = {"HourlyMonitoringJob": "#{DateTime.now.to_fs(:db)} - wykryto błędy dla zadań DELAYED_JOB w aplikacji storage"}
           jobs_storage.each do |job|
             result_hash["#{job.id}"] = "ERROR FOR: #{job.handler}, ERROR: #{job.last_error}"
           end

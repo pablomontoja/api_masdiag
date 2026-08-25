@@ -87,8 +87,8 @@ module MasdiagRecurring
         end
       end
 
-      attachments["ptc-#{Date.today.to_s(:db)}.csv"] = File.read(ptc_csv_file_path)
-      attachments["rest-#{Date.today.to_s(:db)}.csv"] = File.read(rest_csv_file_path)
+      attachments["ptc-#{Date.today.to_fs(:db)}.csv"] = File.read(ptc_csv_file_path)
+      attachments["rest-#{Date.today.to_fs(:db)}.csv"] = File.read(rest_csv_file_path)
 
       mail(to: ['anna.grabowska@masdiag.pl','pawel.swider@masdiag.pl'], subject: 'Zestawienie próbek 3-OMD wykonanych w poprzednim miesiącu')
     end
