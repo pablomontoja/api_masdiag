@@ -48,10 +48,11 @@ module V1::Common
 
   LALEN_TEST_API_KEYS = {
     22 => "vitamin-d",
-    21 => "omega-3-basic",
+    21 => "omega-3-complete",
     23 => "hba1c",
     12 => "homocysteine",
-    26 => "glutathione-index"
+    26 => "glutathione-index",
+    34 => "omega-3-basic"
   }.freeze
 end
 
