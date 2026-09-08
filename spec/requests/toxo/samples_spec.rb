@@ -167,19 +167,19 @@ RSpec.describe "Toxo::SamplesController", type: :request do
       expect(json["errors"]).to have_key("dispatch_date")
     end
 
-    it "returns 422 when Lot exceeds 20 characters" do
+    it "returns 422 when Lot exceeds 50 characters" do
       sample = create_registered_sample
 
-      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "L" * 21), headers: bearer
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Lot: "L" * 51), headers: bearer
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(json["errors"]).to have_key("Lot")
     end
 
-    it "returns 422 when Level exceeds 20 characters" do
+    it "returns 422 when Level exceeds 50 characters" do
       sample = create_registered_sample
 
-      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Level: "L" * 21), headers: bearer
+      put "/toxo/samples/#{sample.Id}", params: edit_params(sample, Level: "L" * 51), headers: bearer
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(json["errors"]).to have_key("Level")

@@ -154,10 +154,10 @@ Rails.application.routes.draw do
 
     # Ujednolicone endpointy zdarzeń powiadomień (LabSample) — wybór szablonu
     # (laboratoryjny vs Toxo) po stronie tej aplikacji.
-    post "sample_accepted",       to: "notifications#sample_accepted"
-    post "sample_rejected",       to: "notifications#sample_rejected"
-    post "result_available",      to: "notifications#result_available"
-    post "registration_reminder", to: "notifications#registration_reminder"
+    post "sample_accepted/:sample_id",       to: "notifications#sample_accepted"
+    post "sample_rejected/:sample_id",       to: "notifications#sample_rejected"
+    post "result_available/:sample_id",      to: "notifications#result_available"
+    post "registration_reminder/:sample_id", to: "notifications#registration_reminder"
 
     # storage app
     post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
