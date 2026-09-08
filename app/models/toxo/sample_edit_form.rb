@@ -48,9 +48,9 @@ class Toxo::SampleEditForm
       errors.add(:Lot, :blank)
       return
     end
-    if self.Lot.length > 20 || self.Level.to_s.length > 20
-      errors.add(:Lot, :too_long) if self.Lot.length > 20
-      errors.add(:Level, :too_long) if self.Level.to_s.length > 20
+    if self.Lot.length > 50 || self.Level.to_s.length > 50
+      errors.add(:Lot, :too_long) if self.Lot.length > 50
+      errors.add(:Level, :too_long) if self.Level.to_s.length > 50
       return
     end
 

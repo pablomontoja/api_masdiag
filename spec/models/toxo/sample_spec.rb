@@ -8,14 +8,14 @@ RSpec.describe Toxo::Sample, type: :model do
       expect(sample.errors[:Lot]).to be_present
     end
 
-    it "is invalid when Lot exceeds 20 characters" do
-      sample = build(:toxo_sample, Lot: "L" * 21)
+    it "is invalid when Lot exceeds 50 characters" do
+      sample = build(:toxo_sample, Lot: "L" * 51)
       sample.valid?
       expect(sample.errors[:Lot]).to be_present
     end
 
-    it "is valid when Lot is present and within 20 characters" do
-      sample = build(:toxo_sample, Lot: "L" * 20)
+    it "is valid when Lot is present and within 50 characters" do
+      sample = build(:toxo_sample, Lot: "L" * 50)
       sample.valid?
       expect(sample.errors[:Lot]).to be_empty
     end
@@ -28,14 +28,14 @@ RSpec.describe Toxo::Sample, type: :model do
       expect(sample.errors[:Level]).to be_empty
     end
 
-    it "is invalid when Level exceeds 20 characters" do
-      sample = build(:toxo_sample, Level: "L" * 21)
+    it "is invalid when Level exceeds 50 characters" do
+      sample = build(:toxo_sample, Level: "L" * 51)
       sample.valid?
       expect(sample.errors[:Level]).to be_present
     end
 
-    it "is valid when Level is present and within 20 characters" do
-      sample = build(:toxo_sample, Level: "L" * 20)
+    it "is valid when Level is present and within 50 characters" do
+      sample = build(:toxo_sample, Level: "L" * 50)
       sample.valid?
       expect(sample.errors[:Level]).to be_empty
     end
