@@ -48,9 +48,9 @@ RSpec.describe Toxo::SampleEditForm do
       expect(form.errors[:Lot]).to be_present
     end
 
-    it "rejects Lot longer than 20 characters" do
+    it "rejects Lot longer than 50 characters" do
       sample = build_sample(Lot: "OLD")
-      form = described_class.new(sample: sample, contractor: owner, Lot: "L" * 21, Level: sample.Level, dispatch_date: sample.dispatch_date)
+      form = described_class.new(sample: sample, contractor: owner, Lot: "L" * 51, Level: sample.Level, dispatch_date: sample.dispatch_date)
 
       expect(form.save).to be false
       expect(form.errors[:Lot]).to be_present

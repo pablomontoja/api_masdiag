@@ -73,8 +73,8 @@ class Toxo::Sample < ApplicationRecord
   validates :post_examination_procedure, presence: true
   validates :infectious_risk, presence: true
   validates :execution_mode, presence: true
-  validates :Lot, presence: true, length: { maximum: 20 }
-  validates :Level, length: { maximum: 20 }, allow_blank: true
+  validates :Lot, presence: true, length: { maximum: 50 }
+  validates :Level, length: { maximum: 50 }, allow_blank: true
   validates :dispatch_date, presence: true, on: :update
 
   validate :code_must_belong_to_contractor_institution
