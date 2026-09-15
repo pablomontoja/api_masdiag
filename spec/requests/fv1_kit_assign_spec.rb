@@ -149,8 +149,8 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
           expect(rsc.reload.project_ids).to contain_exactly(34)
         end
 
-        it 'still pushes the Lalen job using the original omega-3-basic key for project 21' do
-          expect(LalenApi::AssignKitTestsJob).to receive(:perform_later).with(rsc.Code, ["omega-3-basic"])
+        it 'still pushes the Lalen job using the original omega-3-complete key for project 21' do
+          expect(LalenApi::AssignKitTestsJob).to receive(:perform_later).with(rsc.Code, ["omega-3-complete"])
           post "/fv1/kits/assign_tests", params: assign_params, headers: http_auth_header
           expect(response).to have_http_status(204)
         end

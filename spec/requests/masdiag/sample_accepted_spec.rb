@@ -8,13 +8,13 @@ RSpec.describe "POST /masdiag/sample_accepted", type: :request do
 
   it "returns 200 and enqueues SampleAcceptedJob for a valid sample" do
     expect(Notifications::SampleAcceptedJob).to receive(:perform_later).with(sample.Id)
-    post "/masdiag/sample_accepted", params: { sample_id: sample.Id }, headers: http_auth_header
+    post "/masdiag/sample_accepted/#{sample.Id}", headers: http_auth_header
     expect(response).to have_http_status(200)
   end
 
   it "returns 422 for an unknown sample" do
     expect(Notifications::SampleAcceptedJob).not_to receive(:perform_later)
-    post "/masdiag/sample_accepted", params: { sample_id: 999_999 }, headers: http_auth_header
+    post "/masdiag/sample_accepted/999999", headers: http_auth_header
     expect(response).to have_http_status(422)
   end
 
@@ -23,7 +23,7 @@ RSpec.describe "POST /masdiag/sample_accepted", type: :request do
     other_contractor = create(:contractor, institution_id: other_inst.id)
     create(:api_account, username: "other", password: "password", contractor_id: other_contractor.Id)
     header = { "Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("other", "password") }
-    post "/masdiag/sample_accepted", params: { sample_id: sample.Id }, headers: header
+    post "/masdiag/sample_accepted/#{sample.Id}", headers: header
     expect(response).to have_http_status(:unprocessable_content)
   end
 end
