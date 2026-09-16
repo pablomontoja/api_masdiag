@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   #########################################################
   namespace :webhook do
     resources :scanned_docs, only: [:create]
+    post "shopify/orders_create", to: "shopify_orders#create"
   end
 
   get "health/check", to: 'health#check'

@@ -1,0 +1,10 @@
+# Maps a Shopify variant_id (string) to one or more LabSample Project ids.
+#
+# One variant may map to multiple Project ids (a bundle/combo product), mirroring
+# ShopOrders::MixedKits behavior for the WordPress store — see
+# specs/010-shopify-order-webhook/research.md #3 for why this is a separate,
+# config-based mechanism rather than an extension of app/models/shop_orders/.
+#
+# Edit this file (no code change needed) to add, change, or remove a mapping —
+# see specs/010-shopify-order-webhook/spec.md FR-007/SC-007.
+"41234567890123": [2]
