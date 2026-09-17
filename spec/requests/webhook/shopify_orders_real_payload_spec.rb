@@ -17,6 +17,10 @@ RSpec.describe 'Webhook::ShopifyOrdersController with a real Shopify payload', t
       "test" => true,
       "currency" => "EUR",
       "total_discounts" => "20.00",
+      "email" => "webadmin@masdiag.pl",
+      "created_at" => "2026-09-17T15:58:56+02:00",
+      "billing_address" => { "first_name" => "Pablo", "last_name" => "Picasso" },
+      "customer" => { "phone" => "+48696771602" },
       "line_items" => [
         {
           "id" => 866_550_311_766_439_020,
@@ -99,6 +103,18 @@ RSpec.describe 'Webhook::ShopifyOrdersController with a real Shopify payload', t
       create(:project_without_fixed_id) { |p| p.update!(Id: 18) }  # Acylcarnitines -> product_id 15592369881418
       create(:project2)                                            # Amino          -> product_id 15655433929034 (Id 3)
       create(:project_without_fixed_id) { |p| p.update!(Id: 25) }  # 3-OMD          -> product_id 15655459979594
+      create(:institution, id: 33)
+    end
+
+    # One in-stock Package/RSC per kit, matching Shopify::RscAllocator's eligibility query
+    # (default material_type/handler — none of Project ids 18/3/25 hit special routing rules).
+    def create_available_stock(count)
+      product = create(:product)
+      count.times do |i|
+        package = create(:package, product: product, serial_number: 2000 + i, extended_serial_number: "R#{2000 + i}")
+        create(:stock_room_item, storagable: package)
+        create(:reserved_sample_code, package: package, IsRetailSale: false, InstitutionId: nil, Code: "RSTOCK#{2000 + i}")
+      end
     end
 
     it 'blocks the order because two line items (add-ons) have no product_id at all' do
@@ -115,6 +131,7 @@ RSpec.describe 'Webhook::ShopifyOrdersController with a real Shopify payload', t
     end
 
     it 'processes successfully once every line item carries a mapped product_id' do
+      create_available_stock(3)
       payload = real_shopify_order_payload
       payload["line_items"] = payload["line_items"].select { |item| item["product_id"].present? }
       body = payload.to_json
@@ -128,6 +145,27 @@ RSpec.describe 'Webhook::ShopifyOrdersController with a real Shopify payload', t
       expect(delivery.status).to eq("processed")
       expect(delivery.resolved_project_ids).to match_array([18, 3, 25])
       expect(delivery.unmapped_product_ids).to be_blank
+      expect(delivery.shop_order).to be_present
+      expect(delivery.shop_order.packages.count).to eq(3)
+      expect(delivery.shop_order.reserved_sample_codes.flat_map { |rsc| rsc.reserved_tests.pluck(:project_id) })
+        .to match_array([18, 3, 25])
+    end
+
+    it 'fails the delivery when inventory is insufficient for one of the mapped kits' do
+      create_available_stock(2) # only 2 in stock, but 3 mapped line items need kits
+      payload = real_shopify_order_payload
+      payload["line_items"] = payload["line_items"].select { |item| item["product_id"].present? }
+      body = payload.to_json
+
+      post '/webhook/shopify/orders_create', params: body, headers: headers_for(body, webhook_id: "real-payload-4")
+
+      delivery = ShopifyOrderDelivery.find_by!(webhook_id: "real-payload-4")
+      Shopify::OrderProcessor.call(delivery)
+      delivery.reload
+
+      expect(delivery.status).to eq("failed")
+      expect(delivery.shop_order).to be_nil
+      expect(delivery.failure_reason).to be_present
     end
   end
 end

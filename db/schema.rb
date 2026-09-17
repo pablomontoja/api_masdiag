@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_16_151825) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_17_134213) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8mb3", collation: "utf8mb3_general_ci", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -1136,6 +1136,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_16_151825) do
     t.text "coupons"
     t.decimal "total_cost", precision: 7, scale: 2
     t.decimal "total_cost_with_coupons", precision: 7, scale: 2
+    t.string "source", default: "wordpress"
   end
 
   create_table "shopify_order_deliveries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -1150,6 +1151,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_16_151825) do
     t.datetime "processed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "shop_order_id"
+    t.index ["shop_order_id"], name: "index_shopify_order_deliveries_on_shop_order_id"
     t.index ["shopify_order_id"], name: "index_shopify_order_deliveries_on_shopify_order_id"
     t.index ["status"], name: "index_shopify_order_deliveries_on_status"
     t.index ["webhook_id"], name: "index_shopify_order_deliveries_on_webhook_id", unique: true
@@ -1446,6 +1449,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_16_151825) do
   add_foreign_key "result_sending_events", "fileables", column: "id", name: "FK_result_sending_events_fileables_id"
   add_foreign_key "scanned_docs", "Samples", column: "sample_id", primary_key: "Id"
   add_foreign_key "sessions", "Contractors", column: "contractor_id", primary_key: "Id"
+  add_foreign_key "shopify_order_deliveries", "shop_orders"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

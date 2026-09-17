@@ -33,11 +33,24 @@ for the full spec/plan.
 - If any line item's product has no configured mapping, the **entire order is blocked**
   (no partial processing) and flagged on the delivery record (`status: blocked`,
   `unmapped_product_ids`, `failure_reason`) for manual resolution.
+- Once every line item is mapped, each unit of line-item quantity is allocated as its own
+  physical kit: one `Package`/`ReservedSampleCode` is reserved per kit (same inventory
+  selection rules — material type/handler, expiry lead time, stock availability — as the
+  WordPress shop order path, via `Shopify::RscAllocator`), tagged with all of that kit's
+  mapped `Project` id(s) via `ReservedTest`. The whole order is recorded as a `ShopOrder`
+  (`source: "shopify"`, `number: "shopify-<order id>"`), linked from the delivery via
+  `ShopifyOrderDelivery#shop_order`.
+- If inventory can't be found for any single kit, the **entire order fails** — no partial
+  allocation is left behind (all-or-nothing, transactional) — and the delivery is flagged
+  (`status: failed`, `failure_reason` naming the unallocated kit's Project ids) for manual
+  resolution (restock, then reprocess).
 - A `blocked`/`failed` delivery can be reprocessed from its stored payload, after fixing
-  the mapping config or the underlying issue, without Shopify resending anything:
+  the mapping config, restocking inventory, or resolving the underlying issue, without
+  Shopify resending anything:
   ```bash
   rails shopify:reprocess_order_delivery[<webhook_id>]
   ```
-- This feature does **not** create a `Sample`/`ReservedSampleCode` in the shared
-  `LabSample` database — it stops at resolving and recording the mapped `Project` id(s) on
-  the delivery. That write path is an explicitly separate, not-yet-approved follow-on.
+- This feature does **not** create a `Sample` (registration) in the shared `LabSample`
+  database — it stops at reserving the `Package`/`ReservedSampleCode` inventory for each
+  kit. Sample registration from an allocated kit is an explicitly separate, not-yet-approved
+  follow-on.

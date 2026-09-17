@@ -16,6 +16,7 @@
 #  coupons                 :text(65535)
 #  total_cost              :decimal(7, 2)
 #  total_cost_with_coupons :decimal(7, 2)
+#  source                  :string(255)      default("wordpress")
 #
 class ShopOrder < ApplicationRecord
 	has_many :packages, dependent: :nullify
@@ -35,6 +36,9 @@ class ShopOrder < ApplicationRecord
 	before_destroy :clean_packages
 	after_commit :link_packages, on: :create
 	after_commit :update_snapshot_package_ids, on: :create
+
+	scope :shopify_sourced, -> { where(source: "shopify") }
+	scope :wordpress_sourced, -> { where(source: "wordpress") }
 
 	def rscs
 		# ReservedSampleCode.where(package_id: self.package_ids).all
