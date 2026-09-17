@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`api_masdiag` is a Rails 7 API-only application serving as a multi-tenant laboratory management system for diagnostic samples. It handles medical testing workflows (kits, samples, results, patient records) across multiple partner institutions.
+`api_masdiag` is a Rails 8 API-only application serving as a multi-tenant laboratory management system for diagnostic samples. It handles medical testing workflows (kits, samples, results, patient records) across multiple partner institutions.
 
 ## Commands
 
@@ -19,17 +19,17 @@ bundle exec rspec spec/requests/v1_sample_create_spec.rb
 bundle exec rspec spec/requests/v1_sample_create_spec.rb:42
 
 # Start the server
-rvm use 3.1.2 && bin/rails s
+rvm use 3.4.10 && bin/rails s
 
 # Rails console
-rvm use 3.1.2 && bin/rails c
+rvm use 3.4.10 && bin/rails c
 
 # Run background jobs (Solid Queue)
-rvm use 3.1.2 && bin/rails solid_queue:start
+rvm use 3.4.10 && bin/rails solid_queue:start
 
 # Database
-rvm use 3.1.2 && bin/rails db:migrate
-rvm use 3.1.2 && bin/rails db:migrate RAILS_ENV=test
+rvm use 3.4.10 && bin/rails db:migrate
+rvm use 3.4.10 && bin/rails db:migrate RAILS_ENV=test
 ```
 
 ## Architecture
@@ -44,11 +44,15 @@ The API is versioned by namespace, each serving a different client type:
 | `fv1/` | Foreign institutions (confirmation test activation) |
 | `nume/` | NUME lab system |
 | `lalen/` | Lalen partner (Australia/EU) — kit-focused operations |
+| `toxo/` | Toxo portal (samples, measurements, registrations) |
 | `masdiag/` | Internal Masdiag operations (notifications, setup) |
 | `masdiag_mailer/` | Email notification endpoints |
-| `patient_portal/` | Patient-facing endpoints (results, samples) |
+| `patient_portal/` | Patient-facing endpoints (results, samples) — currently unused |
 | `regspec/` | REGSPEC system (institutions, contractors, patients) |
+| `diagnostyka_precyzyjna/` | Diagnostyka Precyzyjna integration (shop orders) |
 | `webhook/` | Machine-to-machine webhooks (Bearer token auth, no ApiAccount) |
+
+Eleven namespaces — `config/routes.rb` is authoritative if this table drifts.
 
 ### Authentication
 

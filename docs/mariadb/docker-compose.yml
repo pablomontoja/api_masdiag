@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+      image: mariadb:10.11
+      container_name: mariadb
+#      environment:
+#          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+#          - MYSQL_DATABASE=LabSample
+#          - MYSQL_USER=pswider
+#          - MYSQL_PASSWORD=${MYSQL_PASSWORD}      
+      volumes:
+          - ./database:/var/lib/mysql
+          - ./tmp:/tmp/db
+          # - ./conf.d:/etc/mysql/conf.d
+      ports:
+          - 3306:3306
+      restart:
+          always
+      networks:
+          - mariadb-net
+  phpmyadmin:
+      image: phpmyadmin:latest
+      container_name: phpmyadmin
+      # environment:
+           # - PMA_ARBITRARY=1
+      restart: always
+      ports:
+          - 3080:80
+      volumes:
+          - ./sessions:/sessions
+      links:
+          - db
+      networks:
+          - mariadb-net
+
+networks:
+  mariadb-net:
+    driver: bridge

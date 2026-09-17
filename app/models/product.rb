@@ -9,8 +9,8 @@
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
 #  capacity         :integer
-#  material_type    :integer          default("dbs"), not null
-#  material_handler :integer          default("dbs_t4"), not null
+#  material_type    :integer          default(0), not null
+#  material_handler :integer          default(0), not null
 #
 class Product < ApplicationRecord
 	has_many :packages
