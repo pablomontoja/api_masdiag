@@ -9,7 +9,7 @@ RSpec.describe 'Webhook::ShopifyOrdersController', type: :request do
     {
       id: 5_000_000_001,
       line_items: [
-        { variant_id: 41_234_567_890_123, quantity: 1, price: "100.00" }
+        { product_id: 15_592_369_881_418, quantity: 1, price: "100.00" }
       ]
     }.to_json
   end
@@ -18,7 +18,7 @@ RSpec.describe 'Webhook::ShopifyOrdersController', type: :request do
     Base64.strict_encode64(OpenSSL::HMAC.digest("sha256", secret, raw_body))
   end
 
-  def headers_for(raw_body, webhook_id: "delivery-1", topic: "orders/create", secret: nil)
+  def headers_for(raw_body, webhook_id: "delivery-1", topic: "orders/paid", secret: nil)
     {
       "Content-Type" => "application/json",
       "X-Shopify-Topic" => topic,
@@ -100,7 +100,7 @@ RSpec.describe 'Webhook::ShopifyOrdersController', type: :request do
     context 'with an unsupported topic' do
       it 'returns 422 and creates no record' do
         expect {
-          post '/webhook/shopify/orders_create', params: body, headers: headers_for(body, topic: "orders/updated", secret: secret)
+          post '/webhook/shopify/orders_create', params: body, headers: headers_for(body, topic: "orders/create", secret: secret)
         }.not_to change(ShopifyOrderDelivery, :count)
 
         expect(response).to have_http_status(:unprocessable_content)

@@ -15,7 +15,8 @@ module Webhook
       result = Shopify::OrderIngestor.call(
         webhook_id: request.headers["X-Shopify-Webhook-Id"],
         shopify_order_id: body["id"].to_s,
-        payload: body
+        payload: body,
+        event_type: request.headers["X-Shopify-Topic"]
       )
 
       Shopify::ProcessOrderJob.perform_later(result.delivery.id) unless result.duplicate?
@@ -41,7 +42,7 @@ module Webhook
 
     def verify_topic!
       return if performed?
-      return if request.headers["X-Shopify-Topic"] == "orders/create"
+      return if request.headers["X-Shopify-Topic"] == "orders/paid"
 
       json_response({ error: "unsupported topic" }, :unprocessable_content)
     end

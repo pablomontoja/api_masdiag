@@ -10,13 +10,13 @@ module Shopify
       unmapped = []
 
       line_items.each do |item|
-        variant_id = item["variant_id"].to_s
-        project_ids = Shopify::ProductMapper.project_ids_for(variant_id)
+        product_id = item["product_id"].to_s
+        project_ids = Shopify::ProductMapper.project_ids_for(product_id)
 
         if project_ids.empty?
-          unmapped << variant_id
+          unmapped << product_id
         else
-          resolved[variant_id] = project_ids
+          resolved[product_id] = project_ids
         end
       end
 
@@ -32,12 +32,12 @@ module Shopify
 
     private
 
-    def block!(unmapped_variant_ids)
+    def block!(unmapped_product_ids)
       @delivery.update!(
         status: :blocked,
-        unmapped_variant_ids: unmapped_variant_ids,
+        unmapped_product_ids: unmapped_product_ids,
         resolved_project_ids: nil,
-        failure_reason: "unmapped variant(s): #{unmapped_variant_ids.join(', ')}"
+        failure_reason: "unmapped product(s): #{unmapped_product_ids.join(', ')}"
       )
     end
 
@@ -45,7 +45,7 @@ module Shopify
       @delivery.update!(
         status: :processed,
         resolved_project_ids: resolved_project_ids,
-        unmapped_variant_ids: nil,
+        unmapped_product_ids: nil,
         failure_reason: nil,
         processed_at: Time.current
       )

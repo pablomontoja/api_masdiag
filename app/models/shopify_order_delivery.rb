@@ -1,6 +1,6 @@
 class ShopifyOrderDelivery < ApplicationRecord
   serialize :payload, type: Hash, default: {}
-  serialize :unmapped_variant_ids, type: Array, default: nil
+  serialize :unmapped_product_ids, type: Array, default: nil
   serialize :resolved_project_ids, type: Array, default: nil
 
   enum :status, { pending: 0, processed: 1, blocked: 2, failed: 3 }

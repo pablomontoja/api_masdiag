@@ -20,8 +20,8 @@ RSpec.describe Shopify::OrderProcessor do
   context 'when every line item is mapped' do
     let(:delivery) do
       create(:shopify_order_delivery, payload: payload_with(line_items: [
-        { "variant_id" => "41234567890123", "quantity" => 1, "price" => "100.00" },
-        { "variant_id" => "41234567890124", "quantity" => 1, "price" => "50.00" }
+        { "product_id" => "41234567890123", "quantity" => 1, "price" => "100.00" },
+        { "product_id" => "41234567890124", "quantity" => 1, "price" => "50.00" }
       ]))
     end
 
@@ -33,24 +33,24 @@ RSpec.describe Shopify::OrderProcessor do
       expect(delivery.resolved_project_ids).to match_array([2, 3])
       expect(delivery.processed_at).to be_present
       expect(delivery.failure_reason).to be_nil
-      expect(delivery.unmapped_variant_ids).to be_blank
+      expect(delivery.unmapped_product_ids).to be_blank
     end
   end
 
   context 'when one line item is unmapped among several mapped ones' do
     let(:delivery) do
       create(:shopify_order_delivery, payload: payload_with(line_items: [
-        { "variant_id" => "41234567890123", "quantity" => 1, "price" => "100.00" },
-        { "variant_id" => "00000000000000", "quantity" => 1, "price" => "10.00" }
+        { "product_id" => "41234567890123", "quantity" => 1, "price" => "100.00" },
+        { "product_id" => "00000000000000", "quantity" => 1, "price" => "10.00" }
       ]))
     end
 
-    it 'blocks the entire order and lists the unmapped variant, without partial processing' do
+    it 'blocks the entire order and lists the unmapped product, without partial processing' do
       described_class.call(delivery)
       delivery.reload
 
       expect(delivery.status).to eq("blocked")
-      expect(delivery.unmapped_variant_ids).to eq(["00000000000000"])
+      expect(delivery.unmapped_product_ids).to eq(["00000000000000"])
       expect(delivery.failure_reason).to be_present
       expect(delivery.resolved_project_ids).to be_blank
     end
@@ -59,7 +59,7 @@ RSpec.describe Shopify::OrderProcessor do
   context 'when a percentage discount is present' do
     let(:delivery) do
       create(:shopify_order_delivery, payload: payload_with(
-        line_items: [{ "variant_id" => "41234567890123", "quantity" => 1, "price" => "100.00" }],
+        line_items: [{ "product_id" => "41234567890123", "quantity" => 1, "price" => "100.00" }],
         total_discounts: "10.00"
       ))
     end
@@ -75,10 +75,10 @@ RSpec.describe Shopify::OrderProcessor do
   context 'reprocessing (User Story 3)' do
     it 're-resolves a blocked delivery to processed after the mapping is fixed' do
       delivery = create(:shopify_order_delivery, status: :blocked,
-        failure_reason: "unmapped variant: 00000000000000",
-        unmapped_variant_ids: ["00000000000000"],
+        failure_reason: "unmapped product: 00000000000000",
+        unmapped_product_ids: ["00000000000000"],
         payload: payload_with(line_items: [
-          { "variant_id" => "00000000000000", "quantity" => 1, "price" => "10.00" }
+          { "product_id" => "00000000000000", "quantity" => 1, "price" => "10.00" }
         ]))
       allow(Shopify::ProductMapper).to receive(:mapping).and_return({ "00000000000000" => [2] })
 
@@ -87,7 +87,7 @@ RSpec.describe Shopify::OrderProcessor do
 
       expect(delivery.status).to eq("processed")
       expect(delivery.failure_reason).to be_nil
-      expect(delivery.unmapped_variant_ids).to be_blank
+      expect(delivery.unmapped_product_ids).to be_blank
       expect(delivery.resolved_project_ids).to eq([2])
     end
 
@@ -95,7 +95,7 @@ RSpec.describe Shopify::OrderProcessor do
       delivery = create(:shopify_order_delivery, status: :failed,
         failure_reason: "boom",
         payload: payload_with(line_items: [
-          { "variant_id" => "41234567890123", "quantity" => 1, "price" => "100.00" }
+          { "product_id" => "41234567890123", "quantity" => 1, "price" => "100.00" }
         ]))
 
       described_class.call(delivery)

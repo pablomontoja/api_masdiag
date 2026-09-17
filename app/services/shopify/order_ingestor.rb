@@ -8,7 +8,7 @@ module Shopify
       @webhook_id = attrs.fetch(:webhook_id)
       @shopify_order_id = attrs.fetch(:shopify_order_id)
       @payload = attrs.fetch(:payload)
-      @event_type = attrs.fetch(:event_type, "orders/create")
+      @event_type = attrs.fetch(:event_type, "orders/paid")
     end
 
     def call

@@ -3,8 +3,8 @@ module Shopify
     CONFIG_PATH = Rails.root.join("config", "shopify_product_mappings.yml")
 
     class << self
-      def project_ids_for(variant_id)
-        mapping.fetch(variant_id.to_s, [])
+      def project_ids_for(product_id)
+        mapping.fetch(product_id.to_s, [])
       end
 
       # Raises if any configured Project id no longer exists — catches drift
