@@ -30,5 +30,55 @@ RSpec.describe MasdiagMailer::IndMailer, type: :mailer do
       expect(mail.subject).to include("shopify")
       expect(mail.body.encoded).to include("shopify")
     end
+
+    it "attaches the Diagnostyka Precyzyjna logo for a wordpress-sourced order" do
+      shop_order = create(:shop_order, source: "wordpress")
+
+      mail = described_class.shipping_after_new_order(shop_order.id)
+
+      expect(mail.attachments.map(&:filename)).to include("logo_dp.png")
+      expect(mail.attachments.map(&:filename)).not_to include("logo-rare-diagnostics.png")
+    end
+
+    it "attaches the Rare Disease Diagnostics logo for a shopify-sourced order" do
+      shop_order = create(:shop_order, source: "shopify")
+
+      mail = described_class.shipping_after_new_order(shop_order.id)
+
+      expect(mail.attachments.map(&:filename)).to include("logo-rare-diagnostics.png")
+      expect(mail.attachments.map(&:filename)).not_to include("logo_dp.png")
+    end
+  end
+
+  describe "#after_new_order_save" do
+    context "when the ShopOrder is wordpress-sourced" do
+      it "sends the existing Polish diagnostykaprecyzyjna.pl email unchanged" do
+        shop_order = create(:shop_order, source: "wordpress", email: "customer@example.com")
+
+        mail = described_class.after_new_order_save(shop_order.id)
+        html = mail.html_part.body.decoded
+
+        expect(mail.subject).to eq("Diagnostyka Precyzyjna - Rejestracja Testów")
+        expect(html).to include("Link do rejestracji")
+        expect(html).to include("diagnostykaprecyzyjna.pl")
+        expect(html).not_to include("Registration Link")
+        expect(html).not_to include("Rare Disease Diagnostics")
+      end
+    end
+
+    context "when the ShopOrder is shopify-sourced" do
+      it "sends the English Rare Disease Diagnostics email" do
+        shop_order = create(:shop_order, source: "shopify", email: "customer@example.com")
+
+        mail = described_class.after_new_order_save(shop_order.id)
+        html = mail.html_part.body.decoded
+
+        expect(mail.subject).to eq("Rare Disease Diagnostics - Test Registration")
+        expect(html).to include("Registration Link")
+        expect(html).to include("results.rarediagnostics.eu")
+        expect(html).not_to include("Link do rejestracji")
+        expect(html).not_to include("diagnostykaprecyzyjna.pl")
+      end
+    end
   end
 end

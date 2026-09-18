@@ -22,7 +22,7 @@ development:
     username: <%= Rails.application.credentials.dig(:db, :username) %>
     password: <%= Rails.application.credentials.dig(:db, :password) %>
     host: <%= Rails.application.credentials.dig(:db, :host) %>
-    port: 3306
+    port: <%= Rails.application.credentials.dig(:db, :port) %>
   queue:
     <<: *default
     database: solid_queue_db
@@ -30,7 +30,7 @@ development:
     password: <%= Rails.application.credentials.dig(:db, :password) %>
     host: <%= Rails.application.credentials.dig(:db, :host) %>
     migrations_paths: db/queue_migrate
-    port: 3306
+    port: <%= Rails.application.credentials.dig(:db, :port) %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

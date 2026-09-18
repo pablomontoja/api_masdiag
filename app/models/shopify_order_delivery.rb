@@ -30,4 +30,8 @@ class ShopifyOrderDelivery < ApplicationRecord
   validates :payload, presence: true
 
   scope :needs_attention, -> { where(status: [:blocked, :failed]) }
+
+  def process_order!
+    Shopify::ProcessOrderJob.perform_now(self.id)
+  end
 end

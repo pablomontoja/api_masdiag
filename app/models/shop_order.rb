@@ -21,6 +21,7 @@
 class ShopOrder < ApplicationRecord
 	has_many :packages, dependent: :nullify
 	has_many :reserved_sample_codes, through: :packages
+	has_one :shopify_order_delivery, dependent: :nullify
 
 	# package_ids/package_ids= come from has_many :packages (collection
 	# association methods), not a DB column — unlike snapshot_package_ids,
