@@ -14,7 +14,7 @@ module MasdiagMailer
     def shipping_after_new_order(shop_order_id)
       @shop_order = ShopOrder.find(shop_order_id)
       return if @shop_order.nil?
-      subject = "[Diagnostyka Precyzyjna]: Nowe zamówienie #{@shop_order.number} - ZESTAWY"
+      subject = "[Diagnostyka Precyzyjna]: Nowe zamówienie #{@shop_order.number} (#{@shop_order.source}) - ZESTAWY"
       mail(to: "logistyka@masdiag.pl", subject: subject)
     end
 

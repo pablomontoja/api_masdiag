@@ -20,4 +20,15 @@ RSpec.describe MasdiagMailer::IndMailer, type: :mailer do
       expect(mail.to).to eq(["patient@example.com"])
     end
   end
+
+  describe "#shipping_after_new_order" do
+    it "includes the ShopOrder's source in the subject and body" do
+      shop_order = create(:shop_order, source: "shopify")
+
+      mail = described_class.shipping_after_new_order(shop_order.id)
+
+      expect(mail.subject).to include("shopify")
+      expect(mail.body.encoded).to include("shopify")
+    end
+  end
 end

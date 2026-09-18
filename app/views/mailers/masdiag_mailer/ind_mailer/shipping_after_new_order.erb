@@ -26,7 +26,7 @@
                           <tr>
                             <td id="v1header_wrapper" style="padding: 36px 48px; display: block">
                               <h1 style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left;   color: white; background-color: inherit">
-                               Nowe zamówienie <%= @shop_order.number %> - ZESTAWY
+                               Nowe zamówienie <%= @shop_order.number %> (<%= @shop_order.source %>) - ZESTAWY
                               </h1>
                             </td>
                           </tr>
@@ -49,10 +49,11 @@
                                     <td style="padding: 48px 48px 32px" valign="top">
                                       <div id="v1body_content_inner" style="color: #676767; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left">
                                         <p style="margin: 0 0 16px">Darku,</p>
-                                        <p style="margin: 0 0 16px">W sklepie diagnostykaprecyzyjna.pl dokonano kolejnego zamówienia:</p>                                                    
-                                        
+                                        <p style="margin: 0 0 16px">W sklepie diagnostykaprecyzyjna.pl dokonano kolejnego zamówienia:</p>
+
                                         <br>
 
+                                        <p style="margin: 0 0 16px"><b>Źródło zamówienia:</b> <%= @shop_order.source %></p>
                                         <p style="margin: 0 0 16px"><b>Imię i nazwisko klienta:</b> <%= @shop_order.costumer_fullname %></p>
                                         <p style="margin: 0 0 16px"><b>Email klienta:</b> <%= @shop_order.email %></p>
                                         <p style="margin: 0 0 16px"><b>Telefon klienta:</b> <%= @shop_order.phone %></p>
