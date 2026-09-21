@@ -7,7 +7,6 @@
 #  institution_id :integer          not null
 #  price_cents    :integer          default(0), not null
 #  price_currency :string(255)      default("PLN"), not null
-#  vat_rate       :integer          default(0)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #

@@ -13,7 +13,11 @@
             <td valign="top" align="center">
               <div id="v1template_header_image">
                 <p style="margin-top: 0">
-                  <%= email_image_tag "logo_dp.png", style: "border: none; display: inline-block; font-size: 14px; font-weight: bold; height: auto; outline: none; text-decoration: none; text-transform: capitalize; vertical-align: middle; max-width: 400px; max-height: 100px; margin-left: 0; margin-right: 0", alt: "Diagnostyka Precyzyjna" %> 
+                  <% if @shop_order.source == "shopify" %>
+                    <%= email_image_tag "logo-rare-diagnostics.png", style: "border: none; display: inline-block; font-size: 14px; font-weight: bold; height: auto; outline: none; text-decoration: none; text-transform: capitalize; vertical-align: middle; max-width: 400px; max-height: 100px; margin-left: 0; margin-right: 0", alt: "Rare Disease Diagnostics" %>
+                  <% else %>
+                    <%= email_image_tag "logo_dp.png", style: "border: none; display: inline-block; font-size: 14px; font-weight: bold; height: auto; outline: none; text-decoration: none; text-transform: capitalize; vertical-align: middle; max-width: 400px; max-height: 100px; margin-left: 0; margin-right: 0", alt: "Diagnostyka Precyzyjna" %>
+                  <% end %>
                 </p>
               </div>
               <table id="v1template_container" style="background-color: #ffffff; border: 1px solid #d9d9d9; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); border-radius: 3px" width="600" cellspacing="0" cellpadding="0" border="0">
@@ -26,7 +30,7 @@
                           <tr>
                             <td id="v1header_wrapper" style="padding: 36px 48px; display: block">
                               <h1 style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left;   color: white; background-color: inherit">
-                               Nowe zamówienie <%= @shop_order.number %> - ZESTAWY
+                               Nowe zamówienie <%= @shop_order.number %> (<%= @shop_order.source %>) - ZESTAWY
                               </h1>
                             </td>
                           </tr>
@@ -49,10 +53,11 @@
                                     <td style="padding: 48px 48px 32px" valign="top">
                                       <div id="v1body_content_inner" style="color: #676767; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left">
                                         <p style="margin: 0 0 16px">Darku,</p>
-                                        <p style="margin: 0 0 16px">W sklepie diagnostykaprecyzyjna.pl dokonano kolejnego zamówienia:</p>                                                    
-                                        
+                                        <p style="margin: 0 0 16px">W sklepie diagnostykaprecyzyjna.pl dokonano kolejnego zamówienia:</p>
+
                                         <br>
 
+                                        <p style="margin: 0 0 16px"><b>Źródło zamówienia:</b> <%= @shop_order.source %></p>
                                         <p style="margin: 0 0 16px"><b>Imię i nazwisko klienta:</b> <%= @shop_order.costumer_fullname %></p>
                                         <p style="margin: 0 0 16px"><b>Email klienta:</b> <%= @shop_order.email %></p>
                                         <p style="margin: 0 0 16px"><b>Telefon klienta:</b> <%= @shop_order.phone %></p>

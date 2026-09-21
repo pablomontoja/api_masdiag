@@ -10,6 +10,8 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.enable_reloading = true
   config.cache_classes = false
+ 
+  config.hosts << "dev1.pawelswider.eu"
 
   # it depends on listen gem
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker

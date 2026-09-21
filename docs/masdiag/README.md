@@ -2,18 +2,21 @@
 
 ## Przegląd
 
-Namespace `masdiag` grupuje wewnętrzne operacje Masdiag: wyzwalanie wysyłki wyników, obsługę zmiany statusu próbki, konfigurację endpointu wyników, magazyn (stock room) oraz — najnowszy element — **ujednolicony system powiadomień cyklu życia próbki** dla systemu laboratoryjnego LabSample.
+Namespace `masdiag` grupuje wewnętrzne operacje Masdiag: wyzwalanie wysyłki wyników, obsługę zmiany statusu próbki, konfigurację endpointu wyników, magazyn (stock room), **sprawdzanie wersji i pobieranie instalatora aplikacji desktopowej LabSample.Updater** oraz — najnowszy element — **ujednolicony system powiadomień cyklu życia próbki** dla systemu laboratoryjnego LabSample.
 
-Namespace obsługują cztery kontrolery w `app/controllers/masdiag/`:
+Namespace obsługuje pięć kontrolerów w `app/controllers/masdiag/`:
 
 - `Masdiag::NotificationController` (`notification_controller.rb`) — starsze endpointy wyzwalające wysyłkę wyników i reakcję na zmianę statusu.
 - `Masdiag::NotificationsController` (`notifications_controller.rb`) — **nowe**, zunifikowane endpointy zdarzeń powiadomień. LabSample zgłasza wyłącznie ZDARZENIE (np. `sample_accepted`), a wybór szablonu (rodzina `:toxo` vs `:lab`) i odbiorcy następuje po stronie tej aplikacji, w warstwie `app/services/notifications/`.
 - `Masdiag::SetupController` (`setup_controller.rb`) — konfiguracja adresu endpointu wyników konta API.
 - `Masdiag::StockRoomsController` (`stock_rooms_controller.rb`) — operacje magazynowe (stock room) dla aplikacji zamówień (order_panel).
+- `Masdiag::LabsampleController` (`labsample_controller.rb`) — sprawdzanie najnowszej wersji i URL instalatora `.7z` aplikacji desktopowej LabSample.Updater, na podstawie modelu `LabsampleRelease`. Szczegóły → [docs/masdiag/labsample-releases.md](labsample-releases.md).
 
 ### Autoryzacja
 
-Każda akcja we wszystkich czterech kontrolerach jest chroniona przez `MasdiagCheck` (`app/controllers/concerns/masdiag_check.rb:1`), który w `before_action :only_masdiag_access` wymaga `Current.api_account.institution.id == 1` — dostęp mają tylko konta API należące do instytucji Masdiag. Przy braku uprawnień zwraca `422 Unprocessable Entity` z komunikatem `"You do not have access to this part of Masdiag API."`.
+Każda akcja w czterech z pięciu kontrolerów jest chroniona przez `MasdiagCheck` (`app/controllers/concerns/masdiag_check.rb:1`), który w `before_action :only_masdiag_access` wymaga `Current.api_account.institution.id == 1` — dostęp mają tylko konta API należące do instytucji Masdiag. Przy braku uprawnień zwraca `422 Unprocessable Entity` z komunikatem `"You do not have access to this part of Masdiag API."`.
+
+> **Wyjątek:** `Masdiag::LabsampleController` **nie** dołącza `MasdiagCheck` — chroni go wyłącznie standardowe HTTP Basic z `ApplicationController#authenticate`, więc dostęp mają wszystkie konta API, nie tylko instytucji Masdiag. Zgodne z zamierzeniem (desktopowa aplikacja LabSample.Updater loguje się danymi zwykłego konta API), ale warto o tym pamiętać przy analizie uprawnień tego namespace'u.
 
 ## Routes i akcje kontrolera
 
@@ -32,6 +35,8 @@ Wszystkie trasy zdefiniowane w `config/routes.rb` w bloku `namespace :masdiag, d
 | `POST /masdiag/stock_room/stock_out_by_shipment` | `StockRoomsController#stock_out_by_shipment` | `shipment_id`, `institution_id`, `comment` | `StockOutByPackagesService` | `200` / `500` |
 | `POST /masdiag/stock_room/back_to_stock_by_shipment/:shipment_id` | `StockRoomsController#back_to_stock_by_shipment` | `shipment_id` (w ścieżce) | `BackToStockByPackagesService` | `200` / `500` |
 | `GET /masdiag/stock_room/is_package_in_stock/:id` | `StockRoomsController#is_package_in_stock` | `id` (Package, w ścieżce) | `Package#stock_room_item` | `200` / `500` |
+| `GET /masdiag/labsample/latest_version` | `LabsampleController#latest_version` | brak | `LabsampleRelease.latest` | `200` (`version: nil`, gdy brak rekordów) |
+| `GET /masdiag/labsample/download_url` | `LabsampleController#download_url` | brak | `LabsampleRelease.latest` + `rails_blob_url` | `200` (`url: nil`, gdy brak rekordu/załącznika) |
 
 > Uwaga: zdarzenie **A — `sample_registration_confirmation`** oraz **D — `registration_reminder_final`** nie mają endpointów HTTP. `sample_registration_confirmation` jest wyzwalane wewnątrz aplikacji (po rejestracji próbki w portalu Toxo), a `registration_reminder_final` jest jobem cyklicznym (patrz `config/recurring.yml`).
 
@@ -65,6 +70,10 @@ Operacje magazynowe wykorzystywane przez aplikację order_panel:
 - **`back_to_stock_by_shipment`** (`stock_rooms_controller.rb:72`) — ustala `package_ids` po `shipment_id` i zawraca opakowania do magazynu przez `BackToStockByPackagesService`. Komentarz w kodzie sugeruje, że endpoint prawdopodobnie nie jest używany.
 
 Odpowiedzi z serwisów zwracają `200` z `notice` lub `500` z `errors`.
+
+### `Masdiag::LabsampleController` (`labsample_controller.rb`)
+
+Odpytywane przez LabSample.Updater (aplikacja desktopowa C#) przed każdym uruchomieniem okna logowania, żeby sprawdzić dostępność nowszej wersji instalatora. Pełny opis modelu `LabsampleRelease`, task `labsample_releases:add` do dodawania wydań oraz szczegóły obu akcji → [docs/masdiag/labsample-releases.md](labsample-releases.md).
 
 ## Zunifikowany system powiadomień (rodzina `masdiag/notifications`)
 
@@ -148,4 +157,5 @@ Przynależność do rodziny Toxo określa stała `V1::Common::TOXO_INSTITUTION_I
 - Brak request speca dla `NotificationController#trigger` i `#sample_status_changed` — oba oznaczone w kodzie komentarzem `# TODO - it need to be tested`.
 - Brak testów dla `Masdiag::SetupController` (dziedziczona akcja) w kontekście namespace `masdiag`.
 - Brak testów dla `Masdiag::StockRoomsController` (`is_package_in_stock`, `stock_out_by_packages`, `stock_out_by_shipment`, `back_to_stock_by_shipment`) oraz serwisów `StockOutByPackagesService` / `BackToStockByPackagesService`.
+- Brak request speca dla `Masdiag::LabsampleController` (`latest_version`, `download_url`) — pokryty jedynie pośrednio przez spec taska `labsample_releases:add` (`spec/lib/tasks/labsample_releases_rake_spec.rb`), który nie testuje samego kontrolera.
 - Uwaga: ścieżka Toxo (mailer + `Sender`) jest pokryta testami, ale przy pustym `TOXO_INSTITUTION_IDS` nie jest wykonywana produkcyjnie do czasu uzupełnienia stałej.

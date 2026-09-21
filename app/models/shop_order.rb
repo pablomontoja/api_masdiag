@@ -16,10 +16,12 @@
 #  coupons                 :text(65535)
 #  total_cost              :decimal(7, 2)
 #  total_cost_with_coupons :decimal(7, 2)
+#  source                  :string(255)      default("wordpress")
 #
 class ShopOrder < ApplicationRecord
 	has_many :packages, dependent: :nullify
 	has_many :reserved_sample_codes, through: :packages
+	has_one :shopify_order_delivery, dependent: :nullify
 
 	# package_ids/package_ids= come from has_many :packages (collection
 	# association methods), not a DB column — unlike snapshot_package_ids,
@@ -35,6 +37,10 @@ class ShopOrder < ApplicationRecord
 	before_destroy :clean_packages
 	after_commit :link_packages, on: :create
 	after_commit :update_snapshot_package_ids, on: :create
+	after_commit :send_new_order_mailers, on: :create
+
+	scope :shopify_sourced, -> { where(source: "shopify") }
+	scope :wordpress_sourced, -> { where(source: "wordpress") }
 
 	def rscs
 		# ReservedSampleCode.where(package_id: self.package_ids).all
@@ -52,7 +58,18 @@ class ShopOrder < ApplicationRecord
 private
 
 	def update_snapshot_package_ids
-    self.update(snapshot_package_ids: packages.pluck(:id))
+    # update_column (not update!) — this runs inside an after_commit callback;
+    # a full save here would re-enter the commit-callback chain and cause
+    # later-registered after_commit callbacks (e.g. send_new_order_mailers) to
+    # be silently skipped.
+    self.update_column(:snapshot_package_ids, packages.pluck(:id))
+  end
+
+	def send_new_order_mailers
+    return if self.package_ids.blank?
+
+    MasdiagMailer::IndMailer.after_new_order_save(self.id).deliver_later
+    MasdiagMailer::IndMailer.shipping_after_new_order(self.id).deliver_later
   end
 
 	# def check_package_ids

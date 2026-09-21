@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.4.10"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2.3"
+gem "rails", "~> 8.0.5"
 
 # Standard library components that application code requires directly.
 # These stopped being Ruby default gems in 3.4, so they must be declared
@@ -51,7 +51,11 @@ group :development, :test do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   gem 'byebug'
   gem 'rspec-json_expectations'
-  gem 'annotate'
+  # Maintained fork of `annotate`, whose final release (3.2.0) caps activerecord < 8.0.
+  # Left as `annotate`, Bundler does not fail on Rails 8 — it silently resolves back to
+  # 2.6.5 (released 2014), which declares no upper bound. A quiet decade-old downgrade is
+  # worse than a loud failure, so the gem is replaced rather than pinned.
+  gem 'annotaterb'
 end
 
 gem 'activepesel'
@@ -101,6 +105,10 @@ gem 'sanitize'
 gem 'microsoft_graph_mailer'
 gem 'listen' # used by config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-gem "rails-i18n"
+# rails-i18n 8.x requires railties >= 8.0.0, so this moves atomically with the Rails
+# version — neither resolves without the other. Note the three-part constraint: "~> 8.0"
+# would permit 8.1.x, which tracks a Rails minor the application does not run. "~> 8.0.0"
+# holds the 8.0 line, matching the framework.
+gem "rails-i18n", "~> 8.0.0"
 gem 'mobility', '~> 1.3.2'
 gem 'pagy', '~> 6.2'

@@ -18,11 +18,6 @@ class DiagnostykaPrecyzyjna::ShopOrdersController < ActionController::API
           @shop_order = rso.payload
 
           if @shop_order.save!
-            if !@shop_order.package_ids.blank?
-              MasdiagMailer::IndMailer.after_new_order_save(@shop_order.id).deliver_later
-              MasdiagMailer::IndMailer.shipping_after_new_order(@shop_order.id).deliver_later
-            end
-
             @shop_order.kits.select{|k| k.project_ids == [0]}.each do |kit|
               kit.products.each do |product|
                 # TODO AppointmentCreationJob is working but patient_portal has error during proceeding request 

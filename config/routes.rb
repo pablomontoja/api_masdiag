@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   #########################################################
   namespace :webhook do
     resources :scanned_docs, only: [:create]
+    post "shopify/orders_create", to: "shopify_orders#create"
   end
 
   get "health/check", to: 'health#check'
@@ -163,7 +164,11 @@ Rails.application.routes.draw do
     post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
     post "stock_room/stock_out_by_shipment", to: "stock_rooms#stock_out_by_shipment"
     post "stock_room/back_to_stock_by_shipment/:shipment_id", to: "stock_rooms#back_to_stock_by_shipment"
-    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock" 
+    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock"
+
+    # LabSample.Updater — sprawdzanie nowej wersji aplikacji desktopowej
+    get "labsample/latest_version", to: "labsample#latest_version"
+    get "labsample/download_url",   to: "labsample#download_url"
   end
 
 
@@ -219,7 +224,9 @@ Rails.application.routes.draw do
   namespace :regspec, defaults: { format: :json } do
     resources :institutions, only: %i{ create update }
     resources :contractors, only: %i{ create update }
-    resources :samples, only: %i{ create update }
+    resources :samples, only: %i{ create update } do
+      get "is_uniq/:code", on: :collection, to: "samples#is_uniq"
+    end
     resources :patients, only: %i{ update }
   end
 
