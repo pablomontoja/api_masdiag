@@ -45,6 +45,7 @@ bin/rails solid_queue:start
 | Raporty i eksporty, walidacja LSI | [docs/runbooks/reports.md](docs/runbooks/reports.md) |
 | Workflow dla partnerów API | [docs/api/partner-workflow.md](docs/api/partner-workflow.md) |
 | Namespace `masdiag` | [docs/masdiag/README.md](docs/masdiag/README.md) |
+| Wydania LabSample.Updater (`LabsampleRelease`) | [docs/masdiag/labsample-releases.md](docs/masdiag/labsample-releases.md) |
 | Namespace `masdiag_mailer` | [docs/masdiag_mailer/README.md](docs/masdiag_mailer/README.md) |
 | Webhook zamówień Shopify | [docs/webhooks/shopify.md](docs/webhooks/shopify.md) |
 | Architektura, konwencje, zasady pracy | [CLAUDE.md](CLAUDE.md) |

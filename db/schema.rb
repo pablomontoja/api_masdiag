@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_09_17_134213) do
+ActiveRecord::Schema[8.0].define(version: 2026_09_18_140000) do
   create_table "AnalyteRanges", primary_key: "Id", id: :integer, charset: "utf8", force: :cascade do |t|
     t.text "Name", size: :long
     t.integer "AgeFrom", null: false
@@ -800,6 +800,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_09_17_134213) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.binary "xlsx_file", size: :medium
+  end
+
+  create_table "labsample_releases", charset: "utf8mb4", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+    t.string "version", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["version"], name: "index_labsample_releases_on_version", unique: true
   end
 
   create_table "measurement_summaries", charset: "utf8", collation: "utf8_polish_ci", force: :cascade do |t|
