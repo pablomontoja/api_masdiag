@@ -12,7 +12,6 @@
 #  material_type          :integer
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  vat_rate               :integer          default(0)
 #
 class Test < ApplicationRecord
   monetize :default_price_cents,

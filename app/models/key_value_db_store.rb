@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: config_entries
+#
+#  id          :integer          not null, primary key
+#  key         :string(255)      not null
+#  json        :text(4294967295)
+#  config_type :string(255)
+#
 class KeyValueDbStore < ApplicationRecord
   self.table_name = "config_entries"
   self.primary_key = "id"

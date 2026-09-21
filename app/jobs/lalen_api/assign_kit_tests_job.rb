@@ -1,5 +1,12 @@
 module LalenApi
   class AssignKitTestsJob < ApplicationJob
+    # This job POSTs an assignment to an external partner and retries on failure, so it
+    # must never run for a write that was rolled back — the partner cannot be untold.
+    # Declared per-job rather than through config.active_job.enqueue_after_transaction_commit,
+    # which Rails 8.0 deprecates and removes in 8.1. Stating it here keeps the guarantee
+    # attached to the job that needs it, where a defaults change cannot silently drop it.
+    self.enqueue_after_transaction_commit = true
+
     retry_on StandardError, wait: :polynomially_longer, attempts: 10 do |job, error|
       Sentry.capture_exception(error)
     end

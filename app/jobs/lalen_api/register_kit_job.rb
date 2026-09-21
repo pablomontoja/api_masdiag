@@ -1,5 +1,10 @@
 module LalenApi
 	class RegisterKitJob < ApplicationJob
+		# Registers a kit with an external partner and retries on failure, so it must never
+		# run for a write that was rolled back. See AssignKitTestsJob for why this is
+		# declared per-job rather than globally.
+		self.enqueue_after_transaction_commit = true
+
 		retry_on StandardError, wait: :polynomially_longer, attempts: 10 do |job, error|
 	    Sentry.capture_exception(error)
 	  end

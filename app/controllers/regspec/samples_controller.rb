@@ -1,7 +1,17 @@
 class Regspec::SamplesController < ApplicationController
 	include MasdiagCheck
 
-	# POST   /regspec/samples 
+	# GET    /regspec/samples/is_uniq/:code
+	def is_uniq
+		rsc = ReservedSampleCode.find_by(Code: is_uniq_params[:code])
+		if rsc.nil?
+			json_response({ result: true })
+		else
+			json_response({ result: false })
+		end
+	end
+
+	# POST   /regspec/samples
 	def create
 		params[:sample][:sample_collection_date] = params[:sample][:acceptance_date].to_date if params[:sample][:sample_collection_date].blank?
 
@@ -60,6 +70,10 @@ class Regspec::SamplesController < ApplicationController
 
 
 	private
+
+	def is_uniq_params
+		params.permit(:code)
+	end
 
 	def process_not_accepted_sample(prms)
     @sample.measurements.update_all(Status: 1)
