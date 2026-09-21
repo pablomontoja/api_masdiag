@@ -164,7 +164,11 @@ Rails.application.routes.draw do
     post "stock_room/stock_out_by_packages", to: "stock_rooms#stock_out_by_packages"
     post "stock_room/stock_out_by_shipment", to: "stock_rooms#stock_out_by_shipment"
     post "stock_room/back_to_stock_by_shipment/:shipment_id", to: "stock_rooms#back_to_stock_by_shipment"
-    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock" 
+    get "stock_room/is_package_in_stock/:id", to: "stock_rooms#is_package_in_stock"
+
+    # LabSample.Updater — sprawdzanie nowej wersji aplikacji desktopowej
+    get "labsample/latest_version", to: "labsample#latest_version"
+    get "labsample/download_url",   to: "labsample#download_url"
   end
 
 
