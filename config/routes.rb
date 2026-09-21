@@ -219,7 +219,9 @@ Rails.application.routes.draw do
   namespace :regspec, defaults: { format: :json } do
     resources :institutions, only: %i{ create update }
     resources :contractors, only: %i{ create update }
-    resources :samples, only: %i{ create update }
+    resources :samples, only: %i{ create update } do
+      get "is_uniq/:code", on: :collection, to: "samples#is_uniq"
+    end
     resources :patients, only: %i{ update }
   end
 
