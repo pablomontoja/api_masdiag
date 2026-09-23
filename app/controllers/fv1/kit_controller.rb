@@ -18,7 +18,7 @@ class Fv1::KitController < V1::KitController
 
     requested_test_ids = assignment_params[:test_ids].map(&:to_i)
 
-    if requested_test_ids.include?(26) && @current_rsc.reserved_tests.exists?
+    if @current_rsc.reserved_tests.exists?(project_id: 26) || (requested_test_ids.include?(26) && @current_rsc.reserved_tests.exists?)
       json_response({ message: "Tests for this sample collection card have already been assigned and cannot be changed" }, :unprocessable_content)
       return
     end
