@@ -240,6 +240,21 @@ RSpec.describe 'Fv1::KitController#assign_tests', type: :request do
         expect(json.dig("message")).to eq("Tests for this sample collection card have already been assigned and cannot be changed")
       end
 
+      it 'returns error when reassigning without test 26 but test 26 is already assigned' do
+        project_26 = create(:project, Id: 26)
+        project_12 = create(:project, Id: 12)
+        rsc_dbs_i4 = create(:reserved_sample_code, Code: "IAA4Z", package_id: package.id, InstitutionId: inst.id, IsRetailSale: true, material_handler: :dbs_i4)
+        rsc_dbs_i4.reserved_tests.create!(project_id: project_26.Id)
+        tmp_params = { data: { code: rsc_dbs_i4.Code, test_ids: [12] } }
+
+        expect {
+          post "/fv1/kits/assign_tests", params: tmp_params, headers: http_auth_header
+        }.not_to change { rsc_dbs_i4.reserved_tests.reload.pluck(:project_id) }
+
+        expect(response).to have_http_status(422)
+        expect(json.dig("message")).to eq("Tests for this sample collection card have already been assigned and cannot be changed")
+      end
+
       it 'assigns test 26 successfully when material_handler is dbs_i4 and no existing tests' do
         project_26 = create(:project, Id: 26)
         rsc_dbs_i4 = create(:reserved_sample_code, Code: "IAA4Y", package_id: package.id, InstitutionId: inst.id, IsRetailSale: true, material_handler: :dbs_i4)

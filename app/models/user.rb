@@ -32,11 +32,46 @@
 #  TokenSerialNumber       :text(4294967295)
 #
 class User < ApplicationRecord
+  extend Mobility
   # has_secure_password
   self.inheritance_column = :_type_bla_bla
 
   self.table_name = "Users"
   self.primary_key = "Id"
+
+  translates :FirstName, type: :string, default: -> { read_attribute(:FirstName) }
+  translates :LastName, type: :string, default: -> { read_attribute(:LastName) }
+  translates :Description, type: :string, default: -> { read_attribute(:Description) }
+
+  # See Project#Name= for why this keys off an explicit locale: kwarg rather than
+  # ambient I18n.locale (app default locale is :en, but these columns hold Polish
+  # text) — a bare assignment must always land in the native column.
+  def FirstName=(value, locale: nil, **options)
+    explicit_locale = locale&.to_sym
+    if explicit_locale.nil? || explicit_locale == :pl
+      write_attribute(:FirstName, value)
+    else
+      super(value, locale: locale, **options)
+    end
+  end
+
+  def LastName=(value, locale: nil, **options)
+    explicit_locale = locale&.to_sym
+    if explicit_locale.nil? || explicit_locale == :pl
+      write_attribute(:LastName, value)
+    else
+      super(value, locale: locale, **options)
+    end
+  end
+
+  def Description=(value, locale: nil, **options)
+    explicit_locale = locale&.to_sym
+    if explicit_locale.nil? || explicit_locale == :pl
+      write_attribute(:Description, value)
+    else
+      super(value, locale: locale, **options)
+    end
+  end
 
   def fullname
     "#{self.FirstName} #{self.LastName}"

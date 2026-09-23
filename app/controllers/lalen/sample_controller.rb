@@ -31,7 +31,7 @@ class Lalen::SampleController < ApplicationController
 
     @sample.validate
 
-    if @sample.save!(context: :fv1)
+    if @sample.save(context: :fv1)
       if [4,5].include?(@sample.soaking_degree_id)
         @sample.measurements.destroy_all
         Notification::SampleChangedJob.perform_later(@sample.Id)
