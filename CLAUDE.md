@@ -157,5 +157,5 @@ No fixtures — use factories exclusively.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/011-shop-order-rsc-allocation/plan.md`.
+at `specs/012-project-name-translation/plan.md`.
 <!-- SPECKIT END -->
