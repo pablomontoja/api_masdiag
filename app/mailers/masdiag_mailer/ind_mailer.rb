@@ -40,7 +40,7 @@ module MasdiagMailer
     end
 
     def shopify_root_address
-      (Rails.env.development? || Rails.env.test?) ? "http://127.0.0.1:3001/" : "https://results.rarediagnostics.eu/"
+      (Rails.env.development? || Rails.env.test?) ? "http://127.0.0.1:3001/" : "https://registration.rarediagnostics.eu/"
     end
     
   end
