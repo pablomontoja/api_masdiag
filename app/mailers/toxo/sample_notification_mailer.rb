@@ -7,6 +7,18 @@ module Toxo
 
     PORTAL_URL = V1::Common::TOXO_PARTNER_PORTAL_URL
 
+    # Etykiety statusu pomiaru — zsynchronizowane ze słownikiem toxo (Measurement::STATUS
+    # w ../toxo/app/models/measurement.rb i enums.measurement_status w jego config/locales/pl.yml).
+    MEASUREMENT_STATUS_LABELS = {
+      1 => "w laboratorium",
+      2 => "w laboratorium",
+      3 => "potrzebna powtórka",
+      4 => "kompletowanie wyniku",
+      5 => "autoryzowany wynik",
+      6 => "nieudany pomiar",
+      7 => "dodana online"
+    }.freeze
+
     # A — Potwierdzenie zlecenia badania (+ załącznik PDF).
     def sample_registration_confirmation(sample)
       @sample = sample
@@ -47,10 +59,17 @@ module Toxo
     end
 
     # F — Wynik badania.
+    #
+    # TODO: brak jeszcze i18n dla tego mailera — wymuszamy polski (Contractor#locale
+    # nie jest jeszcze uwzględniany), zamiast pozostawić domyślny :en, który psuł
+    # nazwy badań (Project#Name, tłumaczone przez Mobility w zależności od I18n.locale).
     def result_available(sample)
-      @sample = sample
-      @portal_url = PORTAL_URL
-      mail(subject: "Wynik badania")
+      I18n.with_locale(:pl) do
+        @sample = sample
+        @portal_url = PORTAL_URL
+        @measurements = sample.measurements
+        mail(subject: "Wynik badania")
+      end
     end
 
     # G — Prośba o chromatogram.

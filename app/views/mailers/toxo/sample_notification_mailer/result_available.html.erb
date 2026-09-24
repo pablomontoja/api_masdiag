@@ -4,4 +4,32 @@
   Informujemy, że wynik dla próbki o numerze <strong><%= @sample.Code %></strong> jest dostępny.
   Sprawozdanie z badań znajduje się w systemie informatycznym <a href="https://<%= @portal_url %>"><%= @portal_url %></a>.
 </p>
+
+<table style="border-collapse:collapse;width:100%;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#333333">
+  <thead>
+    <tr>
+      <th style="text-align:left;border-bottom:1px solid #cccccc;padding:6px 8px">Badanie</th>
+      <th style="text-align:left;border-bottom:1px solid #cccccc;padding:6px 8px">Status</th>
+      <th style="text-align:left;border-bottom:1px solid #cccccc;padding:6px 8px">Data autoryzacji</th>
+      <th style="text-align:left;border-bottom:1px solid #cccccc;padding:6px 8px">Sprawozdanie</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @measurements.each do |measurement| %>
+      <tr>
+        <td style="border-bottom:1px solid #eeeeee;padding:6px 8px"><%= measurement.project.Name %></td>
+        <td style="border-bottom:1px solid #eeeeee;padding:6px 8px"><%= Toxo::SampleNotificationMailer::MEASUREMENT_STATUS_LABELS[measurement.Status] || measurement.Status %></td>
+        <td style="border-bottom:1px solid #eeeeee;padding:6px 8px"><%= measurement.AuthorizedAt&.strftime("%d.%m.%Y %H:%M") %></td>
+        <td style="border-bottom:1px solid #eeeeee;padding:6px 8px">
+          <% if measurement.report_pdf_url.present? %>
+            <a href="<%= measurement.report_pdf_url %>">Pobierz PDF</a>
+          <% else %>
+            &ndash;
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
 <p style="font-size:12px;color:#999999">Laboratorium Masdiag Sp. z o.o.</p>

@@ -26,7 +26,7 @@
                           <tr>
                             <td id="v1header_wrapper" style="padding: 36px 48px; display: block">
                               <h1 style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left;   color: white; background-color: inherit">
-                                Registration Link
+                                Thank you for your order
                               </h1>
                             </td>
                           </tr>
@@ -49,10 +49,19 @@
                                     <td style="padding: 48px 48px 32px" valign="top">
                                       <div id="v1body_content_inner" style="color: #676767; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left">
                                         <p style="margin: 0 0 16px">Dear Sir/Madam,</p>
-                                        <p style="margin: 0 0 16px">The Rare Disease Diagnostics store is sending you the registration link for your ordered tests:</p>
+                                        <p style="margin: 0 0 16px">Thank you for placing an order with the Rare Disease Diagnostics store. Your collection kit will be shipped to the address you provided and should arrive within the next few days — there is nothing you need to do just yet.</p>
+
+                                        <p style="margin: 0 0 16px">Once the kit arrives:</p>
+                                        <ol style="margin: 0 0 16px; padding-left: 20px">
+                                          <li style="margin: 0 0 8px">please read the sample collection instructions included in the kit,</li>
+                                          <li style="margin: 0 0 8px">collect the sample following those instructions,</li>
+                                          <li style="margin: 0 0 8px">and then register your kit — using the link below or the registration code printed on the sample carrier (the DBS card or urine vial).</li>
+                                        </ol>
+
+                                        <p style="margin: 0 0 16px">Once you have collected your sample, you can use the link below to register it:</p>
 
                                         <div style="margin-left: auto; margin-right: auto; text-align: center; padding-bottom: 20px">
-                                          <a href="<%= @link %>" style="margin-left: auto; margin-right: auto; -webkit-appearance: button; -moz-appearance: button; appearance: button; text-decoration: none; color: initial; background-color: #26c6da; border: none;   padding: 15px 32px; text-align: center; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 18px;">Registration Link</a>
+                                          <a href="<%= @link %>" style="margin-left: auto; margin-right: auto; -webkit-appearance: button; -moz-appearance: button; appearance: button; text-decoration: none; color: initial; background-color: #26c6da; border: none;   padding: 15px 32px; text-align: center; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 18px;">Register your kit once received</a>
                                         </div>
 
                                         <br>
@@ -69,7 +78,7 @@
                                         <% if @shop_order.rscs.count > 1 %>
                                           <hr>
 
-                                          <p style="margin: 0 0 16px">If multiple kits were ordered and different tests were purchased for each, you can distinguish between them using the table below: </p>
+                                          <p style="margin: 0 0 16px">You have ordered several kits with different tests. The table below will help you tell them apart — each kit is registered separately, using its own code: </p>
 
                                             <center>
                                               <table  border="0" cellpadding="0" cellspacing="0" bgcolor="#E3FFFE" style="border-collapse: collapse; width: 80%; ">

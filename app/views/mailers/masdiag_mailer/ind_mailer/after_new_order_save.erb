@@ -26,7 +26,7 @@
                           <tr>
                             <td id="v1header_wrapper" style="padding: 36px 48px; display: block">
                               <h1 style="font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 30px; font-weight: 300; line-height: 150%; margin: 0; text-align: left;   color: white; background-color: inherit">
-                                Link do rejestracji
+                                Dziękujemy za zamówienie
                               </h1>
                             </td>
                           </tr>
@@ -49,12 +49,21 @@
                                     <td style="padding: 48px 48px 32px" valign="top">
                                       <div id="v1body_content_inner" style="color: #676767; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 14px; line-height: 150%; text-align: left">
                                         <p style="margin: 0 0 16px">Szanowna Pani/Szanowny Panie,</p>
-                                        <p style="margin: 0 0 16px">Sklep diagnostykaprecyzyjna.pl przesyła link do rejestracji zamówionych testów:</p>
-                                        
+                                        <p style="margin: 0 0 16px">Dziękujemy za złożenie zamówienia w sklepie diagnostykaprecyzyjna.pl. Zestaw do pobrania materiału zostanie wysłany na podany adres i dotrze do Państwa w ciągu najbliższych dni — na tym etapie nie muszą Państwo jeszcze nic robić.</p>
+
+                                        <p style="margin: 0 0 16px">Gdy zestaw dotrze:</p>
+                                        <ol style="margin: 0 0 16px; padding-left: 20px">
+                                          <li style="margin: 0 0 8px">prosimy zapoznać się z instrukcją pobrania materiału dołączoną do zestawu,</li>
+                                          <li style="margin: 0 0 8px">pobrać materiał zgodnie z instrukcją,</li>
+                                          <li style="margin: 0 0 8px">a następnie zarejestrować próbkę — korzystając z linku poniżej lub z kodu rejestracji naklejonego na nośniku materiału (karcie DBS lub fiolce na mocz).</li>
+                                        </ol>
+
+                                        <p style="margin: 0 0 16px">Do rejestracji, gdy będą już Państwo mieli pobrany materiał, można użyć poniższego linku:</p>
+
                                         <div style="margin-left: auto; margin-right: auto; text-align: center; padding-bottom: 20px">
-                                          <a href="<%= @link %>" style="margin-left: auto; margin-right: auto; -webkit-appearance: button; -moz-appearance: button; appearance: button; text-decoration: none; color: initial; background-color: #26c6da; border: none;   padding: 15px 32px; text-align: center; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 18px;">Link do rejestracji</a>
-                                        </div>                  
-                                        
+                                          <a href="<%= @link %>" style="margin-left: auto; margin-right: auto; -webkit-appearance: button; -moz-appearance: button; appearance: button; text-decoration: none; color: initial; background-color: #26c6da; border: none;   padding: 15px 32px; text-align: center; font-family: &quot;Helvetica Neue&quot;, Helvetica, Roboto, Arial, sans-serif; font-size: 18px;">Zarejestruj próbkę po otrzymaniu zestawu</a>
+                                        </div>
+
                                         <br>
 
                                         <p style="margin: 0 0 16px">Proszę wkleić podany niżej adres w przeglądarce, gdyby powyższy przycisk nie działał: </p>
@@ -69,7 +78,7 @@
                                         <% if @shop_order.rscs.count > 1 %>
                                           <hr>
 
-                                          <p style="margin: 0 0 16px">Jeśli zamówiono wielu zestawów i do każdego z nich zakupiono inne badania to można będzie rozróżnić te zestawy na podstawie poniższej tabeli: </p>
+                                          <p style="margin: 0 0 16px">Zamówili Państwo kilka zestawów z różnymi badaniami. Poniższa tabela pozwoli rozpoznać, który zestaw odpowiada któremu badaniu — każdy zestaw rejestruje się osobno, używając odpowiedniego kodu: </p>
 
                                             <center>
                                               <table  border="0" cellpadding="0" cellspacing="0" bgcolor="#E3FFFE" style="border-collapse: collapse; width: 80%; ">
