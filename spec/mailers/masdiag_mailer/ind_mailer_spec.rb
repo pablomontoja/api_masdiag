@@ -52,16 +52,16 @@ RSpec.describe MasdiagMailer::IndMailer, type: :mailer do
 
   describe "#after_new_order_save" do
     context "when the ShopOrder is wordpress-sourced" do
-      it "sends the existing Polish diagnostykaprecyzyjna.pl email unchanged" do
+      it "sends the Polish diagnostykaprecyzyjna.pl email" do
         shop_order = create(:shop_order, source: "wordpress", email: "customer@example.com")
 
         mail = described_class.after_new_order_save(shop_order.id)
         html = mail.html_part.body.decoded
 
         expect(mail.subject).to eq("Diagnostyka Precyzyjna - Rejestracja Testów")
-        expect(html).to include("Link do rejestracji")
+        expect(html).to include("Dziękujemy za zamówienie")
         expect(html).to include("diagnostykaprecyzyjna.pl")
-        expect(html).not_to include("Registration Link")
+        expect(html).not_to include("Thank you for your order")
         expect(html).not_to include("Rare Disease Diagnostics")
       end
     end
@@ -74,9 +74,9 @@ RSpec.describe MasdiagMailer::IndMailer, type: :mailer do
         html = mail.html_part.body.decoded
 
         expect(mail.subject).to eq("Rare Disease Diagnostics - Test Registration")
-        expect(html).to include("Registration Link")
+        expect(html).to include("Thank you for your order")
         expect(html).to include("results.rarediagnostics.eu")
-        expect(html).not_to include("Link do rejestracji")
+        expect(html).not_to include("Dziękujemy za zamówienie")
         expect(html).not_to include("diagnostykaprecyzyjna.pl")
       end
     end
