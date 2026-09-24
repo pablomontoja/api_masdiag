@@ -45,4 +45,11 @@ class Measurement < ApplicationRecord
     self.ModifiedAt = DateTime.now
   end
 
+  def report_pdf_url
+    return nil unless online_file&.file_contents&.present?
+
+    online_file.prepare_active_storage
+    Rails.application.routes.url_helpers.url_for(online_file.unencrypted_result)
+  end
+
 end

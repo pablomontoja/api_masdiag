@@ -15,6 +15,89 @@ RSpec.describe Toxo::SampleNotificationMailer, type: :mailer do
       expect(body).to include("TX001A")
       expect(body).to include(V1::Common::TOXO_PARTNER_PORTAL_URL)
     end
+
+    it "renders the sample's measurement in the table" do
+      project = create(:project_without_fixed_id, Name: "Analiza specjalna")
+      create(:measurement, sample: sample, project: project)
+
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+
+      expect(body).to include("Analiza specjalna")
+    end
+
+    it "renders the Polish measurement name even when I18n.default_locale is :en" do
+      expect(I18n.default_locale).to eq(:en) # dokumentuje istniejącą konfigurację aplikacji
+      project = create(:project_without_fixed_id, Name: "Nazwa polska")
+      create(:measurement, sample: sample, project: project)
+
+      I18n.with_locale(:en) do
+        delivered = described_class.result_available(sample.reload)
+        body = delivered.html_part ? delivered.html_part.body.encoded : delivered.body.encoded
+        expect(body).to include("Nazwa polska")
+      end
+    end
+
+    it "renders a textual (Polish) status label instead of the raw integer" do
+      project = create(:project_without_fixed_id)
+      create(:measurement, sample: sample, project: project, Status: 5)
+
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+
+      expect(body).to include("autoryzowany wynik")
+    end
+
+    it "falls back to the raw status when no label is defined for it" do
+      project = create(:project_without_fixed_id)
+      create(:measurement, sample: sample, project: project, Status: 99)
+
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+
+      expect(body).to include(">99<")
+    end
+
+    context "with a sample that has multiple measurements in different states" do
+      let(:project_with_pdf)          { create(:project_without_fixed_id, Name: "Toxo IgG") }
+      let(:project_without_pdf_yet)   { create(:project_without_fixed_id, Name: "Toxo IgM") }
+      let(:project_not_yet_authorized) { create(:project_without_fixed_id, Name: "Toxo na zlecenie") }
+
+      let!(:measurement_with_pdf) do
+        m = create(:measurement, sample: sample, project: project_with_pdf, Status: 5, AuthorizedAt: 1.day.ago)
+        create(:online_file, measurement: m, file_contents: "%PDF-1.4 fake pdf bytes", filename: "wynik.pdf")
+        m.reload
+      end
+      let!(:measurement_without_pdf_yet) do
+        create(:measurement, sample: sample, project: project_without_pdf_yet, Status: 5, AuthorizedAt: 1.day.ago)
+      end
+      let!(:measurement_not_yet_authorized) do
+        create(:measurement, sample: sample, project: project_not_yet_authorized, Status: 1, AuthorizedAt: nil)
+      end
+
+      it "renders a table row for every measurement on the sample, regardless of status" do
+        body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+
+        expect(body).to include("Toxo IgG")
+        expect(body).to include("Toxo IgM")
+        expect(body).to include("Toxo na zlecenie")
+      end
+
+      it "renders a working PDF link for every measurement that has an available report (SC-004)" do
+        body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+
+        expect(body).to include(measurement_with_pdf.report_pdf_url)
+      end
+
+      it "does not render a link for a measurement with no PDF available yet" do
+        body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+
+        expect(measurement_without_pdf_yet.report_pdf_url).to be_nil
+        expect(body.scan(measurement_without_pdf_yet.AuthorizedAt.strftime("%Y")).any?).to be true
+      end
+
+      it "shows no authorization date and no PDF link for a not-yet-authorized measurement" do
+        expect(measurement_not_yet_authorized.report_pdf_url).to be_nil
+        expect(measurement_not_yet_authorized.AuthorizedAt).to be_nil
+      end
+    end
   end
 
   describe "#sample_accepted" do
