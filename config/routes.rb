@@ -157,7 +157,7 @@ Rails.application.routes.draw do
     # (laboratoryjny vs Toxo) po stronie tej aplikacji.
     post "sample_accepted/:sample_id",       to: "notifications#sample_accepted"
     post "sample_rejected/:sample_id",       to: "notifications#sample_rejected"
-    post "result_available/:sample_id",      to: "notifications#result_available"
+    post "result_available/:measurement_id", to: "notifications#result_available"
     post "registration_reminder/:sample_id", to: "notifications#registration_reminder"
 
     # storage app

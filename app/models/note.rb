@@ -42,6 +42,7 @@ class Note < ApplicationRecord
 			included-in-monthly-ptc-report
 			included-in-monthly-invoice-for-hospitals
 			omegaquant-result-exit-in-csv
+			result-available-email
 			lab-user-note
 		]
 	}.freeze

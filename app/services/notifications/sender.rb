@@ -1,13 +1,14 @@
 module Notifications
   # Wysyła pojedyncze powiadomienie w sposób idempotentny:
   #  1. pomija, gdy brak odbiorcy,
-  #  2. pomija, gdy Note dla (Sample, event-key) już istnieje (już wysłano),
+  #  2. pomija, gdy Note dla (subject, event-key) już istnieje (już wysłano),
   #  3. dostarcza wiadomość,
   #  4. zapisuje audyt (ResultSendingEvent / Fileable / DbFile),
   #  5. tworzy Note znakujący wysyłkę.
   #
-  # Klucz Note odpowiada zdarzeniu (jednakowy dla obu rodzin szablonów), więc
-  # próbka otrzymuje najwyżej jeden e-mail danego typu niezależnie od szablonu.
+  # `subject` idempotencji to `measurement`, gdy podany, w przeciwnym razie
+  # `sample` — dla :result_available podajemy `measurement:` (jeden pomiar =
+  # jedno powiadomienie), dla pozostałych zdarzeń nadal `sample:`.
   class Sender
     # event => klucz Note (patrz Note#available_keys)
     EVENT_KEYS = {
@@ -24,16 +25,18 @@ module Notifications
       def skipped? = status == :skipped
     end
 
-    def self.call(sample:, event:, mail:, recipient:, family:)
-      new(sample: sample, event: event, mail: mail, recipient: recipient, family: family).call
+    def self.call(event:, mail:, recipient:, family:, sample: nil, measurement: nil)
+      new(sample: sample, measurement: measurement, event: event, mail: mail, recipient: recipient, family: family).call
     end
 
-    def initialize(sample:, event:, mail:, recipient:, family:)
-      @sample    = sample
-      @event     = event.to_sym
-      @mail      = mail
-      @recipient = recipient
-      @family    = family
+    def initialize(event:, mail:, recipient:, family:, sample: nil, measurement: nil)
+      @measurement = measurement
+      @subject     = measurement || sample
+      @sample      = measurement&.sample || sample
+      @event       = event.to_sym
+      @mail        = mail
+      @recipient   = recipient
+      @family      = family
     end
 
     def call
@@ -59,13 +62,13 @@ module Notifications
     end
 
     def already_sent?
-      Note.exists?(subject_type: "Sample", subject_id: @sample.Id, key: note_key)
+      Note.exists?(subject_type: @subject.class.name, subject_id: @subject.id, key: note_key)
     end
 
     def mark_note
       Note.create!(
         key: note_key,
-        subject: @sample,
+        subject: @subject,
         description: "[#{@family}] powiadomienie #{@event} — #{Date.current.strftime('%F')}"
       )
     end
@@ -73,7 +76,7 @@ module Notifications
     def record_audit
       f = Fileable.new
       event = f.build_result_sending_event
-      event.measurement = nil
+      event.measurement = @measurement
       event.sample = @sample
       event.sent_date = Time.current
       event.sent_through = 1 # EmailNotification

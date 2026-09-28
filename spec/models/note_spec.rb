@@ -34,4 +34,24 @@ RSpec.describe Note, type: :model do
     other = create(:sample, Code: "OTHER1")
     expect(Note.new(key: "sample-accepted-email", subject: other)).to be_valid
   end
+
+  describe "result-available-email for a Measurement subject" do
+    let(:measurement) { create(:measurement, sample: sample, project: create(:project_without_fixed_id)) }
+
+    it "accepts result-available-email when the subject is a Measurement" do
+      note = Note.new(key: "result-available-email", subject: measurement)
+      expect(note).to be_valid
+    end
+
+    it "still accepts result-available-email when the subject is a Sample" do
+      note = Note.new(key: "result-available-email", subject: sample)
+      expect(note).to be_valid
+    end
+
+    it "allows a Sample-scoped and a Measurement-scoped Note with the same key to coexist" do
+      Note.create!(key: "result-available-email", subject: sample)
+      measurement_note = Note.new(key: "result-available-email", subject: measurement)
+      expect(measurement_note).to be_valid
+    end
+  end
 end

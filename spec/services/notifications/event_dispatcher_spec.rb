@@ -20,30 +20,93 @@ RSpec.describe Notifications::EventDispatcher do
     create(:sample, patient: patient)
   end
 
-  it "routes a toxo sample to the Toxo mailer via the Sender" do
-    sample = toxo_registered_sample
-    expect(Toxo::SampleNotificationMailer).to receive(:result_available).with(sample).and_call_original
-    expect(Notifications::Sender).to receive(:call).and_call_original
-
-    described_class.call(event: :result_available, sample: sample)
+  def measurement_for(sample)
+    create(:measurement, sample: sample, project: create(:project_without_fixed_id))
   end
 
-  it "routes a non-toxo sample to the existing lab mailer (delegation)" do
+  it "routes a toxo measurement to the Toxo mailer via the Sender" do
+    sample = toxo_registered_sample
+    measurement = measurement_for(sample)
+    expect(Toxo::SampleNotificationMailer).to receive(:result_available).with(sample, measurement).and_call_original
+    expect(Notifications::Sender).to receive(:call).and_call_original
+
+    described_class.call(event: :result_available, measurement: measurement)
+  end
+
+  it "routes a non-toxo measurement to the existing lab mailer (delegation)" do
     sample = lab_registered_sample
+    measurement = measurement_for(sample)
+    create(:online_file, measurement: measurement, is_notification_send: false)
     fake = double(deliver_later: true, deliver_now: true)
     expect(MasdiagMailer::ContractorResultNotificationMailer).to receive(:send_mail).and_return(fake)
 
-    described_class.call(event: :result_available, sample: sample)
+    described_class.call(event: :result_available, measurement: measurement)
   end
 
   it "skips without error when no recipient can be resolved" do
     contractor = create(:contractor, institution: toxo_institution, email: "")
     patient = create(:patient, contractor: contractor, IsVirtual: false)
     sample = create(:sample, patient: patient)
+    measurement = measurement_for(sample)
 
     expect {
-      described_class.call(event: :result_available, sample: sample)
+      described_class.call(event: :result_available, measurement: measurement)
     }.not_to change { ActionMailer::Base.deliveries.size }
+  end
+
+  it "raises ArgumentError when :result_available is called without measurement:" do
+    sample = toxo_registered_sample
+    expect {
+      described_class.call(event: :result_available, sample: sample)
+    }.to raise_error(ArgumentError)
+  end
+
+  it "raises ArgumentError when a non-result_available event is called without sample:" do
+    sample = toxo_registered_sample
+    measurement = measurement_for(sample)
+    expect {
+      described_class.call(event: :sample_accepted, measurement: measurement)
+    }.to raise_error(ArgumentError)
+  end
+
+  describe "dispatch_lab unsent-files guard (US3)" do
+    it "sends no email and does not call the mailer when all files for the sample are already notified" do
+      sample = lab_registered_sample
+      measurement = measurement_for(sample)
+      create(:online_file, measurement: measurement, is_notification_send: true)
+
+      expect(MasdiagMailer::ContractorResultNotificationMailer).not_to receive(:send_mail)
+
+      result = described_class.call(event: :result_available, measurement: measurement)
+      expect(result.status).to eq(:skipped)
+    end
+
+    it "includes only the unsent file when the sample has a mix of sent and unsent files" do
+      sample = lab_registered_sample
+      m1 = measurement_for(sample)
+      m2 = measurement_for(sample)
+      create(:online_file, measurement: m1, is_notification_send: true)
+      unsent_file = create(:online_file, measurement: m2, is_notification_send: false)
+
+      expect(MasdiagMailer::ContractorResultNotificationMailer)
+        .to receive(:send_mail).with(anything, [unsent_file.measurement_id]).and_return(double(deliver_later: true))
+
+      described_class.call(event: :result_available, measurement: m2)
+    end
+  end
+
+  it "dispatches independently for two different measurements on the same sample (US1 regression)" do
+    sample = toxo_registered_sample
+    m1 = measurement_for(sample)
+    m2 = measurement_for(sample)
+
+    expect {
+      described_class.call(event: :result_available, measurement: m1)
+      described_class.call(event: :result_available, measurement: m2)
+    }.to change { ActionMailer::Base.deliveries.size }.by(2)
+
+    expect(Note.where(subject_type: "Measurement", key: "result-available-email").pluck(:subject_id))
+      .to contain_exactly(m1.Id, m2.Id)
   end
 
   it "raises / no-ops for an unknown event (no mail enqueued)" do
