@@ -17,17 +17,21 @@ module Notifications
       result_available
     ].freeze
 
-    def self.call(event:, sample:)
-      new(event: event, sample: sample).call
+    def self.call(event:, sample: nil, measurement: nil)
+      new(event: event, sample: sample, measurement: measurement).call
     end
 
-    def initialize(event:, sample:)
-      @event  = event.to_sym
-      @sample = sample
+    def initialize(event:, sample: nil, measurement: nil)
+      @event       = event.to_sym
+      @measurement = measurement
+      @sample      = measurement&.sample || sample
+      @sample_arg  = sample
     end
 
     def call
       raise ArgumentError, "Unknown notification event: #{@event}" unless KNOWN_EVENTS.include?(@event)
+      raise ArgumentError, "result_available requires measurement:" if @event == :result_available && @measurement.nil?
+      raise ArgumentError, "#{@event} requires sample:" if @event != :result_available && @sample_arg.nil?
 
       family = TemplateResolver.family_for(@sample)
       family == :toxo ? dispatch_toxo : dispatch_lab
@@ -39,8 +43,8 @@ module Notifications
       recipient = RecipientResolver.call(sample: @sample, event: @event)
       return Sender::Result.new(status: :skipped) if recipient.blank?
 
-      mail = Toxo::SampleNotificationMailer.public_send(@event, @sample)
-      Sender.call(sample: @sample, event: @event, mail: mail, recipient: recipient, family: :toxo)
+      mail = @event == :result_available ? Toxo::SampleNotificationMailer.result_available(@sample, @measurement) : Toxo::SampleNotificationMailer.public_send(@event, @sample)
+      Sender.call(sample: @sample, measurement: @measurement, event: @event, mail: mail, recipient: recipient, family: :toxo)
     end
 
     # Rodzina laboratoryjna — delegacja do istniejących mailerów. Zdarzenia
@@ -49,6 +53,8 @@ module Notifications
     def dispatch_lab
       case @event
       when :result_available
+        return Sender::Result.new(status: :skipped) if lab_result_file_ids.empty?
+
         MasdiagMailer::ContractorResultNotificationMailer
           .send_mail(@sample.patient.ContractorId, lab_result_file_ids)&.deliver_later
       when :sample_accepted
@@ -75,6 +81,7 @@ module Notifications
     def lab_result_file_ids
       OnlineFile.joins(measurement: :sample)
                 .where(Samples: { Id: @sample.Id })
+                .where(is_notification_send: false)
                 .pluck(:measurement_id)
     end
   end

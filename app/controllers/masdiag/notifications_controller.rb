@@ -15,9 +15,13 @@ module Masdiag
       enqueue_by_id(Notifications::SampleRejectedJob)
     end
 
-    # POST /masdiag/result_available
+    # POST /masdiag/result_available/:measurement_id
     def result_available
-      enqueue_by_id(Notifications::ResultAvailableJob)
+      measurement = Measurement.find_by(Id: params[:measurement_id])
+      return render_measurement_not_found if measurement.nil?
+
+      Notifications::ResultAvailableJob.perform_later(measurement.Id)
+      json_response("OK")
     end
 
     # POST /masdiag/registration_reminder  (accepts sample_id or code)
@@ -46,6 +50,10 @@ module Masdiag
 
     def render_sample_not_found
       json_response({ error: "sample not found" }, :unprocessable_content)
+    end
+
+    def render_measurement_not_found
+      json_response({ error: "measurement not found" }, :unprocessable_content)
     end
   end
 end

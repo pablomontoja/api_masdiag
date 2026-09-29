@@ -5,19 +5,21 @@ RSpec.describe "POST /masdiag/result_available", type: :request do
   let!(:contractor) { create(:contractor, institution_id: inst.id) }
   let!(:api_account) { create(:api_account, contractor_id: contractor.Id) }
   let!(:sample) { create(:sample) }
+  let!(:measurement) { create(:measurement, sample: sample, project: create(:project_without_fixed_id)) }
 
-  it "returns 200 and enqueues ResultAvailableJob for a valid sample" do
-    expect(Notifications::ResultAvailableJob).to receive(:perform_later).with(sample.Id)
+  it "returns 200 and enqueues ResultAvailableJob for a valid measurement" do
+    expect(Notifications::ResultAvailableJob).to receive(:perform_later).with(measurement.Id)
 
-    post "/masdiag/result_available/#{sample.Id}", headers: http_auth_header
+    post "/masdiag/result_available/#{measurement.Id}", headers: http_auth_header
     expect(response).to have_http_status(200)
   end
 
-  it "returns 422 for an unknown sample" do
+  it "returns 422 for an unknown measurement" do
     expect(Notifications::ResultAvailableJob).not_to receive(:perform_later)
 
     post "/masdiag/result_available/999999", headers: http_auth_header
     expect(response).to have_http_status(422)
+    expect(JSON.parse(response.body)["error"]).to eq("measurement not found")
   end
 
   it "is blocked by MasdiagCheck for a non-institution-1 caller" do
@@ -27,7 +29,7 @@ RSpec.describe "POST /masdiag/result_available", type: :request do
 
     header = { "Authorization" => ActionController::HttpAuthentication::Basic.encode_credentials("other", "password"),
                }
-    post "/masdiag/result_available/#{sample.Id}", headers: header
+    post "/masdiag/result_available/#{measurement.Id}", headers: header
     expect(response).to have_http_status(:unprocessable_content)
   end
 end
