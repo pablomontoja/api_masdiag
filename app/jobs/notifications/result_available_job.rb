@@ -5,7 +5,7 @@ module Notifications
     # Data progu — tylko Measurement autoryzowane od tego dnia (włącznie) mogą
     # wyzwolić powiadomienie. Chroni przed masową wysyłką zaległych powiadomień
     # Toxo po naprawie mechanizmu wyzwalającego (patrz spec.md FR-001).
-    CUTOFF_DATE = Date.new(2026, 9, 24).freeze
+    CUTOFF_DATE = Date.new(2026, 9, 29).freeze
 
     def perform(measurement_id)
       measurement = Measurement.find_by(Id: measurement_id)

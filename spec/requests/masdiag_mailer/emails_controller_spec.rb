@@ -24,9 +24,10 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
         expect(response.body).to include_json(error: "too many requests, the use of this endpoint is limited to 1 request per 60 seconds")
       end
 
-      it 'not enqueues ContractorResultsNotifierJob and PatientResultsNotifierJob' do
+      it 'not enqueues ContractorResultsNotifierJob, PatientResultsNotifierJob, and ResultAvailableSweepJob' do
         expect(MasdiagMailer::ContractorResultsNotifierJob).not_to receive(:perform_later)
         expect(MasdiagMailer::PatientResultsNotifierJob).not_to receive(:perform_later)
+        expect(Notifications::ResultAvailableSweepJob).not_to receive(:perform_later)
 
         post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
       end
@@ -37,9 +38,10 @@ RSpec.describe MasdiagMailer::EmailsController, type: :request do
         Rails.configuration.last_use_of_send_all_mail = current_time - 61.seconds
       end
 
-      it 'enqueues ContractorResultsNotifierJob and PatientResultsNotifierJob' do
+      it 'enqueues ContractorResultsNotifierJob, PatientResultsNotifierJob, and ResultAvailableSweepJob' do
         expect(MasdiagMailer::ContractorResultsNotifierJob).to receive(:perform_later)
         expect(MasdiagMailer::PatientResultsNotifierJob).to receive(:perform_later)
+        expect(Notifications::ResultAvailableSweepJob).to receive(:perform_later)
 
         post '/masdiag_mailer/send_all_mails', params: {}, headers: http_auth_header_with_json_content_type
       end
