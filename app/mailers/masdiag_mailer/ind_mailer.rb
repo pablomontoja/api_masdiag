@@ -24,11 +24,17 @@ module MasdiagMailer
       mail(to: "logistyka@masdiag.pl", subject: subject)
     end
 
+    # Ambient/default I18n locale is :en (see config/application.rb), but this
+    # mailer only ever sends Polish content (patient.fullname, rsc.projects_names_pl
+    # via Project#Name, which is Mobility-translated) — force :pl so deliver_later
+    # jobs don't pick up English project names.
     def after_sample_registration(sample_id)
-    	@sample = Sample.find(sample_id)
-      return if @sample.patient&.email.blank?
+    	I18n.with_locale(:pl) do
+        @sample = Sample.find(sample_id)
+        return if @sample.patient&.email.blank?
 
-      mail(to: @sample.patient.email, subject: "Rejestracja Próbki - Masdiag Sp. z o.o.")
+        mail(to: @sample.patient.email, subject: "Rejestracja Próbki - Masdiag Sp. z o.o.")
+      end
     end
 
   private
