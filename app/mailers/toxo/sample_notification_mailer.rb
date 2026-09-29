@@ -63,11 +63,12 @@ module Toxo
     # TODO: brak jeszcze i18n dla tego mailera — wymuszamy polski (Contractor#locale
     # nie jest jeszcze uwzględniany), zamiast pozostawić domyślny :en, który psuł
     # nazwy badań (Project#Name, tłumaczone przez Mobility w zależności od I18n.locale).
-    def result_available(sample)
+    def result_available(sample, measurement)
       I18n.with_locale(:pl) do
         @sample = sample
         @portal_url = PORTAL_URL
         @measurements = sample.measurements
+        @triggering_measurement = measurement
         mail(subject: "Wynik badania")
       end
     end

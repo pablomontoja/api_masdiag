@@ -4,7 +4,8 @@ RSpec.describe Toxo::SampleNotificationMailer, type: :mailer do
   let(:sample) { create(:sample, Code: "TX001A") }
 
   describe "#result_available" do
-    subject(:mail) { described_class.result_available(sample) }
+    let(:triggering_measurement) { create(:measurement, sample: sample, project: create(:project_without_fixed_id, Name: "Badanie wyzwalające")) }
+    subject(:mail) { described_class.result_available(sample, triggering_measurement) }
 
     it "has the correct Polish subject" do
       expect(mail.subject).to eq("Wynik badania")
@@ -14,6 +15,11 @@ RSpec.describe Toxo::SampleNotificationMailer, type: :mailer do
       body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
       expect(body).to include("TX001A")
       expect(body).to include(V1::Common::TOXO_PARTNER_PORTAL_URL)
+    end
+
+    it "states which measurement/test this email concerns" do
+      body = mail.html_part ? mail.html_part.body.encoded : mail.body.encoded
+      expect(body).to include("Badanie wyzwalające")
     end
 
     it "renders the sample's measurement in the table" do
@@ -31,7 +37,7 @@ RSpec.describe Toxo::SampleNotificationMailer, type: :mailer do
       create(:measurement, sample: sample, project: project)
 
       I18n.with_locale(:en) do
-        delivered = described_class.result_available(sample.reload)
+        delivered = described_class.result_available(sample.reload, triggering_measurement)
         body = delivered.html_part ? delivered.html_part.body.encoded : delivered.body.encoded
         expect(body).to include("Nazwa polska")
       end
