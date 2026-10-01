@@ -2,6 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## LSI.Masdiag QMS
+
+This repository is the **Mailer** component of LSI.Masdiag, prefix **MA**. The default branch is **`main`**.
+
+- The process is defined in the sibling repository `../lsi-masdiag-qms/`. Its `CLAUDE.md` takes precedence in matters of process (change IDs, skills, evidence, language of issues and PRs). Read the relevant skill in `../lsi-masdiag-qms/skills/<name>/SKILL.md` before doing process work.
+- Change traces (`change.md`, `risk.md`, test results) live in `../lsi-masdiag-qms/changes/<ID>/`, not here. A change ID is `MA-<issue number>`.
+- Branch: `<ID>-short-description`. Commit: starts with the ID, e.g. `MA-42: fix notification template`. Commits, branch names, code and code comments are in English; issues, PR descriptions and PR comments are in Polish (exception to any other language rule in this file).
+- Work only on branches and open PRs to `main`.
+- **Never** merge a PR (also via `gh api`), push to `main`, force-push, rewrite history, bypass hooks (`--no-verify`) or store tokens in the repository. Merging is the human's approval.
+- Do not run tests in the working copy to record results; use a clean `git worktree` on the given SHA (`lsi-test-record`).
+- Tests that verify a requirement carry RSpec metadata (the equivalent of `[Property("TC", ...)]` / `[Property("REQ", ...)]` in the .NET components): `it "...", tc: "TC-MA-001", req: "REQ-MA-001"`. A TC number is assigned once and never changes. Note: `../lsi-masdiag-qms/tools/traceability.sh` currently scans only `*.cs` files, so it does not yet read this metadata (to be settled in the QMS).
+- The commands in "Commands" below were not verified when this section was added (no Ruby or database in the agent environment). Verify them in a clean worktree before recording any results.
+
 ## Project Overview
 
 `api_masdiag` is a Rails 8 API-only application serving as a multi-tenant laboratory management system for diagnostic samples. It handles medical testing workflows (kits, samples, results, patient records) across multiple partner institutions.
